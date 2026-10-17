@@ -1,0 +1,9 @@
+# 僅供本機管理的 Tunnel 使用，不能直接啟動：須先替換既有 Tunnel 的 ID 與憑證路徑。
+# 使用 Cloudflare 控制台／token 管理的 connector，直接在控制台填入同樣的 hostname/service。
+# cloudflared container 須連接既有 external Docker network：cloudflared。
+tunnel: REPLACE_WITH_YOUR_TUNNEL_ID
+credentials-file: /etc/cloudflared/REPLACE_WITH_YOUR_TUNNEL_ID.json
+ingress:
+  - hostname: game.example.com
+    service: http://REPLACE_WITH_WEB_SERVICE:80
+  - service: http_status:404

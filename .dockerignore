@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+**/node_modules
+tools/cache
+**/__pycache__
+*.log
+.firebase
+.wrangler
+videos
+backups
+.config
+*.local
+docs/CONTACTOS_CREADORES.md

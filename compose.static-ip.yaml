@@ -1,0 +1,6 @@
+# 選配：確認既有 cloudflared 網路子網與未占用 IP 後才套用。
+services:
+  pokesurvivor-web:
+    networks:
+      cloudflared:
+        ipv4_address: ${CFT_IPV4:?請填入 cloudflared 子網內未占用的 IP}

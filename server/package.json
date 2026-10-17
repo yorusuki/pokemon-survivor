@@ -1,0 +1,21 @@
+{
+  "name": "pokesurvivor-server",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "^22.23.2 || ^24.18.1 || ^26.5.1"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "db:init": "node bootstrap.js",
+    "test": "node --test --experimental-test-isolation=none tests/*.test.js",
+    "check": "node --check index.js && node --check store.js && node --check policy.js && node --check security.js && node --check bootstrap.js && node --check google-auth.js && node --check game-config.js"
+  },
+  "dependencies": {
+    "google-auth-library": "11.3.1",
+    "pg": "8.16.3"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.14"
+  }
+}
