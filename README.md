@@ -33,9 +33,9 @@ docker compose up -d
 | 主題 | 文件 |
 |---|---|
 | 部署、備份與回滾 | [自架部署](docs/SELF_HOSTING.md)、[回滾](docs/ROLLBACK.md) |
-| 帳號與 API | [Google 登入](docs/GOOGLE_AUTH.md)、[API](docs/API.md) |
+| 帳號與 API | [Google 登入](docs/GOOGLE_AUTH.md)、[API](docs/API.md)、[暱稱修改提案](docs/ACCOUNT_NICKNAME_PLAN.md) |
 | 安全與多人連線 | [安全說明](docs/SECURITY_REVIEW.md)、[連線診斷](docs/MULTIPLAYER.md) |
-| 機率與遊戲設定 | [遊戲設定](docs/GAME_CONFIG.md)、[道具與異色](docs/ITEMS_SHINY_DEFENSE_REVIEW.md) |
+| 機率與遊戲設定 | [遊戲設定](docs/GAME_CONFIG.md)、[道具與異色](docs/ITEMS_SHINY_DEFENSE_REVIEW.md)、[生命寶珠提案](docs/LIFE_ORB_PROPOSAL.md) |
 | 介面與收藏 | [畫面設定](docs/GAMEPLAY_OPTIONS.md)、[最愛與能力面板](docs/FAVORITES_DISPLAY.md) |
 | 平衡與招式 | [平衡方案](docs/BALANCE_PLAN.md)、[支援敵人](docs/SUPPORT_BALANCE.md)、[招式池](docs/SKILL_POOL_REVIEW.md) |
 | 翻譯與字型 | [中文化](docs/LOCALIZATION.md)、[名稱來源](docs/terminology-zh-TW.json)、[字型來源](docs/FONT_SOURCES.md) |

@@ -865,7 +865,7 @@ html[lang="zh-Hant"] .topbar .pill { white-space: nowrap; }
 @font-face{font-family:"Cubic 11";src:url('../assets/fonts/Cubic_11.woff2') format('woff2');font-weight:100 900;font-display:swap}
 html[data-font="pixel"]{--font:"Cubic 11","Pixelify",system-ui,sans-serif}
 html[data-font="pixel"] body,html[data-font="pixel"] button,html[data-font="pixel"] input,html[data-font="pixel"] select{font-family:var(--font)}
-.favorites-tab{margin-right:14px!important;border-color:#ff8faf!important;color:#ffb8ce!important;flex-shrink:0}
+.favorites-tab{margin-right:clamp(0px,1vw,10px);border-color:#ff8faf;color:#ffb8ce;flex-shrink:0}
 .favorite-heart{position:absolute;top:5px;left:50%;transform:translateX(-50%);color:#ff78a4;font:20px var(--font);text-shadow:0 1px 3px #000;pointer-events:none}
 #dex-grid .cell{touch-action:manipulation}
 #run-bonuses{position:fixed;bottom:110px;width:185px;padding:8px 10px;background:#08142c55;border:1px solid #9fbaff40;border-radius:9px;z-index:8;font:11px/1.45 var(--font);pointer-events:none;color:#eaf2ff}
@@ -874,7 +874,7 @@ html[data-font="pixel"] body,html[data-font="pixel"] button,html[data-font="pixe
 .card-current{display:block;margin-top:2px;color:#ffe599;font-size:11px;line-height:1.25}.level-bonus-summary{margin-top:4px;padding:4px;border-top:1px solid #ffffff44;color:#d4e6ff;font-size:12px;line-height:1.5}
 @media(max-width:650px){#run-bonuses{width:158px;font-size:10px;padding:6px;bottom:105px}.favorite-heart{font-size:18px}}
 
-#dex-detail .favorite-action{position:static;order:8;flex-shrink:0}
+#dex-detail .favorite-hint{width:100%;box-sizing:border-box;text-align:center;color:var(--muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 .level-bonus-summary summary{cursor:pointer}.level-bonus-summary>div{max-height:64px;overflow:auto}
 #run-bonuses{text-shadow:0 1px 3px #000,0 0 3px #000}
 

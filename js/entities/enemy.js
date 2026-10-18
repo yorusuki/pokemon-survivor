@@ -593,8 +593,12 @@
     // Shared per-target intervals prevent stacking casts from different support enemies.
     receiveSupport(kind, now, supportRate) {
       if(this.remote || this.dead) return 0;
+      if(!Number.isFinite(now)) return 0;
       if(kind==='heal') {
-        if(now-(this.supportHealAt ?? -Infinity)<3) return 0;
+        const previous=this.supportHealAt ?? -Infinity;
+        // Freeze the interval at the last successful heal; use paused game time.
+        const interval=2+6*Math.min(1,Math.max(0,previous)/1800);
+        if(now<previous+interval) return 0;
         const rate=Number.isFinite(supportRate)?Math.max(.05,Math.min(.12,supportRate)):.05;
         const value=Math.min(this.maxHp*rate,Math.max(0,this.maxHp-this.hp));
         if(value<=0) return 0;

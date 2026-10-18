@@ -17,9 +17,29 @@ test('玩家等級決定每次 5～12%，不依攻擊，合作取存活最高等
   const {G,make}=fixture(),a=make({hp:500}),h=make({behavior:'healer'});G.Game.everyone=()=>players;G.EnemyMgr.queryCircle=()=>[a];h.healAround();assert.ok(Math.abs(a.hp-500-expected)<1e-8);
  }
 });
-test('同一目標來自不同治療者，3 秒內最多一次',()=>{
+test('同一目標來自不同治療者，開局 2 秒內最多一次',()=>{
  const {G,make}=fixture(),a=make({hp:500}),h1=make({behavior:'healer'}),h2=make({behavior:'healer'});G.EnemyMgr.queryCircle=()=>[a];
- h1.healAround();assert.equal(a.hp,550);h2.healAround();assert.equal(a.hp,550);G.Game.st.time=2.999;h2.healAround();assert.equal(a.hp,550);G.Game.st.time=3;h2.healAround();assert.equal(a.hp,600);
+ h1.healAround();assert.equal(a.hp,550);h2.healAround();assert.equal(a.hp,550);G.Game.st.time=1.999;h2.healAround();assert.equal(a.hp,550);G.Game.st.time=2;h2.healAround();assert.equal(a.hp,600);
+});
+
+test('受療間隔隨場次 0～30 分鐘由 2 增至 8 秒，鎖定上次成功受療時的間隔',()=>{
+ for(const [start,interval] of [[0,2],[60,2.2],[300,3],[900,5],[1800,8],[3600,8]]) {
+  const {make}=fixture(),a=make({hp:100});
+  assert.equal(a.receiveSupport('heal',start,.05),50);
+  assert.equal(a.receiveSupport('heal',start+interval-.001,.12),0);
+  assert.equal(a.receiveSupport('heal',start+interval,.05),50);
+  assert.equal(a.receiveSupport('heal',start+interval,.05),0);
+ }
+});
+
+test('滿血、死亡、遠端及異常時間不消耗受療間隔，暫停不推進冷卻',()=>{
+ const {make}=fixture(),a=make();
+ assert.equal(a.receiveSupport('heal',900,.05),0);a.hp=500;
+ for(const now of [NaN,Infinity,-Infinity])assert.equal(a.receiveSupport('heal',now,.05),0);
+ assert.equal(a.receiveSupport('heal',900,.05),50);
+ for(let i=0;i<10;i++)assert.equal(a.receiveSupport('heal',900,.05),0);
+ assert.equal(a.receiveSupport('heal',904.999,.05),0);assert.equal(a.receiveSupport('heal',905,.05),50);
+ for(const state of [{dead:true},{remote:true}])assert.equal(make({...state,hp:500}).receiveSupport('heal',900,.05),0);
 });
 test('不自療但能互補，原範圍內不限人數、隔牆與特殊敵人可補',()=>{
  const {G,make}=fixture(),h=make({behavior:'healer',hp:500}),other=make({behavior:'healer',hp:500}),targets=Array.from({length:20},()=>make({hp:500})),special=['boss','legend','judge'].map(k=>make({[k]:true,hp:500}));

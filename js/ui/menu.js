@@ -233,9 +233,9 @@ G.MenuUI = (() => {
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });
-    const favoriteButton=document.createElement('button');favoriteButton.className='btn small favorite-action';
-    favoriteButton.textContent=G.T(G.DB.isFavorite(dex)?'Quitar de favoritos':'Añadir a favoritos');
-    favoriteButton.onclick=()=>toggleFavorite(dex);box.appendChild(favoriteButton);
+    const favoriteHint=document.createElement('p');favoriteHint.className='favorite-hint';
+    favoriteHint.textContent=G.T('Toca dos veces un Pokémon de la lista para añadirlo o quitarlo de favoritos.');
+    box.querySelector('h3').insertAdjacentElement('afterend',favoriteHint);
     const pick = $('dex-pick');
     if (pick) pick.onclick = () => {
       s.partner = dex;

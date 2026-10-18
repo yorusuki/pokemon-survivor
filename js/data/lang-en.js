@@ -4,6 +4,7 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Toca dos veces un Pokémon de la lista para añadirlo o quitarlo de favoritos.': 'Double-tap a Pokémon in the list to add or remove it from favorites.',
   'Salir de pantalla completa': 'Exit fullscreen', 'Estado del guardado': 'Save status',
   'Sin asignar': 'Unassigned', 'Mediano': 'Standard',
   'Ajusta los efectos y las partículas. En modo automático, la calidad baja si el juego pierde fluidez. Calidad actual: {x}.': 'Adjust effects and particles. Auto lowers quality when the game stutters. Current quality: {x}.',
