@@ -741,7 +741,7 @@ G.I18n.add({
   "Demasiados intentos. Inténtalo más tarde.": "Too many attempts. Try again later.",
   "Crea una cuenta para cambiar tu apodo.": "Create an account to change your nickname.",
   "Espera a que se guarde tu progreso antes de cambiar el apodo.": "Wait for your progress to sync before changing your nickname.",
-  "+30% de daño y -20% de vida máxima. No consume vida al atacar.": "+30% damage and -20% maximum HP. Attacks do not drain HP."
+  "+30% de daño y -10% de vida máxima. No consume vida al atacar.": "+30% damage and -10% maximum HP. Attacks do not drain HP."
 });
 
 G.I18n.add({"No puedes añadirte como amigo.": "You cannot add yourself as a friend."});

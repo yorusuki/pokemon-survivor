@@ -1696,5 +1696,9 @@
   "Las novedades se agrupan por fecha y categoría; los cambios del mismo día se reúnen en una sola entrada.": "更新紀錄依日期與類別整理，同一天的變更合併在同一筆紀錄。",
   "Updates are grouped by date and category; same-day changes share one entry.": "更新紀錄依日期與類別整理，同一天的變更合併在同一筆紀錄。",
   "Novedades por fecha": "依日期整理更新紀錄",
-  "Updates by date": "依日期整理更新紀錄"
+  "Updates by date": "依日期整理更新紀錄",
+  "+30% damage and -10% maximum HP. Attacks do not drain HP.": "攻擊 +30%、最大生命 -10%，攻擊時不再扣除生命。",
+  "+30% de daño y -10% de vida máxima. No consume vida al atacar.": "攻擊 +30%、最大生命 -10%，攻擊時不再扣除生命。",
+  "Vidasfera da +30% de daño y -10% de vida máxima, sin perder vida al atacar.": "生命寶珠改為攻擊 +30%、最大生命 -10%，攻擊不再扣血。",
+  "Life Orb gives +30% damage and -10% maximum HP, without draining HP on attacks.": "生命寶珠改為攻擊 +30%、最大生命 -10%，攻擊不再扣血。"
 }
