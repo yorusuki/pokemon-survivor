@@ -214,3 +214,7 @@ docker compose logs --tail=40 pokesurvivor-web
 活動機率表、一次性全帳號 SQL 配發與拉霸文字解析度說明見 [GAME_CONFIG.md](GAME_CONFIG.md)。本次不新增配發資料表或領獎 API。
 
 多人連線的等待時間、發證限額、診斷日誌與驗收方式請見 [MULTIPLAYER.md](MULTIPLAYER.md)。
+
+## 帳號與好友代碼升級
+
+新版需由 db-init 建立兩個帳號私有表並授權 API；既有使用者、存檔與好友保留。升級步驟、暱稱與代碼規則見 [帳號文件](ACCOUNT_NICKNAME_PLAN.md)。請同時發布前後端並重新載入舊分頁；不要刪除資料卷。

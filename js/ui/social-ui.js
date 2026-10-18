@@ -48,13 +48,18 @@
   function withNick(fn) {
     if (!needOnline()) return;
     if (G.Social.me) { fn(); return; }
-    G.Social.start().then(r => { if (r === 'ok') fn(); else G.NickUI.open(fn); });
+    G.Social.start().then(r => { if (r === 'ok') fn(); else if(r==='need-nick') G.NickUI.open(fn); });
   }
 
   // ======================= AMIGOS =======================
 
   G.FriendsUI = (() => {
     function init() {
+      $('fr-copy').onclick=async()=>{
+        const code=$('fr-code').value;if(!code)return;
+        try {await navigator.clipboard.writeText(code);msg(G.T('Código de amigo copiado.'),false);}
+        catch(e){$('fr-code').focus();$('fr-code').select();msg(G.T('No se pudo copiar. Selecciona y copia el código manualmente.'),true);}
+      };
       $('fr-add').onsubmit = async e => {
         e.preventDefault();
         const name = $('fr-name').value;
@@ -73,7 +78,8 @@
       if (t) G.Audio.sfx(bad ? 'error' : 'confirm');
     }
 
-    function open() { withNick(() => { G.UI.show('scr-friends', true); msg(''); render(); G.Social.refreshPresence(); }); }
+    function open() { withNick(() => { G.UI.show('scr-friends', true); msg(''); render(); G.Social.refreshPresence();
+      G.Social.refreshAccount().catch(()=>msg(G.T('No se pudo cargar la cuenta. Inténtalo de nuevo.'),true)); }); }
 
     /** "hace 5 min", "hace 2 h", "hace 3 días". */
     function ago(t) {
@@ -93,7 +99,10 @@
 
     function render() {
       const room = G.Social.room;
-      $('fr-me').innerHTML = 'Tu apodo: <b class="gold" translate="no">' + esc(G.Social.me ? G.Social.me.name : '') + '</b> · dáselo a tus amigos para que te añadan.';
+      $('fr-me').innerHTML = esc(G.T('Tu apodo'))+': <b class="gold" translate="no">' + esc(G.Social.me ? G.Social.me.name : '') + '</b>';
+      $('fr-code').value=G.Social.account?.friendCode||'';
+      $('fr-code').setAttribute('aria-label',G.T('Código de amigo'));
+      $('fr-copy').disabled=!$('fr-code').value;
       $('fr-room').classList.toggle('hidden', !room);
       const list = G.Social.friends.sort((a, b) => {
         const rank = f => f.status === 'in' ? 0 : f.status === 'ok' ? (f.online ? (f.play ? 2 : 1) : 3) : 4;
@@ -102,7 +111,7 @@
       const box = $('fr-list');
       box.innerHTML = '';
       if (!list.length) {
-        box.innerHTML = '<p class="sub">Aún no tienes amigos añadidos. Escribe arriba el apodo de un amigo.</p>';
+        box.innerHTML = '<p class="sub">'+esc(G.T('Pega el código que te comparta tu amigo para añadirlo.'))+'</p>';
         return;
       }
       for (const f of list) {

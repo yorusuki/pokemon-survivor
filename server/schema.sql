@@ -54,3 +54,16 @@ CREATE TABLE IF NOT EXISTS oauth_flows (
   expires_at timestamptz NOT NULL
 );
 CREATE INDEX IF NOT EXISTS oauth_flows_expiry ON oauth_flows(expires_at);
+
+-- Private account metadata; never exposed through the documents API.
+CREATE TABLE IF NOT EXISTS account_settings (
+  user_id text PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  friend_code text NOT NULL UNIQUE CHECK (friend_code ~ '^PS-[A-F0-9]{20}$'),
+  renamed_at bigint CHECK (renamed_at IS NULL OR renamed_at >= 0)
+);
+CREATE TABLE IF NOT EXISTS nickname_holds (
+  lower_name text PRIMARY KEY,
+  user_id text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at bigint NOT NULL
+);
+CREATE INDEX IF NOT EXISTS nickname_holds_expiry ON nickname_holds(expires_at);

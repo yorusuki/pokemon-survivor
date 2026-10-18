@@ -39,3 +39,7 @@ npm --prefix server audit
 部署後另行確認容器健康、Nginx 設定與回應標頭、資料庫升級和重啟持久化、Google 授權往返、跨網路多人連線，以及實際映像與主機的漏洞掃描。`npm audit` 只涵蓋 npm 公告資料庫，不涵蓋整個系統。
 
 操作與回滾：[部署文件](SELF_HOSTING.md)、[Google 登入](GOOGLE_AUTH.md)、[多人連線](MULTIPLAYER.md)、[回滾](ROLLBACK.md)。
+
+## 2.0.0 帳號與好友
+
+改名需登入與同源驗證，以單一交易套用 24 小時冷卻、7 天保留及房間限制；一般文件 API 不得繞過。好友代碼為獨立 80-bit 隨機值，只作可分享的查詢識別碼，並非授權秘密；查詢具每帳號限流。新增的私有資料表不透過 documents API 開放。交易錯誤不記錄原始名稱、代碼或 SQL。

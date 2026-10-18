@@ -52,7 +52,7 @@ G.Social = (() => {
   let fb = null, uid = null;
   let me = null;                    // { uid, name }
   let friends = new Map();          // otherUid -> { uid, name, pid, status: 'ok'|'in'|'out', online, play }
-  let unFriends = null;
+  let unFriends = null, unMe = null, account = null;
   let beatT = 0, presAt = 0, unInv = null;
   const pres = new Map();           // otherUid -> { online, play, room, seen } (lo último leído)
   const sentInv = new Set();        // a quién invitaste (para retirarlo al salir)
@@ -62,7 +62,7 @@ G.Social = (() => {
   const listeners = new Set();
   let started = false;
 
-  function emit(what) { listeners.forEach(fn => { try { fn(what); } catch (e) { console.warn(e); } }); }
+  function emit(what) { listeners.forEach(fn => { try { fn(what); } catch (e) { console.warn('[Social] listener failed'); } }); }
   const ts = () => G.Backend.timestamp();
   const fts = () => G.Backend.timestamp();
   const msOf = v => (v && v.toMillis ? v.toMillis() : +v || 0);
@@ -71,19 +71,25 @@ G.Social = (() => {
   // ---------------- arranque ----------------
 
   /** Tras iniciar sesión. → 'ok' | 'need-nick' | 'off' (sin nube) */
+  let starting=null;
   async function start() {
+    if(starting)return starting;
+    starting=boot();
+    try {return await starting;}
+    catch(e){started=false;console.warn('[Social] start:',e.code||'network');G.UI?.toast?.(G.T(accountError(e)));return 'error';}
+    finally {starting=null;}
+  }
+  async function boot() {
     if (!G.DB.online) return 'off';
     if (started) return me ? 'ok' : 'need-nick';
     fb = G.DB.fb; uid = fb.uid;
     started = true;
     measureSkew();
-    // El apodo no cambia nunca: se recuerda en este navegador y así no se lee
-    // el perfil en cada visita (una lectura menos por jugador y sesión).
+    // Fetch the canonical profile; browser caches cannot override a renamed account.
     const NICK = 'ps.nick.' + uid;
-    let cachedNick = null;
-    try { cachedNick = localStorage.getItem(NICK); } catch (e) { /* nada */ }
-    const prof = cachedNick ? { name: cachedNick }
-      : await fb.fs.collection('profiles').doc(uid).get().then(s => s.exists ? s.data() : null).catch(() => null);
+    const bootUid=uid;
+    const prof = await fb.fs.collection('profiles').doc(uid).get().then(s => s.exists ? s.data() : null);
+    if(!G.DB.online || uid!==bootUid)return 'off';
     if (prof) {
       me = { uid, name: prof.name };
       if (G.DB.user !== prof.name) G.DB.setName(prof.name);
@@ -94,6 +100,7 @@ G.Social = (() => {
       const r = await claimNick(G.DB.save.name);
       if (!r.ok) return 'need-nick';
     } else return 'need-nick';
+    await refreshAccount();
     online();
     return 'ok';
   }
@@ -102,19 +109,12 @@ G.Social = (() => {
   async function claimNick(name) {
     name = (name || '').trim();
     if (!VALID.test(name)) return { ok: false, error: 'El apodo debe tener 3-16 letras, números o _.' };
-    const lower = name.toLowerCase();
     try {
-      await fb.fs.runTransaction(async tx => {
-        const nref = fb.fs.collection('names').doc(lower);
-        const n = await tx.get(nref);
-        if (n.exists && n.data().uid !== uid) throw { code: 'taken' };
-        if (!n.exists) tx.set(nref, { uid });
-        tx.set(fb.fs.collection('profiles').doc(uid),
-          { name, lower, at: G.Backend.timestamp() });
-      });
+      const owner=uid,value=await G.Backend.api('account',{action:'rename',name});
+      if(!G.DB.online || uid!==owner)throw {code:'auth/invalid-credential'};
+      applyAccount(value);
     } catch (e) {
-      if (e && e.code === 'taken') return { ok: false, error: 'Ese apodo ya lo tiene otro jugador.' };
-      return { ok: false, error: 'No se pudo guardar el apodo (' + ((e && e.code) || 'error') + ').' };
+      return {ok:false,error:accountError(e)};
     }
     me = { uid, name };
     try { localStorage.setItem('ps.nick.' + uid, name); } catch (e) { /* nada */ }
@@ -124,8 +124,52 @@ G.Social = (() => {
     return { ok: true };
   }
 
+  function accountError(e) {
+    const errors={'rename-cooldown':'Puedes cambiar tu apodo una vez cada 24 horas.','rename-in-room':'Sal de la sala antes de cambiar tu apodo.',
+      'nickname-taken':'Ese apodo está ocupado o reservado.','invalid-nickname':'Usa de 3 a 16 letras, números o _.',
+      'invalid-friend-code':'Pega un código de amigo válido.','friend-not-found':'No se encontró ese código de amigo.',
+      'too-many-requests':'Demasiados intentos. Inténtalo más tarde.'};
+    return errors[e?.code]||'No se pudo completar la operación. Comprueba tu conexión.';
+  }
+  function applyAccount(value) {
+    account=value;
+    if(value.hasNickname) {
+      me={uid,name:value.name};
+      if(G.DB.user!==value.name || G.DB.save?.name!==value.name)G.DB.setName(value.name);
+      try {localStorage.setItem('ps.nick.'+uid,value.name);} catch(e) { console.warn('[Social] nickname-cache'); }
+      if(fb?.auth.currentUser)fb.auth.currentUser.displayName=value.name;
+    }
+    emit('account');
+  }
+  async function refreshAccount() {
+    if(!G.DB.online)throw {code:'auth/invalid-credential'};
+    const owner=G.DB.fb.uid,value=await G.Backend.api('account',{action:'get'});
+    if(!G.DB.online || G.DB.fb.uid!==owner)throw {code:'auth/invalid-credential'};
+    applyAccount(value);return value;
+  }
+  async function rename(name) {
+    if(!G.DB.online)return {ok:false,error:'Crea una cuenta para cambiar tu apodo.'};
+    if(room || G.Game.state!=='ui')return {ok:false,error:'Sal de la sala y vuelve al menú antes de cambiar tu apodo.'};
+    await G.DB.flush();
+    if(G.DB.syncState!=='ok')return {ok:false,error:'Espera a que se guarde tu progreso antes de cambiar el apodo.'};
+    const result=await claimNick(name);
+    if(result.ok){profCache.clear();publishProfile(true);}
+    return result;
+  }
+
   /** Presencia (latido), amigos e invitaciones. Nada de esto usa la Realtime Database. */
+  function watchOwnProfile() {
+    if(!fb || unMe)return;
+    unMe=fb.fs.collection('profiles').doc(uid).onSnapshot(s=>{
+      if(s.exists && me && (me.name!==s.data().name || G.DB.save?.name!==s.data().name || G.DB.user!==s.data().name)) {
+        applyAccount({...account,name:s.data().name,hasNickname:true});
+        refreshAccount().catch(e=>console.warn('[Social] account:',e.code||'network'));
+      }
+    },e=>console.warn('[Social] account:',e.code||'network'));
+  }
+
   function online() {
+    watchOwnProfile();
     if (beatT) return;                        // ya estaba en marcha
     if (fb.rtdb) fb.rtdb.goOffline();         // se conecta sólo al entrar en una sala
     writeStatus();
@@ -166,6 +210,7 @@ G.Social = (() => {
     if (!started) return;
     await leaveRoom().catch(() => {});
     if (unFriends) { unFriends(); unFriends = null; }
+    if (unMe) { unMe(); unMe = null; }
     if (unInv) { unInv(); unInv = null; }
     clearInterval(beatT); beatT = 0;
     document.removeEventListener('visibilitychange', onVisible);
@@ -176,7 +221,7 @@ G.Social = (() => {
       await deleteAll().catch(e => console.warn('[Social] borrar:', e));
     }
     friends.clear(); invites.clear(); sentInv.clear(); pres.clear(); presAt = 0;
-    me = null; started = false; fb = null; uid = null; playing = false;
+    me = null; account=null; started = false; fb = null; uid = null; playing = false;
     emit('stop');
   }
 
@@ -215,6 +260,7 @@ G.Social = (() => {
       // Un amigo nuevo (o recién aceptado): se mira si está en línea.
       const added = [...next.values()].some(f => f.status === 'ok' && (!friends.has(f.uid) || friends.get(f.uid).status !== 'ok'));
       const hadFriends = hasFriends();
+      for(const [other,value] of next)if(friends.get(other)?.name!==value.name)profCache.delete(other);
       friends = next;
       emit('friends');
       // Tu primer amigo: ahora sí hay quien lea tu "en línea" y quien te invite.
@@ -250,19 +296,18 @@ G.Social = (() => {
 
   /** Envía una solicitud de amistad (o acepta la que ya te había mandado). */
   async function request(name) {
-    name = (name || '').trim();
+    name = (name || '').trim().toUpperCase();
     if (!me) return { ok: false, error: 'Primero elige tu apodo.' };
-    if (!VALID.test(name)) return { ok: false, error: 'Escribe el apodo exacto de tu amigo.' };
-    const n = await fb.fs.collection('names').doc(name.toLowerCase()).get().catch(() => null);
-    if (!n || !n.exists) return { ok: false, error: 'No hay ningún jugador con ese apodo.' };
-    const other = n.data().uid;
-    if (other === uid) return { ok: false, error: 'Ese eres tú.' };
+    let found;
+    try {found=await G.Backend.api('account',{action:'lookup',code:name});}
+    catch(e){return {ok:false,error:accountError(e)};}
+    const other = found.uid;
+    if (other === uid) return { ok: false, error: 'No puedes añadirte como amigo.' };
     const f = friends.get(other);
     if (f && f.status === 'ok') return { ok: false, error: 'Ya sois amigos.' };
     if (f && f.status === 'out') return { ok: false, error: 'Ya le enviaste una solicitud.' };
     if (f && f.status === 'in') return accept(other);
-    const prof = await fb.fs.collection('profiles').doc(other).get().catch(() => null);
-    const otherName = prof && prof.exists ? prof.data().name : name;
+    const otherName = found.name;
     const users = [uid, other].sort();
     try {
       await fb.fs.collection('friendships').doc(users[0] + '_' + users[1]).set({
@@ -521,7 +566,8 @@ G.Social = (() => {
   G.DB.onLeave(why => stop(why));
 
   return {
-    start, stop, claimNick, request, accept, remove, publishProfile, getProfile, profileData,
+    start, stop, claimNick, rename, refreshAccount, request, accept, remove, publishProfile, getProfile, profileData,
+    get account() {return account;},
     createRoom, joinRoom, leaveRoom, setOpen, refreshMember, setPlaying, refreshPresence,
     invite, acceptInvite, declineInvite,
     on(fn) { listeners.add(fn); }, off(fn) { listeners.delete(fn); },

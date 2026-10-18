@@ -189,6 +189,14 @@ test('真正前端資料層：註冊、合併存檔、預約暱稱、建立房�
   const saved = await G.Backend.store.collection('saves').doc(G.DB.fb.uid).get();
   assert.equal(saved.data().save.coins, 623);
   assert.equal(await G.Social.start(), 'ok');
+  const friendClient=client(),friendUid=await register(friendClient,'CodeFriend');
+  assert.equal((await friendClient('account',{action:'rename',name:'CodeFriend'})).status,200);
+  const friendCode=(await friendClient('account',{action:'get'})).body.friendCode;
+  assert.equal((await G.Social.request(' '+friendCode.toLowerCase()+' ')).ok,true);
+  assert.equal((await G.Social.request(G.Social.account.friendCode)).ok,false);
+  assert.equal((await G.Social.request(friendUid)).ok,false);
+  const relation=[G.DB.fb.uid,friendUid].sort().join('_');
+  assert.equal((await get(friendClient,'friendships/'+relation)).body.data.from,G.DB.fb.uid);
   G.DB.save.partner = 1;
   const room = await G.Social.createRoom(); assert.ok(room.id);
   await G.Social.leaveRoom();

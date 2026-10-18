@@ -1,5 +1,7 @@
 # PokéSurvivor 繁體中文自架版
 
+目前版本：**2.0.0**。升級包含新增資料表，請先閱讀 [帳號升級步驟](docs/ACCOUNT_NICKNAME_PLAN.md)。
+
 以寶可夢為主題的瀏覽器倖存者遊戲，包含 966 隻寶可夢、招式升級、異色收藏、抽卡及最多四人合作。本分支沿用原作 HTML、CSS、原生 JavaScript 與 Canvas 2D，加入繁體中文、PostgreSQL 後端及 Docker 部署。
 
 ## 快速啟動
@@ -33,9 +35,9 @@ docker compose up -d
 | 主題 | 文件 |
 |---|---|
 | 部署、備份與回滾 | [自架部署](docs/SELF_HOSTING.md)、[回滾](docs/ROLLBACK.md) |
-| 帳號與 API | [Google 登入](docs/GOOGLE_AUTH.md)、[API](docs/API.md)、[暱稱修改提案](docs/ACCOUNT_NICKNAME_PLAN.md) |
+| 帳號與 API | [Google 登入](docs/GOOGLE_AUTH.md)、[API](docs/API.md)、[暱稱與好友代碼](docs/ACCOUNT_NICKNAME_PLAN.md) |
 | 安全與多人連線 | [安全說明](docs/SECURITY_REVIEW.md)、[連線診斷](docs/MULTIPLAYER.md) |
-| 機率與遊戲設定 | [遊戲設定](docs/GAME_CONFIG.md)、[道具與異色](docs/ITEMS_SHINY_DEFENSE_REVIEW.md)、[生命寶珠提案](docs/LIFE_ORB_PROPOSAL.md) |
+| 機率與遊戲設定 | [遊戲設定](docs/GAME_CONFIG.md)、[道具與異色](docs/ITEMS_SHINY_DEFENSE_REVIEW.md)、[生命寶珠平衡](docs/LIFE_ORB_PROPOSAL.md) |
 | 介面與收藏 | [畫面設定](docs/GAMEPLAY_OPTIONS.md)、[最愛與能力面板](docs/FAVORITES_DISPLAY.md) |
 | 平衡與招式 | [平衡方案](docs/BALANCE_PLAN.md)、[支援敵人](docs/SUPPORT_BALANCE.md)、[招式池](docs/SKILL_POOL_REVIEW.md) |
 | 翻譯與字型 | [中文化](docs/LOCALIZATION.md)、[名稱來源](docs/terminology-zh-TW.json)、[字型來源](docs/FONT_SOURCES.md) |

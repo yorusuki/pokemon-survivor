@@ -2,7 +2,7 @@
 const { Pool } = require('pg');
 const fs = require('node:fs');
 const path = require('node:path');
-const TABLES = ['users', 'sessions', 'saves', 'profiles', 'names', 'friendships', 'presence', 'invitations', 'runs', 'leaderboard_entries', 'leaderboard_summaries', 'reports', 'rooms', 'security_limits', 'google_identities', 'oauth_flows'];
+const TABLES = ['users', 'sessions', 'saves', 'profiles', 'names', 'friendships', 'presence', 'invitations', 'runs', 'leaderboard_entries', 'leaderboard_summaries', 'reports', 'rooms', 'security_limits', 'google_identities', 'oauth_flows', 'account_settings', 'nickname_holds'];
 
 async function grantRuntime(db, password) {
   if (typeof password !== 'string' || password.length < 32 || password.length > 256 || /[\x00-\x1f]/.test(password)) throw new Error('APP_DATABASE_PASSWORD 必須為 32～256 個不含控制字元的字元');

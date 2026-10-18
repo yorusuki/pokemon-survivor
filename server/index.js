@@ -10,6 +10,7 @@ const scrypt = promisify(crypto.scrypt);
 const sha = s => crypto.createHash('sha256').update(s).digest('hex');
 const { createGoogleAuth } = require('./google-auth');
 const { gameConfig } = require('./game-config');
+const { createAccounts } = require('./accounts');
 const SESSION_MS = 30 * 86400000;
 const LIMIT = 768 * 1024;
 async function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
@@ -84,6 +85,7 @@ function createApp(pool, options = {}) {
     await db.query('DELETE FROM users WHERE id=$1', [uid]);
   }
   const google = createGoogleAuth({ pool, origin, options, transaction, issue, cookie, rate, passwordTask, verifyPassword, deleteUser, registrationBudget });
+  const accounts = createAccounts({ pool, transaction, rate, clock: options.accountClock });
   async function rebuild(db, board) {
     const r = await db.query("SELECT id,data FROM leaderboard_entries WHERE id LIKE $1 ESCAPE '!' ORDER BY (data->>'t')::numeric DESC,id LIMIT 50", [board.replace(/[!_%]/g, x => '!' + x) + '/e/%']);
     const top = Object.fromEntries(r.rows.map(r => [r.id.split('/')[2], r.data]));
@@ -93,6 +95,7 @@ function createApp(pool, options = {}) {
     if (b.op === 'get') {
       const r = await read(pool, b.path);
       if (!canRead(b.path, r.data, uid)) fail('permission-denied', 403);
+      if (b.path.startsWith('friendships/') && r.data) return (await accounts.projectFriends([r]))[0];
       return r;
     }
     if (b.op === 'query') {
@@ -126,7 +129,8 @@ function createApp(pool, options = {}) {
         order = 'data->' + arg(b.order[0]) + ' ' + b.order[1] + ',id';
       }
       const r = await pool.query(`SELECT id,data,revision FROM ${TABLES[kind]} ${cond.length ? 'WHERE ' + cond.join(' AND ') : ''} ORDER BY ${order} LIMIT ${arg(b.limit)}`, args);
-      return { docs: r.rows.map(r => ({ path: kind === 'lb' ? 'lb/' + r.id : b.path + '/' + r.id, data: r.data, revision: r.revision })) };
+      const rows = kind === 'friendships' ? await accounts.projectFriends(r.rows) : r.rows;
+      return { docs: rows.map(r => ({ path: kind === 'lb' ? 'lb/' + r.id : b.path + '/' + r.id, data: r.data, revision: r.revision })) };
     }
     if (b.op !== 'commit' || !Array.isArray(b.writes) || b.writes.length > 100 || !Array.isArray(b.reads) || b.reads.length > 100) fail('invalid-operation');
     return transaction(async db => {
@@ -156,6 +160,10 @@ function createApp(pool, options = {}) {
         }
         if (next && ['profiles', 'pres', 'friendships', 'inv', 'lb', 'reports'].includes(a.kind)) next.at = Date.now();
         if (next && a.kind === 'saves') next.updatedAt = Date.now();
+        if (next && a.kind === 'saves' && object(next.save)) {
+          const profile = (await read(db, 'profiles/' + a.key)).data;
+          if (profile) next.save.name = profile.name;
+        }
         if (next && !old && a.kind === 'reports') {
           rate('report:' + uid, 20, 3600000);
           const count = await db.query("SELECT count(*) FROM reports WHERE data->>'by'=$1", [uid]);
@@ -287,6 +295,7 @@ function createApp(pool, options = {}) {
       }
       if (!u) fail('auth/invalid-credential', 401);
       rate('user:' + u.id, 2400);
+      if (url.pathname === '/api/account') return send(res, 200, await accounts.operation(b, u.id));
       if (url.pathname === '/api/auth/logout') {
         const token = /ps_session=([a-f0-9]{64})/.exec(req.headers.cookie || '')?.[1];
         if (token) await pool.query('DELETE FROM sessions WHERE token_hash=$1', [sha(token)]);
@@ -341,6 +350,7 @@ function createApp(pool, options = {}) {
     limiter.cleanup();
     pool.query('DELETE FROM oauth_flows WHERE expires_at<now()').catch(() => console.error('oauth_cleanup_failed'));
     pool.query('DELETE FROM sessions WHERE expires_at<now()').catch(() => console.error('session_cleanup_failed'));
+    pool.query('DELETE FROM nickname_holds WHERE expires_at<=$1',[Date.now()]).catch(() => console.error('nickname_cleanup_failed'));
     pool.query("DELETE FROM rooms WHERE touched_at<now()-interval '5 minutes'").catch(() => console.error('room_cleanup_failed'));
   }, 60000);
   timer.unref();

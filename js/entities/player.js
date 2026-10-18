@@ -27,7 +27,8 @@ G.Player = class Player {
     this.xpMul = perks.xpMul || 1;
     this.coinMul = perks.coinMul || 1;
 
-    this.maxHp = mon.hp + (perks.hp || 0);
+    this.itemHpMul = 1;
+    this.baseMaxHp = mon.hp + (perks.hp || 0);
     this.hp = this.maxHp;
     this.baseSpd = mon.spd;
     this.baseAtk = mon.atk;
@@ -87,6 +88,13 @@ G.Player = class Player {
   cy() { return this.y; }
 
   // ---------------- stats efectivos ----------------
+  get maxHp() { return Math.max(1,(this.baseMaxHp ?? 1)*(this.itemHpMul ?? 1)); }
+  set maxHp(value) { this.baseMaxHp=value/(this.itemHpMul||1); }
+  setItemHpMultiplier(value) {
+    const fraction=Math.max(0,Math.min(1,this.hp/this.maxHp));
+    this.itemHpMul=value;
+    this.hp=fraction*this.maxHp;
+  }
   get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
   get spd() {
     const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount) * (this.slowT > 0 ? 0.5 : 1);
@@ -204,10 +212,7 @@ G.Player = class Player {
    * acelera si la recarga es más corta que la animación, para que encadene.
    */
   cast(m) {
-    // Vidasfera: cada ataque cuesta un poco de vida (nunca te deja KO).
-    if (this.hasItem('lifeorb') && m.kind !== 'orbit' && m.kind !== 'trail' && !this.remote) {
-      this.hp = Math.max(1, this.hp - Math.max(1, this.maxHp * 0.01));
-    }
+    // Life Orb trades maximum HP for attack; casting never drains health.
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
                    aura: 'Charge', buff: 'Charge', orbit: 'Charge', boomerang: 'Shoot', chain: 'Shoot',
                    mine: 'Charge', meteor: 'Charge', turret: 'Charge', dash: 'Attack', trail: 'Walk', cone: 'Shoot' }[m.kind] || 'Attack';
@@ -270,7 +275,11 @@ G.Player = class Player {
     if (got >= 1) G.FX.dmgText(this.x, this.y - this.bodyH - 6, '+' + got, '#5fe08a');
   }
 
-  addMaxHp(amount) { this.maxHp += amount; this.hp += amount; }
+  addMaxHp(amount) {
+    const before=this.maxHp;
+    this.baseMaxHp=(this.baseMaxHp ?? this.maxHp)+amount;
+    this.hp=Math.min(this.maxHp,this.hp+this.maxHp-before);
+  }
 
   /** Devuelve cuántos niveles ha subido (pueden ser varios de golpe). */
   gainXp(amount) {

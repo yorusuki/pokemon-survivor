@@ -1,6 +1,6 @@
 {
   "name": "pokesurvivor-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "engines": {
     "node": "^22.23.2 || ^24.18.1 || ^26.5.1"
@@ -9,7 +9,7 @@
     "start": "node index.js",
     "db:init": "node bootstrap.js",
     "test": "node --test --experimental-test-isolation=none tests/*.test.js",
-    "check": "node --check index.js && node --check store.js && node --check policy.js && node --check security.js && node --check bootstrap.js && node --check google-auth.js && node --check game-config.js"
+    "check": "node --check index.js && node --check store.js && node --check policy.js && node --check security.js && node --check bootstrap.js && node --check google-auth.js && node --check game-config.js && node --check accounts.js"
   },
   "dependencies": {
     "google-auth-library": "11.3.1",

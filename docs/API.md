@@ -109,3 +109,19 @@ TURN 長期 token 只用於後端與 Cloudflare API；前端取得的是短期 I
 需登入，同源 JSON。請求範例：`{"event":"failed","reason":"timeout","route":"unknown"}`。
 成功：`{"ok":true}`；未登入 401、無效列舉 400、每帳號每分鐘超過 30 次為 429（錯誤格式 `{"error":"..."}`）。
 只記錄固定列舉與帳號 ID，不記錄額外請求欄位。此端點為不可信玩家端診斷，非稽核證據。列舉值與操作說明見 [MULTIPLAYER.md](MULTIPLAYER.md)。
+
+## 帳號暱稱與好友代碼
+
+`POST /api/account`：所有操作都需要登入 Cookie、正確 Origin 及既有代理驗證。欄位未列出時拒絕；錯誤沿用 `{ "error": "代碼" }`，不輸出 SQL 或請求內容。
+
+| action | 其他欄位 | 成功回應 |
+|---|---|---|
+| `get` | 無 | `name`、`hasNickname`、`loginName`（Google-only 為 null）、`friendCode`、`nextRenameAt`（毫秒時間戳或 0） |
+| `rename` | `name`：新公開暱稱 | 同 get；名稱未變時不消耗冷卻 |
+| `lookup` | `code`：完整大寫好友代碼 | `{ "uid": "內部識別碼", "name": "目前暱稱" }` |
+
+例如 `{ "action": "rename", "name": "訓練家甲" }`；好友代碼應直接使用玩家複製的值，不能以 UID 或暱稱替代。前端會 trim 並轉大寫。
+
+錯誤：`invalid-account-operation`／`invalid-nickname`／`invalid-friend-code`（400）、`friend-not-found`（404）、`nickname-taken`／`rename-in-room`（409）、`rename-cooldown`／`too-many-requests`（429）、未登入（401）、來源或權限錯誤（403）。
+
+改名完整交易更新現行名稱、舊名保留、公開 profile、使用者顯示名、存檔與邀請；不修改登入帳號、UID、好友關係或歷史排行榜快照。好友 documents 的讀取與查詢會投影目前名稱，revision 仍代表原好友文件版本。schema 與部署方式見 [帳號文件](ACCOUNT_NICKNAME_PLAN.md)。

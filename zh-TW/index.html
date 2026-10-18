@@ -23,7 +23,7 @@
 <link rel="preload" href="assets/fonts/PixelifyPS-400.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="assets/fonts/PixelifyPS-700.ttf" as="font" type="font/ttf" crossorigin>
 
-<link rel="stylesheet" href="css/style.css?v=33cc9118df">
+<link rel="stylesheet" href="css/style.css?v=5625b13006">
 </head>
 <body>
 
@@ -298,8 +298,9 @@
     <div class="row between"><h2>Amigos</h2>
       <div class="row"><button id="fr-room" class="btn small gold hidden">Ir a la sala</button><button class="btn small ghost" data-back>Volver</button></div></div>
     <p class="sub" id="fr-me"></p>
+    <div class="friend-code-row"><input id="fr-code" class="field" readonly aria-label="Código de amigo" translate="no"><button id="fr-copy" type="button" class="btn small">Copiar código de amigo</button></div>
     <form id="fr-add" class="row" autocomplete="off">
-      <input id="fr-name" class="field grow" maxlength="16" spellcheck="false" placeholder="Apodo de tu amigo">
+      <input id="fr-name" class="field grow" maxlength="32" spellcheck="false" autocapitalize="characters" placeholder="Código de amigo">
       <button class="btn gold" type="submit" data-sfx="confirm">Añadir amigo</button>
     </form>
     <p id="fr-msg" class="note"></p>
@@ -500,6 +501,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=575ec29fc4"></script>
+<script defer src="js/app.min.js?v=378d43fb1c"></script>
 </body>
 </html>

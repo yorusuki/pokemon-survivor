@@ -34,9 +34,10 @@ async function authorize(db, path, before, after, uid) {
       if (isAdmin && before && d && same(before.save, d.save)) ok = typeof d.ban === 'boolean';
       break;
     case 'profiles': {
-      if (!d) { ok = own; break; }
+      if (!d) { ok = own && !before; break; }
       const reservation = str(d.lower, 16) ? (await read(db, 'names/' + d.lower)).data : null;
       ok = own && keys(d, ['name', 'lower', 'at', 'favs', 'title', 'best', 'medals'])
+        && (!before || (before.name === d.name && before.lower === d.lower))
         && str(d.name, 16) && /^[\p{L}\p{N}_]{3,16}$/u.test(d.name) && d.lower === d.name.toLowerCase()
         && reservation?.uid === uid && (!d.favs || (Array.isArray(d.favs) && d.favs.length <= 3 && d.favs.every(n => Number.isInteger(n) && n >= 1 && n <= 1025)))
         && (!d.title || str(d.title, 40)) && (!d.medals || (Array.isArray(d.medals) && d.medals.length <= 8 && d.medals.every(x => str(x, 40))))
@@ -47,6 +48,8 @@ async function authorize(db, path, before, after, uid) {
       ok = d === null ? before?.uid === uid : keys(d, ['uid']) && d.uid === uid && (!before || before.uid === uid)
         && /^[\p{L}\p{N}_]{3,16}$/u.test(a.key) && a.key === a.key.toLowerCase();
       if (ok && d && !before) ok = !(await db.query("SELECT id FROM names WHERE data->>'uid'=$1 AND id<>$2", [uid, a.key])).rowCount;
+      if (ok && !d && (await read(db, 'profiles/' + uid)).data?.lower === a.key) ok = false;
+      if (ok && d) ok = !(await db.query('SELECT 1 FROM nickname_holds WHERE lower_name=$1 AND user_id<>$2 AND expires_at>$3', [a.key, uid, Date.now()])).rows.length;
       break;
     }
     case 'pres':

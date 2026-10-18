@@ -714,3 +714,34 @@ G.I18n.add({'El interruptor de Repertorio aparece en una fila aparte; al comprar
 G.I18n.add({"Los nombres conmemorativos muestran el marco dorado y los destellos con más claridad en la selección de Pokémon.": "Commemorative names show clearer golden frames and sparkles in Pokémon selection."});
 
 G.I18n.add({"Los nombres conmemorativos conservan el texto dorado y los destellos, sin marco.": "Commemorative names keep golden text and sparkles without a frame.", "Texto dorado sin marco": "Golden text without a frame"});
+
+G.I18n.add({
+  "Una vez cada 24 horas. El apodo anterior queda reservado durante 7 días.": "Once every 24 hours. Your previous nickname is reserved for 7 days.",
+  "Nuevo apodo": "New nickname",
+  "Cambiar apodo": "Change nickname",
+  "Tu nombre de acceso no cambia.": "Your login name stays the same.",
+  "Nombre de acceso": "Login name",
+  "Próximo cambio disponible": "Next change available",
+  "Sal de la sala y vuelve al menú antes de cambiar tu apodo.": "Leave the room and return to the menu before changing your nickname.",
+  "Apodo actualizado.": "Nickname updated.",
+  "No se pudo cargar la cuenta. Inténtalo de nuevo.": "Could not load your account. Please try again.",
+  "No se pudo completar la operación. Comprueba tu conexión.": "Could not complete the operation. Check your connection.",
+  "Código de amigo": "Friend code",
+  "Copiar código de amigo": "Copy friend code",
+  "Código de amigo copiado.": "Friend code copied.",
+  "No se pudo copiar. Selecciona y copia el código manualmente.": "Could not copy. Select the code and copy it manually.",
+  "Tu apodo": "Your nickname",
+  "Pega el código que te comparta tu amigo para añadirlo.": "Paste the code shared by your friend to add them.",
+  "Puedes cambiar tu apodo una vez cada 24 horas.": "You can change your nickname once every 24 hours.",
+  "Sal de la sala antes de cambiar tu apodo.": "Leave the room before changing your nickname.",
+  "Ese apodo está ocupado o reservado.": "That nickname is taken or reserved.",
+  "Usa de 3 a 16 letras, números o _.": "Use 3–16 letters, numbers or underscores.",
+  "Pega un código de amigo válido.": "Paste a valid friend code.",
+  "No se encontró ese código de amigo.": "That friend code was not found.",
+  "Demasiados intentos. Inténtalo más tarde.": "Too many attempts. Try again later.",
+  "Crea una cuenta para cambiar tu apodo.": "Create an account to change your nickname.",
+  "Espera a que se guarde tu progreso antes de cambiar el apodo.": "Wait for your progress to sync before changing your nickname.",
+  "+30% de daño y -20% de vida máxima. No consume vida al atacar.": "+30% damage and -20% maximum HP. Attacks do not drain HP."
+});
+
+G.I18n.add({"No puedes añadirte como amigo.": "You cannot add yourself as a friend."});

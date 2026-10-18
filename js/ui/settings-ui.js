@@ -6,7 +6,7 @@
 G.SettingsUI = (() => {
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.2 · 2026-10-09';
+  const VERSION = '2.0.0 · 2026-10-18';
   const REPO = 'https://github.com/JPTER78/pokesurvivor';
   let tab = 'sound';
 
@@ -28,6 +28,9 @@ G.SettingsUI = (() => {
     if (t) tab = t;
     $('scr-settings').classList.remove('hidden');
     render();
+    if(G.DB.online)G.Social.refreshAccount().then(()=>{if(isOpen()&&tab==='acc')render();}).catch(()=>{
+      if(isOpen()&&tab==='acc'&&$('set-msg'))$('set-msg').textContent=G.T('No se pudo cargar la cuenta. Inténtalo de nuevo.');
+    });
   }
   function close() { $('scr-settings').classList.add('hidden'); }
   const isOpen = () => !$('scr-settings').classList.contains('hidden');
@@ -145,7 +148,11 @@ G.SettingsUI = (() => {
     const nick = G.Social.me ? G.Social.me.name : (G.DB.user || '');
     const kind = G.DB.mode === 'local' ? 'Cuenta de este navegador' : G.DB.nameAccount ? 'Nombre y contraseña' : 'Google';
     box.innerHTML = section('Cuenta')
-      + `<div class="set-row"><div class="grow"><b>Apodo</b><small>Es único y no se puede cambiar.</small></div><span class="gold" translate="no">${esc(nick)}</span></div>`
+      + `<div class="set-row"><div class="grow"><b>Apodo</b><small>${esc(G.T('Una vez cada 24 horas. El apodo anterior queda reservado durante 7 días.'))}</small></div><span class="gold" translate="no">${esc(nick)}</span></div>`
+      + (G.DB.online ? `<form id="set-rename-form" class="account-rename"><input id="set-rename-name" class="field" maxlength="16" autocomplete="off" aria-label="${esc(G.T('Nuevo apodo'))}" placeholder="${esc(G.T('Nuevo apodo'))}"><button class="btn small" id="set-rename" type="submit" ${G.Social.room||G.Game.state!=='ui'||G.Social.account?.nextRenameAt>Date.now()?'disabled':''}>${esc(G.T('Cambiar apodo'))}</button></form>
+          <p class="note">${esc(G.T(G.Social.room||G.Game.state!=='ui'?'Sal de la sala y vuelve al menú antes de cambiar tu apodo.':'Tu nombre de acceso no cambia.'))}</p>
+          ${G.Social.account?.loginName?`<p class="note">${esc(G.T('Nombre de acceso'))}: <span translate="no">${esc(G.Social.account.loginName)}</span></p>`:''}
+          ${G.Social.account?.nextRenameAt>Date.now()?`<p class="note">${esc(G.T('Próximo cambio disponible'))}: ${esc(new Date(G.Social.account.nextRenameAt).toLocaleString())}</p>`:''}` : '')
       + `<div class="set-row"><div class="grow"><b>Tipo de cuenta</b></div><span>${esc(kind)}</span></div>`
       + `<div class="set-row"><div class="grow"><b>Estado del guardado</b></div><span>${esc(SYNC[st] || st)}</span></div>`
       + `<div class="row wrap" style="gap:8px;margin-top:12px">
@@ -161,6 +168,16 @@ G.SettingsUI = (() => {
   }
 
   function wire(box) {
+    const renameForm=$('set-rename-form');
+    if(renameForm)renameForm.onsubmit=async e=>{
+      e.preventDefault();const button=$('set-rename');button.disabled=true;
+      try {
+        const result=await G.Social.rename($('set-rename-name').value);
+        if(!result.ok){$('set-msg').textContent=G.T(result.error);return;}
+        render();$('set-msg').textContent=G.T('Apodo actualizado.');
+      } catch(e) { $('set-msg').textContent=G.T('No se pudo completar la operación. Comprueba tu conexión.'); }
+      finally {if(button.isConnected)button.disabled=!!G.Social.room||G.Game.state!=='ui'||G.Social.account?.nextRenameAt>Date.now();}
+    };
     const opacity=$('set-attack-opacity');
     if(opacity) opacity.oninput=()=>{ G.Settings.set('attackOpacity',Number(opacity.value)/100); $('set-attack-value').textContent=Math.round(G.Settings.get('attackOpacity')*100)+'%'; };
     box.querySelectorAll('.switch[data-k]').forEach(b => { b.onclick = () => { G.Settings.set(b.dataset.k, !G.Settings.get(b.dataset.k)); render(); }; });
