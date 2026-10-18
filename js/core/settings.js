@@ -16,14 +16,14 @@
  */
 G.Settings = (() => {
   const KEY = 'ps.settings';
-  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, attackOpacity: 1, healthPosition: 'hud', healthNumbers: true, fontStyle: 'smooth', bonusPosition: 'right' };
+  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, attackOpacity: 1, healthPosition: 'hud', healthNumbers: true, fontStyle: 'pixel', bonusPosition: 'right' };
   let s = Object.assign({}, DEF);
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
   const opacity = v => typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(1,v)) : 1;
   s.attackOpacity=opacity(s.attackOpacity);
   if(!['hud','below'].includes(s.healthPosition)) s.healthPosition='hud';
   if(typeof s.healthNumbers!=='boolean') s.healthNumbers=true;
-  if(!['smooth','pixel'].includes(s.fontStyle)) s.fontStyle='smooth';
+  if(!['smooth','pixel'].includes(s.fontStyle)) s.fontStyle='pixel';
   if(!['left','right','hidden'].includes(s.bonusPosition)) s.bonusPosition='right';
   function applyFont() {
     if(document.documentElement?.dataset) document.documentElement.dataset.font=s.fontStyle;

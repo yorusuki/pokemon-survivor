@@ -69,7 +69,7 @@
       this.sparkT = 0;
       // personalidades
       this.sc = sc;                       // escala de la run (para sus invocaciones)
-      this.supportDamage = 0; this.supportShieldRestored = 0; this.supportHealAt = -Infinity; this.supportInitialShield = false;
+      this.supportHealAt = -Infinity; this.supportShieldAt = -Infinity;
       this.shield = 0; this.shieldT = 0;  // escudo que absorbe daño
       this.skillCd = G.U.rand(1, 4);      // escudos / saltos
       this.minions = [];
@@ -113,12 +113,10 @@
       if (this.shield > 0) {
         const a = Math.min(this.shield, d);
         this.shield -= a;
-        this.supportDamage = (this.supportDamage || 0) + a;
         if (a >= d) { G.FX.dmgText(this.x, this.y - this.bodyH - 4, d, '#9fd8ff'); this.flash = 0.05; return; }
         amount = d - a;
       }
       const loss = Math.max(1, Math.round(amount));
-      this.supportDamage = (this.supportDamage || 0) + Math.min(Math.max(0,this.hp),loss);
       this.hp -= loss;
       G.Judgment.noteDmg(amount, this);
       this.showHurt(d, color, dirX, dirY, eff);
@@ -592,40 +590,35 @@
       }
     }
 
-    // Healing has a shared 3-second target interval; shields retain their own budget.
-    receiveSupport(kind, now, healRate=0.05) {
+    // Shared per-target intervals prevent stacking casts from different support enemies.
+    receiveSupport(kind, now, supportRate) {
       if(this.remote || this.dead) return 0;
       if(kind==='heal') {
         if(now-(this.supportHealAt ?? -Infinity)<3) return 0;
-        const rate=Number.isFinite(healRate)?Math.max(.05,Math.min(.12,healRate)):.05;
+        const rate=Number.isFinite(supportRate)?Math.max(.05,Math.min(.12,supportRate)):.05;
         const value=Math.min(this.maxHp*rate,Math.max(0,this.maxHp-this.hp));
         if(value<=0) return 0;
         this.hp+=value;this.supportHealAt=now;
         return value;
       }
-      if(kind!=='shield' || this.boss || this.legend || this.judge) return 0;
-      const budget=Math.max(0,0.30*(this.supportDamage||0)-(this.supportShieldRestored||0));
-      const missing=Math.max(0,this.maxHp*0.10-(this.shield||0));
-      const value=this.supportInitialShield ? Math.min(missing,budget) : missing;
-      if(value<=0) return 0;
-      if(this.supportInitialShield) this.supportShieldRestored=(this.supportShieldRestored||0)+value;
-      this.supportInitialShield=true;this.shield=(this.shield||0)+value;this.shieldT=8;
+      if(kind!=='shield' || now-(this.supportShieldAt ?? -Infinity)<2.5) return 0;
+      const rate=Number.isFinite(supportRate)?Math.max(.1,Math.min(.4,supportRate)):.1;
+      const value=Math.max(0,this.maxHp*rate-(this.shield||0));
+      if(value<=0)return 0;
+      this.shield=(this.shield||0)+value;this.shieldT=8;this.supportShieldAt=now;
       return value;
     }
 
-    supportVisibleTo(target) {
-      const dx=target.x-this.x,dy=target.y-this.y,steps=Math.ceil(Math.hypot(dx,dy)/8);
-      for(let i=1;i<steps;i++) if(G.World.isWall(this.x+dx*i/steps,this.y+dy*i/steps)) return false;
-      return true;
+    supportLevel() {
+      let level=1;
+      for(const p of G.Game.everyone())if(!p.dead&&Number.isFinite(p.level))level=Math.max(level,Math.min(100,p.level));
+      return (level-1)/99;
     }
 
     healAround() {
       if(this.remote) return;
       const now=G.Game.st.time;
-      const players=G.Game.everyone().filter(p=>!p.dead);
-      let level=1;
-      for(const p of players)if(Number.isFinite(p.level))level=Math.max(level,Math.min(100,p.level));
-      const rate=.05+.07*(level-1)/99;
+      const rate=.05+.07*this.supportLevel();
       // queryCircle uses the original radius rule: 150 plus the target body radius.
       const near=G.EnemyMgr.queryCircle(this.x,this.y,150);
       let n=0;
@@ -644,11 +637,12 @@
 
     castShields() {
       if(this.remote) return;
+      const rate=.1+.3*this.supportLevel();
       const near=G.EnemyMgr.queryCircle(this.x,this.y,160)
-        .filter(e=>!e.dead && !e.remote && !e.boss && !e.legend && !e.judge && G.U.dist2(e.x,e.y,this.x,this.y)<=160*160 && this.supportVisibleTo(e))
+        .filter(e=>e!==this && !e.dead && !e.remote && G.U.dist2(e.x,e.y,this.x,this.y)<=160*160)
         .sort((a,b)=>G.U.dist2(a.x,a.y,this.x,this.y)-G.U.dist2(b.x,b.y,this.x,this.y));
       let n=0;
-      for(const e of near) {if(n>=6) break;if(e.receiveSupport('shield',G.Game.st.time)>0)n++;}
+      for(const e of near) {if(n>=6) break;if(e.receiveSupport('shield',G.Game.st.time,rate)>0)n++;}
       this.anim.play('Charge');
       if(n) {
         G.FX.ring(this.x,this.y,8,160,'#7fc8ff',0.5,3);

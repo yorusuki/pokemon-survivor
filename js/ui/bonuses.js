@@ -3,6 +3,7 @@ G.Bonuses = (() => {
   const finite = v => Number.isFinite(v) ? v : 0;
   const n = (v,d=0) => finite(v).toFixed(d);
   const t = s => G.T ? G.T(s) : s;
+  const effective=p=>Number.isFinite(p.effectiveReduction)?p.effectiveReduction:Math.min(.9,Math.max(0,1-(1-finite(p.reduction))*(p.activeGroup?.().some(m=>m.kind==='melee')?.75:1)));
   let panel=null, lastAt=-Infinity, lastHTML='';
   function rows(pl) {
     if(!pl) return [];
@@ -14,7 +15,7 @@ G.Bonuses = (() => {
     if(changed(pl.atk,pl.baseAtk)) add('atk','Ataque',n(pl.atk,2));
     if(changed(pl.spd,pl.baseSpd)) add('spd','Velocidad',n(pl.spd));
     if(changed(pl.cdMul,1)) add('cd','Recarga general',n(pl.cdMul*100,1)+'%');
-    if(pl.reduction>0||melee) add('def','Reducción de daño',n((1-(1-finite(pl.reduction))*(melee?.75:1))*100,1)+'%');
+    if(pl.reduction>0||melee) add('def','Reducción de daño',n(effective(pl)*100,1)+'%');
     if(pl.regen>0) add('rgn','Regeneración fija',n(pl.regen,1)+'/s');
     if(pl.critChance>0) add('crit','Probabilidad crítica',n(pl.critChance*100,1)+'%');
     if(changed(pl.xpMul,1)) add('xp','Experiencia personal',n(pl.xpMul*100,1)+'%');
@@ -41,14 +42,14 @@ G.Bonuses = (() => {
         switch(id){
           case 'hp':return n(p.maxHp);case 'atk':return n(p.atk,2);case 'spd':return n(p.spd);
           case 'cd':return n(p.cdMul*100,1)+'%';
-          case 'def':return n((1-(1-p.reduction)*(p.activeGroup?.().some(m=>m.kind==='melee')?.75:1))*100,1)+'%';
+          case 'def':return n(effective(p)*100,1)+'%';
           case 'rgn':return n(p.regen,1)+'/s';case 'mag':return n(p.magnet);
           case 'xp':return n(p.xpMul*100,1)+'%';case 'heal':return n(p.hp);
           default:return '';
         }
       };
       const labels={hp:'Vida máxima',atk:'Ataque',spd:'Velocidad',cd:'Recarga general',def:'Reducción de daño',rgn:'Regeneración fija',mag:'Radio de recogida',xp:'Experiencia personal',heal:'Vida'};
-      return t(labels[id])+': '+value(pl)+' → '+value(after);
+      return t(labels[id])+': '+value(pl)+' → '+value(after)+(id==='def'&&effective(after)===effective(pl)?' · '+t('Límite actual'):'');
     }
     const move=pl.moves?.find(m=>m.id===id);
     if(move && kind==='up') return t('Nivel actual')+': '+n(move.lvl)+' → '+n(move.lvl+1);

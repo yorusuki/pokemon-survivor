@@ -16,7 +16,7 @@ G.LevelUp = (() => {
     { id: 'cd',   icon: 'clock', title: 'Reflejos',     desc: '-8% de recarga en todos los movimientos.',
       apply: pl => pl.cdMul *= 0.92, max: 10 },
     { id: 'def',  icon: 'shield', title: 'Coraza',       desc: '+6% de reducción de daño recibido.',
-      apply: pl => pl.dmgReduce = Math.min(0.7, pl.dmgReduce + 0.06), max: 12 },
+      apply: pl => pl.dmgReduce = Math.max(pl.dmgReduce, Math.min(0.7, pl.dmgReduce + 0.06)), max: 12 },
     { id: 'rgn',  icon: 'sprout', title: 'Síntesis',     desc: '+0.9 de vida regenerada por segundo.',
       apply: pl => pl.regenFlat += 0.9 },
     { id: 'mag',  icon: 'magnet', title: 'Imán',         desc: '+30% de radio de recogida de experiencia.',
@@ -88,8 +88,8 @@ G.LevelUp = (() => {
     // Cada mejora tiene un tope de veces (`max`): en partidas muy largas se
     // acumulaban sin fin (velocidad, recarga y experiencia por las nubes) y el
     // juego acababa colgándose. Las que piden una evolución salen siempre.
-    const room = s => !s.max || (pl.statsTaken[s.id] || 0) < s.max;
-    const pickStats = G.U.pickN(STATS.filter(s => !waiting[s.id] && room(s)), 5).concat(STATS.filter(s => waiting[s.id]));
+    const room = s => (!s.max || (pl.statsTaken[s.id] || 0) < s.max) && (s.id!=='def' || pl.dmgReduce<.7-1e-9);
+    const pickStats = G.U.pickN(STATS.filter(s => !waiting[s.id] && room(s)), 5).concat(STATS.filter(s => waiting[s.id] && room(s)));
     for (const s of pickStats) {
       const evoFor = waiting[s.id];
       out.push({

@@ -77,9 +77,9 @@ G.Spawner = (() => {
   }
 
   function spawnOne(pl, t, angle) {
-    const healerCount=G.EnemyMgr.all().filter(e=>!e.dead && e.behavior==='healer').length;
-    const healerCap=10;
-    const pool=G.Enemies.bagAt(t).filter(d=>!(t<60 && ['healer','shielder'].includes(d.behavior)) && !(d.behavior==='healer' && healerCount>=healerCap));
+    const counts={healer:0,shielder:0};
+    for(const e of G.EnemyMgr.all())if(!e.dead && Object.hasOwn(counts,e.behavior))counts[e.behavior]++;
+    const pool=G.Enemies.bagAt(t).filter(d=>!(Object.hasOwn(counts,d.behavior) && (t<60 || counts[d.behavior]>=25)));
     if(!pool.length) return null;
     const def=G.U.pick(pool);
     const pt = freePoint(pl, angle == null ? Math.random() * 6.2832 : angle, isFlyer(def));

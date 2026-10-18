@@ -21,6 +21,7 @@ G.Player = class Player {
     this.spdMul = perks.spdMul || 1;
     this.cdMul = perks.cdMul || 1;
     this.dmgReduce = perks.dmgReduce || 0;
+    this.itemDmgReduce = 0;
     this.regenFlat = perks.regen || 0;
     this.magnet = 78 * (perks.magnetMul || 1);
     this.xpMul = perks.xpMul || 1;
@@ -93,7 +94,11 @@ G.Player = class Player {
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * slow * w;
   }
-  get reduction() { return Math.min(0.8, this.dmgReduce + this.buffs.def.n * this.buffs.def.amount); }
+  get reduction() { return Math.min(0.9, Math.max(0,this.dmgReduce + (this.itemDmgReduce||0) + this.buffs.def.n * this.buffs.def.amount)); }
+  get effectiveReduction() {
+    const close=this.activeGroup().some(m=>m.kind==='melee')?0.75:1;
+    return Math.min(0.9,Math.max(0,1-(1-this.reduction)*close));
+  }
   get regen() { return this.regenFlat + this.buffs.regen.n * this.buffs.regen.amount; }
 
   // ---------------- movimientos ----------------
@@ -235,8 +240,7 @@ G.Player = class Player {
     }
     // Con un ataque cuerpo a cuerpo activo se recibe un 25 % menos: hay que
     // estar encima de los enemigos para pegar (iban muy por detrás).
-    const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
-    const d = pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close);
+    const d = pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.effectiveReduction));
     this.hp -= d;
     this.invuln = 0.45;
     this.flash = 0.14;

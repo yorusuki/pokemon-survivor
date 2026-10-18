@@ -216,7 +216,7 @@ def main():
     if guide_template.exists():
         (ROOT / 'zh-TW/guide/index.html').write_text(guide_template.read_text(encoding='utf-8'), encoding='utf-8')
     report = {'generatedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              'sources': provenance, 'coverage': coverage, 'records': records,
+              'sources': provenance, 'fontSources': [{'name': 'Cubic 11', 'repository': 'https://github.com/ACh-K/Cubic-11', 'license': 'SIL Open Font License 1.1', 'localFile': 'assets/fonts/Cubic_11.woff2', 'sha256': hashlib.sha256((ROOT / 'assets/fonts/Cubic_11.woff2').read_bytes()).hexdigest(), 'licenseFile': 'assets/fonts/Cubic11-OFL.txt', 'provenance': '上游與授權經查核，未驗證其與特定上游版本二進位相同'}], 'coverage': coverage, 'records': records,
               'reliability': '名稱依 PokéAPI zh-Hant CSV 比對，屬社群維護資料，非逐筆官方認證。一般文案依遊戲語境撰寫，不使用外部機翻服務。',
               'officialSpotChecks': [{'dex': 1, 'name': '妙蛙種子', 'url': 'https://tw.portal-pokemon.com/pokedex/0001/'}],
               'editorialTextCount': len(editorial), 'missingEditorialTexts': 0, 'guidePages': len(pages) + 1}

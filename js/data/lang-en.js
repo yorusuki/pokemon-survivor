@@ -697,3 +697,13 @@ G.I18n.add({
   "Los sanadores pueden curarse entre sí y a enemigos especiales, atraviesan paredes y aparecen tras el primer minuto, hasta 10 a la vez.": "Healers can heal each other and special enemies through walls; they can spawn after one minute, up to 10 at a time.",
   "La probabilidad shiny del gacha sube al 3%; las probabilidades de estrellas y las garantías no cambian.": "Gacha shiny chance increases to 3%; star rates and guarantees stay unchanged."
 });
+
+G.I18n.add({
+  "Límite actual": "Current cap reached",
+  "Cubic 11:": "Cubic 11:",
+  "· SIL Open Font License 1.1.": "· SIL Open Font License 1.1.",
+  "Armadura corregida y escudos reforzados": "Armor fixes and stronger shields",
+  "La armadura, los objetos y los efectos temporales ya no se restan entre sí; la reducción total, incluido el cuerpo a cuerpo, tiene un máximo del 90%.": "Armor, items and temporary effects no longer subtract from each other; total defense reduction including melee is capped at 90%.",
+  "Los protectores dan escudos del 10 al 40% según el nivel, sin autoescudo; cada objetivo sólo recibe un escudo cada 2,5 segundos.": "Shielders grant 10–40% shields based on level, cannot shield themselves, and share a 2.5-second cooldown per target.",
+  "Sanadores y protectores tienen un límite de 25 de cada tipo. Cubic 11 es la fuente predeterminada para nuevos ajustes.": "Healers and shielders are capped at 25 each. Cubic 11 is the default font for new settings."
+});

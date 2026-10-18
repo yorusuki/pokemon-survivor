@@ -1607,5 +1607,12 @@
   "Healers can heal each other and special enemies through walls; they can spawn after one minute, up to 10 at a time.": "治療者可互補、替特殊敵人回血並穿牆治療；開場一分鐘後可生成，場上最多 10 隻。",
   "Gacha shiny chance increases to 3%; star rates and guarantees stay unchanged.": "抽卡異色獨立機率提高至 3%，不改星級機率與保底。",
   "3 in 100": "3／100",
-  "How to get shiny Pokémon in PokéSurvivor: 1 in 4096 in the wild and 3 in 100 from the gacha. A gallery of normal and shiny forms.": "異色寶可夢取得指南：野外基礎機率為 1／4096，抽卡為 3／100，並附一般與異色外觀對照。"
+  "How to get shiny Pokémon in PokéSurvivor: 1 in 4096 in the wild and 3 in 100 from the gacha. A gallery of normal and shiny forms.": "異色寶可夢取得指南：野外基礎機率為 1／4096，抽卡為 3／100，並附一般與異色外觀對照。",
+  "Current cap reached": "目前達減傷上限",
+  "Cubic 11:": "Cubic 11：",
+  "· SIL Open Font License 1.1.": "· SIL Open Font License 1.1 授權。",
+  "Armor fixes and stronger shields": "護甲修正與護盾者調整",
+  "Armor, items and temporary effects no longer subtract from each other; total defense reduction including melee is capped at 90%.": "護甲、道具與臨時效果分開計算，避免互相倒扣；含近戰保護的防禦減傷最高 90%。",
+  "Shielders grant 10–40% shields based on level, cannot shield themselves, and share a 2.5-second cooldown per target.": "護盾者依玩家等級提供 10～40% 護盾，不能替自己上盾；同一目標每 2.5 秒最多接受一次上盾。",
+  "Healers and shielders are capped at 25 each. Cubic 11 is the default font for new settings.": "治療者與護盾者各最多 25 隻；未設定過字型的玩家預設使用 Cubic 11。"
 }

@@ -7,10 +7,10 @@ function fixture(){
  const make=(extra={})=>Object.assign(Object.create(G.Enemy.prototype),{id:1,x:0,y:0,hp:1000,maxHp:1000,shield:0,bodyH:20,behavior:'chase',anim:{play(){}},showHurt(){},die(){this.dead=true;}},extra);
  return {G,make};
 }
-test('有效傷害排除過量傷害，護盾吸收也列入；訪客不能累計預算',()=>{
- const {make,G}=fixture(),a=make({hp:50,shield:10});a.hurt(1000);assert.equal(a.supportDamage,60);
- const b=make({shield:100});b.hurt(20);assert.equal(b.supportDamage,20);assert.equal(b.hp,1000);
- G.Coop.hit=()=>{};const c=make({remote:true});c.hurt(20);assert.equal(c.supportDamage,undefined);assert.equal(c.receiveSupport('shield',1),0);
+test('護盾先吸收傷害；遠端不能自行補盾',()=>{
+ const {make,G}=fixture(),a=make({hp:50,shield:10});a.hurt(1000);assert.equal(a.dead,true);
+ const b=make({shield:100});b.hurt(20);assert.equal(b.shield,80);assert.equal(b.hp,1000);
+ G.Coop.hit=()=>{};const c=make({remote:true});c.hurt(20);assert.equal(c.receiveSupport('shield',1),0);
 });
 test('玩家等級決定每次 5～12%，不依攻擊，合作取存活最高等級',()=>{
  for(const [players,expected] of [[[{level:1,atk:999}],50],[[{level:50.5}],85],[[{level:100}],120],[[{level:999}],120],[[{level:1},{level:100,dead:true}],50]]) {
@@ -29,21 +29,26 @@ test('遠端與死亡副本不能回復；滿血受療不消耗間隔',()=>{
  const {make}=fixture();assert.equal(make({remote:true,hp:1}).receiveSupport('heal',0),0);assert.equal(make({dead:true,hp:1}).receiveSupport('heal',0),0);
  const a=make();assert.equal(a.receiveSupport('heal',0),0);a.hp=900;assert.equal(a.receiveSupport('heal',0),50);
 });
-test('回血無累積預算，護盾仍保留首次 10% 與後續 30% 預算',()=>{
- const {make}=fixture(),a=make();assert.equal(a.receiveSupport('shield',0),100);a.hurt(50);assert.equal(a.receiveSupport('shield',1),15);assert.equal(a.supportShieldRestored,15);
- a.hp=500;assert.equal(a.receiveSupport('heal',1,.12),120);assert.equal(a.supportShieldRestored,15);assert.equal(a.receiveSupport('shield',2),0);
- assert.equal(make({boss:true}).receiveSupport('shield',0),0);
+test('護盾等級 10～40%，跨來源 2.5 秒限制且總盾不超過當前比例',()=>{
+ const {make}=fixture(),a=make();assert.equal(a.receiveSupport('shield',0,.4),400);a.hurt(100);assert.equal(a.receiveSupport('shield',2.499,.4),0);assert.equal(a.receiveSupport('shield',2.5,.4),100);assert.equal(a.shield,400);assert.equal(a.receiveSupport('shield',5,.4),0);assert.equal(a.receiveSupport('shield',5,.1),0);assert.equal(a.shield,400);
+ a.shield=0;assert.equal(a.receiveSupport('shield',5,.1),100);assert.equal(a.shield,100);assert.equal(a.shieldT,8);
+});
+test('護盾不能自施，可穿牆與補特殊敵人，單次保留最多六個目標',()=>{
+ for(const [level,shield] of [[1,100],[100,400]]) {
+ const {G,make}=fixture(),h=make({behavior:'shielder'}),targets=['boss','legend','judge'].map((k,i)=>make({id:i+2,[k]:true}));for(let i=0;i<7;i++)targets.push(make({id:i+5}));
+ G.Game.everyone=()=>[{level}];G.World.isWall=()=>true;G.EnemyMgr.queryCircle=()=>[h,...targets];h.castShields();assert.equal(h.shield,0);assert.equal(targets.filter(e=>e.shield>0).length,6);assert.ok(targets.slice(0,3).every(e=>Math.abs(e.shield-shield)<1e-8));
+ }
 });
 test('無回復總額限制時，低輸出確實可能被持續治療抵銷',()=>{
  const {make}=fixture(),a=make({hp:500});for(let t=0;t<100;t++){a.hurt(1);a.receiveSupport('heal',t,.12);}assert.equal(a.dead,undefined);assert.ok(a.hp>900);
 });
-test('生成器：前 60 秒排除支援，單人與合作上限皆十隻',()=>{
- for(const [n,time,expected] of [[1,59,0],[1,60,10],[4,60,10]]){
+test('生成器：前 60 秒排除支援，治療與護盾單人合作各上限 25',()=>{
+ for(const [n,time,expected] of [[1,59,0],[1,60,25],[4,60,25]]){
   const all=[],bag=[{dex:1,behavior:'healer'},{dex:2,behavior:'shielder'},{dex:3,behavior:'chase'}];
-  const G={U:{pick:a=>a[0],rand:a=>a,dist2:(x,y,a,b)=>(x-a)**2+(y-b)**2},Camera:{outerRadius:()=>100},World:{isFree:()=>true},Sprites:{hovers:()=>false,hasShiny:()=>false,preload(){}},Enemies:{bagAt:()=>bag,scale:()=>({hp:1}),upcomingDex:()=>[],BOSSES:[]},Coop:{scaleRate:()=>1,scaleHp:()=>1},Rift:{inArena:false},Judgment:{active:false},Events:{golden:false},EnemyMgr:{all:()=>all,get count(){return all.length;},bossAlive:()=>false,add:e=>all.push(e)},Enemy:class{constructor(def){Object.assign(this,def,{maxHp:100,hp:100,dmg:1,xp:1});}}};
+  const G={U:{pick:a=>a[0],rand:a=>a,dist2:(x,y,a,b)=>(x-a)**2+(y-b)**2},Camera:{outerRadius:()=>100},World:{isFree:()=>true},Sprites:{hovers:()=>false,hasShiny:()=>false,preload(){}},Enemies:{bagAt:()=>bag,scale:()=>({hp:1}),upcomingDex:()=>[],BOSSES:[]},Coop:{scaleRate:()=>1,scaleHp:()=>1},Rift:{inArena:false},Judgment:{active:false},Events:{golden:false},Audio:{sfx(){}},EnemyMgr:{all:()=>all,get count(){return all.length;},bossAlive:()=>false,add:e=>all.push(e)},Enemy:class{constructor(def){Object.assign(this,def,{maxHp:100,hp:100,dmg:1,xp:1});}}};
   const c={G,console};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(root,'js/systems/spawner.js'),'utf8'),c);
-  G.Spawner.update(30,Array.from({length:n},()=>({x:0,y:0})),time);
-  assert.equal(all.filter(e=>e.behavior==='healer').length,expected);if(!expected)assert.ok(all.every(e=>e.behavior==='chase'));
+  G.Spawner.update(100,Array.from({length:n},()=>({x:0,y:0})),time);
+  assert.equal(all.filter(e=>e.behavior==='healer').length,expected);assert.equal(all.filter(e=>e.behavior==='shielder').length,expected);if(!expected)assert.ok(all.every(e=>e.behavior==='chase'));
  }
 });
 

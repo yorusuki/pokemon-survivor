@@ -144,3 +144,5 @@ Este es un proyecto de fan sin ánimo de lucro.
 ## Cubic 11
 
 Cubic 11／俐方體11號：ACh-K/Cubic-11，Cubic_11.woff2；授權及上游聲明見 [Cubic11-OFL.txt](assets/fonts/Cubic11-OFL.txt)。上游：https://github.com/ACh-K/Cubic-11 。字型未修改，與 Pixelify Sans 並列為可選字型。
+
+預設中文字型採 Cubic 11。依 [上游 README](https://github.com/ACh-K/Cubic-11#readme)，俐方體11號基於 M⁺ gothic 12r 修改與擴充，採 SIL Open Font License 1.1；隨專案附授權全文，詳見 [字型來源紀錄](docs/FONT_SOURCES.md)。字型獨立授權不等同本遊戲程式或寶可夢素材授權。

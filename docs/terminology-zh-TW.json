@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T10:48:26.665378+00:00",
+  "generatedAt": "2026-10-18T11:16:58.987804+00:00",
   "sources": [
     {
       "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv",
@@ -20,6 +20,17 @@
     {
       "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/ability_names.csv",
       "sha256": "8acb80c42210f86ae747dc3347b060d69cd2574a9dbfaf74774ae632ca6348da"
+    }
+  ],
+  "fontSources": [
+    {
+      "name": "Cubic 11",
+      "repository": "https://github.com/ACh-K/Cubic-11",
+      "license": "SIL Open Font License 1.1",
+      "localFile": "assets/fonts/Cubic_11.woff2",
+      "sha256": "d28e92846e00c3696b30d950d4eddf445dd90b2a970e67cdb629796c1997ef67",
+      "licenseFile": "assets/fonts/Cubic11-OFL.txt",
+      "provenance": "上游與授權經查核，未驗證其與特定上游版本二進位相同"
     }
   ],
   "coverage": {
@@ -10068,7 +10079,7 @@
       "url": "https://tw.portal-pokemon.com/pokedex/0001/"
     }
   ],
-  "editorialTextCount": 1609,
+  "editorialTextCount": 1616,
   "missingEditorialTexts": 0,
   "guidePages": 10
 }
