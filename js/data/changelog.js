@@ -200,3 +200,5 @@ G.CHANGELOG = [
     ['Primera versión pública de PokéSurvivor.', 'First public version of PokéSurvivor.']
   ] }
 ];
+
+G.CHANGELOG[0].fix=(G.CHANGELOG[0].fix||[]).concat([['El interruptor de Repertorio aparece en una fila aparte; al comprarlo desaparece el indicador de nivel máximo.','The Repertoire toggle is on its own row; after purchase the maximum-level indicator is hidden.'],["Los nombres conmemorativos muestran el marco dorado y los destellos con más claridad en la selección de Pokémon.", "Commemorative names show clearer golden frames and sparkles in Pokémon selection."]]);

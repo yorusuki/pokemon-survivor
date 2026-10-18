@@ -707,3 +707,7 @@ G.I18n.add({
   "Los protectores dan escudos del 10 al 40% según el nivel, sin autoescudo; cada objetivo sólo recibe un escudo cada 2,5 segundos.": "Shielders grant 10–40% shields based on level, cannot shield themselves, and share a 2.5-second cooldown per target.",
   "Sanadores y protectores tienen un límite de 25 de cada tipo. Cubic 11 es la fuente predeterminada para nuevos ajustes.": "Healers and shielders are capped at 25 each. Cubic 11 is the default font for new settings."
 });
+
+G.I18n.add({'El interruptor de Repertorio aparece en una fila aparte; al comprarlo desaparece el indicador de nivel máximo.':'The Repertoire toggle is on its own row; after purchase the maximum-level indicator is hidden.'});
+
+G.I18n.add({"Los nombres conmemorativos muestran el marco dorado y los destellos con más claridad en la selección de Pokémon.": "Commemorative names show clearer golden frames and sparkles in Pokémon selection."});

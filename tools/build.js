@@ -38,9 +38,13 @@ const outJs = path.join(ROOT, 'js', 'app.min.js');
 // 自架版只使用本機來源合併，不執行 npx 或臨時下載建置工具。
 fs.copyFileSync(tmp, outJs);
 const min = fs.readFileSync(outJs);
-const hash = crypto.createHash('sha1').update(min).digest('hex').slice(0, 10);
+const css = fs.readFileSync(path.join(ROOT, 'css/style.css'));
+const cssHash = crypto.createHash('sha1').update(css).digest('hex').slice(0, 10);
+// CSS-only changes must invalidate both the stylesheet URL and the updater version.
+const hash = crypto.createHash('sha1').update(min).update(cssHash).digest('hex').slice(0, 10);
 
 let html = dev.slice(0, i) + `<script defer src="js/app.min.js?v=${hash}"></script>` + dev.slice(j + END.length);
+html = html.replace('href="css/style.css"', `href="css/style.css?v=${cssHash}"`);
 html = html.replace(/<meta name="robots" content="noindex">\s*/, '');
 // --sin-seo: sin canonical/redes/datos estructurados ni enlaces a las páginas
 // (para publicar antes de tener el dominio pokesurvivor.com).

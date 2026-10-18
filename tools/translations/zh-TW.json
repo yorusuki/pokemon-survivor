@@ -1614,5 +1614,7 @@
   "Armor fixes and stronger shields": "護甲修正與護盾者調整",
   "Armor, items and temporary effects no longer subtract from each other; total defense reduction including melee is capped at 90%.": "護甲、道具與臨時效果分開計算，避免互相倒扣；含近戰保護的防禦減傷最高 90%。",
   "Shielders grant 10–40% shields based on level, cannot shield themselves, and share a 2.5-second cooldown per target.": "護盾者依玩家等級提供 10～40% 護盾，不能替自己上盾；同一目標每 2.5 秒最多接受一次上盾。",
-  "Healers and shielders are capped at 25 each. Cubic 11 is the default font for new settings.": "治療者與護盾者各最多 25 隻；未設定過字型的玩家預設使用 Cubic 11。"
+  "Healers and shielders are capped at 25 each. Cubic 11 is the default font for new settings.": "治療者與護盾者各最多 25 隻；未設定過字型的玩家預設使用 Cubic 11。",
+  "The Repertoire toggle is on its own row; after purchase the maximum-level indicator is hidden.": "招式儲備開關改至獨立下一行，購買後不再顯示已達上限與單格進度點。",
+  "Commemorative names show clearer golden frames and sparkles in Pokémon selection.": "寶可夢選擇畫面的紀念名稱金框與閃光更清楚，遊戲 HUD 也保留呈現。"
 }

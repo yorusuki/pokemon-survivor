@@ -279,21 +279,22 @@ G.MenuUI = (() => {
       const maxed = lvl >= u.max;
       const cost = maxed ? 0 : G.Upgrades.cost(u.id, lvl);
       const el = document.createElement('div');
-      el.className = 'panel upg-item';
+      const reserve=u.id==='moves' && maxed;
+      el.className = 'panel upg-item'+(reserve?' upg-reserve':'');
       el.innerHTML = `
         <div class="ic">${G.Icons.html(u.icon, 32)}</div>
         <div>
           <b>${u.name}</b> <span style="color:var(--muted);font-size:13px">${u.unit}</span>
-          <div class="pips">${Array.from({ length: u.max }, (_, i) => `<i class="${i < lvl ? 'on' : ''}"></i>`).join('')}</div>
+          ${reserve?'':`<div class="pips">${Array.from({ length: u.max }, (_, i) => `<i class="${i < lvl ? 'on' : ''}"></i>`).join('')}</div>`}
         </div>
-        <div class="upg-btns">
-          ${u.id === 'moves' && lvl > 0 ? `<button class="btn small" data-reserve aria-pressed="${G.DB.reserveEnabled(upgDex)}">${G.T(G.DB.reserveEnabled(upgDex)?'Reserva activada':'Reserva desactivada')}</button>` : ''}
+        ${reserve ? `<div class="reserve-toggle"><button class="btn small" data-reserve aria-pressed="${G.DB.reserveEnabled(upgDex)}">${G.T(G.DB.reserveEnabled(upgDex)?'Reserva activada':'Reserva desactivada')}</button></div>` : `<div class="upg-btns">
           ${u.id === 'ban' && lvl > 0 ? `<button class="btn small" data-ban>Elegir (${banList().length}/${lvl})</button>` : ''}
           <button class="btn small ${maxed ? '' : 'gold'}" data-buy data-sfx="none" ${maxed || s.coins < cost ? 'disabled' : ''}>
-          ${maxed ? 'Máx.' : `<span class="coin"></span> ${cost}`}</button></div>`;
-      if(u.id==='moves' && lvl>0)el.querySelector('[data-reserve]').onclick=()=>{if(!G.DB.setReserveEnabled(upgDex,!G.DB.reserveEnabled(upgDex)))G.UI.toast(G.T('No se pudo cambiar la reserva.'));renderUpgrades();};
+          ${maxed ? 'Máx.' : `<span class="coin"></span> ${cost}`}</button></div>`}`;
+      if(reserve)el.querySelector('[data-reserve]').onclick=()=>{if(!G.DB.setReserveEnabled(upgDex,!G.DB.reserveEnabled(upgDex)))G.UI.toast(G.T('No se pudo cambiar la reserva.'));renderUpgrades();};
       if (u.id === 'ban' && lvl > 0) el.querySelector('[data-ban]').onclick = () => { banOpen = !banOpen; renderUpgrades(); };
-      el.querySelector('[data-buy]').onclick = () => {
+      const buy=el.querySelector('[data-buy]');
+      if(buy)buy.onclick = () => {
         // Se vuelve a leer todo al pulsar (la partida puede haber cambiado desde que se dibujó).
         const sv = G.DB.save, lv = G.DB.upgradesOf(upgDex), now = lv[u.id] || 0;
         if (now >= u.max) { renderUpgrades(); return; }
