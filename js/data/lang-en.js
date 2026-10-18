@@ -690,3 +690,10 @@ G.I18n.add({
 });
 
 G.I18n.add({'No se pudo cambiar la reserva.':'Could not change the reserve setting.'});
+
+G.I18n.add({
+  "Sanadores reforzados y shiny al 3%": "Stronger healers and 3% gacha shinies",
+  "Los sanadores curan del 5 al 12% según el nivel; cada objetivo recibe curación como máximo una vez cada 3 segundos.": "Healers restore 5–12% based on player level; each target can be healed at most once every 3 seconds.",
+  "Los sanadores pueden curarse entre sí y a enemigos especiales, atraviesan paredes y aparecen tras el primer minuto, hasta 10 a la vez.": "Healers can heal each other and special enemies through walls; they can spawn after one minute, up to 10 at a time.",
+  "La probabilidad shiny del gacha sube al 3%; las probabilidades de estrellas y las garantías no cambian.": "Gacha shiny chance increases to 3%; star rates and guarantees stay unchanged."
+});

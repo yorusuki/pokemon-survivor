@@ -69,7 +69,7 @@
       this.sparkT = 0;
       // personalidades
       this.sc = sc;                       // escala de la run (para sus invocaciones)
-      this.supportDamage = 0; this.supportRestored = 0; this.supportHealAt = -Infinity; this.supportInitialShield = false;
+      this.supportDamage = 0; this.supportShieldRestored = 0; this.supportHealAt = -Infinity; this.supportInitialShield = false;
       this.shield = 0; this.shieldT = 0;  // escudo que absorbe daño
       this.skillCd = G.U.rand(1, 4);      // escudos / saltos
       this.minions = [];
@@ -592,22 +592,23 @@
       }
     }
 
-    // Shared per-target budget; only the authoritative enemy may restore HP/shield.
-    receiveSupport(kind, now) {
-      if(this.remote || this.dead || this.boss || this.legend || this.judge) return 0;
-      const budget=Math.max(0,0.30*(this.supportDamage||0)-(this.supportRestored||0));
+    // Healing has a shared 3-second target interval; shields retain their own budget.
+    receiveSupport(kind, now, healRate=0.05) {
+      if(this.remote || this.dead) return 0;
       if(kind==='heal') {
-        if(this.behavior==='healer' || now-(this.supportHealAt ?? -Infinity)<5) return 0;
-        const value=Math.min(this.maxHp*0.04,Math.max(0,this.maxHp-this.hp),budget);
+        if(now-(this.supportHealAt ?? -Infinity)<3) return 0;
+        const rate=Number.isFinite(healRate)?Math.max(.05,Math.min(.12,healRate)):.05;
+        const value=Math.min(this.maxHp*rate,Math.max(0,this.maxHp-this.hp));
         if(value<=0) return 0;
-        this.hp+=value; this.supportRestored=(this.supportRestored||0)+value;this.supportHealAt=now;
+        this.hp+=value;this.supportHealAt=now;
         return value;
       }
-      if(kind!=='shield') return 0;
+      if(kind!=='shield' || this.boss || this.legend || this.judge) return 0;
+      const budget=Math.max(0,0.30*(this.supportDamage||0)-(this.supportShieldRestored||0));
       const missing=Math.max(0,this.maxHp*0.10-(this.shield||0));
       const value=this.supportInitialShield ? Math.min(missing,budget) : missing;
       if(value<=0) return 0;
-      if(this.supportInitialShield) this.supportRestored=(this.supportRestored||0)+value;
+      if(this.supportInitialShield) this.supportShieldRestored=(this.supportShieldRestored||0)+value;
       this.supportInitialShield=true;this.shield=(this.shield||0)+value;this.shieldT=8;
       return value;
     }
@@ -621,13 +622,16 @@
     healAround() {
       if(this.remote) return;
       const now=G.Game.st.time;
-      const near=G.EnemyMgr.queryCircle(this.x,this.y,150)
-        .filter(e=>!e.dead && !e.remote && !e.boss && !e.legend && !e.judge && e.behavior!=='healer' && e.hp<e.maxHp && G.U.dist2(e.x,e.y,this.x,this.y)<=150*150 && this.supportVisibleTo(e))
-        .sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp || a.id-b.id);
+      const players=G.Game.everyone().filter(p=>!p.dead);
+      let level=1;
+      for(const p of players)if(Number.isFinite(p.level))level=Math.max(level,Math.min(100,p.level));
+      const rate=.05+.07*(level-1)/99;
+      // queryCircle uses the original radius rule: 150 plus the target body radius.
+      const near=G.EnemyMgr.queryCircle(this.x,this.y,150);
       let n=0;
       for(const e of near) {
-        if(n>=5) break;
-        if(e.receiveSupport('heal',now)<=0) continue;
+        if(e===this || e.dead || e.remote || e.hp>=e.maxHp)continue;
+        if(e.receiveSupport('heal',now,rate)<=0) continue;
         G.FX.burst(e.x,e.y-e.bodyH*0.6,'#7dffb0',5,60);n++;
       }
       this.anim.play('Charge');

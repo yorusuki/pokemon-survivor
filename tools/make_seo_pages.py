@@ -336,22 +336,22 @@ def shinies(lang):
 <p class="lead">Los <b>shiny</b> son versiones de otro color, muy raras. En PokéSurvivor casi todos los {N} Pokémon tienen su forma shiny, con sprites de verdad.</p>
 <h2>Cómo conseguirlos</h2>
 <ul><li><b>Salvajes:</b> cada Pokémon que aparece tiene <b>1 entre 4096</b> de salir shiny (como en los juegos clásicos). Lo verás brillar y saldrá un aviso: derrótalo y es tuyo.</li>
-<li><b>En el gacha:</b> cada tirada tiene <b>1 entre 100</b> de ser shiny.</li>
+<li><b>En el gacha:</b> cada tirada tiene <b>3 entre 100</b> de ser shiny.</li>
 <li>Un shiny repetido da el triple de Pokémonedas.</li>
 <li>Cuando tienes la forma shiny de tu compañero, puedes jugar con ella (se elige en la colección).</li></ul>
 <h2>Normal y shiny</h2><ul class="dexgrid pairs">{pairs}</ul>{cta(pid, lang, 'Sal a cazar shinies')}</article>'''
-        title, desc = 'Shinies en PokéSurvivor: probabilidades y cómo conseguirlos', 'Cómo conseguir Pokémon shiny en PokéSurvivor: 1 entre 4096 en estado salvaje y 1 entre 100 en el gacha. Galería de formas normales y shiny.'
+        title, desc = 'Shinies en PokéSurvivor: probabilidades y cómo conseguirlos', 'Cómo conseguir Pokémon shiny en PokéSurvivor: 1 entre 4096 en estado salvaje y 3 entre 100 en el gacha. Galería de formas normales y shiny.'
     else:
         h1 = 'Shinies in PokéSurvivor: how to get them'
         body = f'''<article class="doc wide"><h1>{h1}</h1>
 <p class="lead"><b>Shiny</b> Pokémon are rare, differently colored versions. In PokéSurvivor almost all {N} Pokémon have a shiny form, with real sprites.</p>
 <h2>How to get them</h2>
 <ul><li><b>In the wild:</b> every Pokémon that spawns has a <b>1 in 4096</b> chance of being shiny (just like the classic games). You'll see it sparkle and get an alert: defeat it and it's yours.</li>
-<li><b>From the gacha:</b> every pull has a <b>1 in 100</b> chance of being shiny.</li>
+<li><b>From the gacha:</b> every pull has a <b>3 in 100</b> chance of being shiny.</li>
 <li>A duplicate shiny gives triple PokéCoins.</li>
 <li>Once you own your partner's shiny form, you can play with it (pick it in your collection).</li></ul>
 <h2>Normal and shiny</h2><ul class="dexgrid pairs">{pairs}</ul>{cta(pid, lang, 'Go shiny hunting')}</article>'''
-        title, desc = 'Shinies in PokéSurvivor: odds and how to get them', 'How to get shiny Pokémon in PokéSurvivor: 1 in 4096 in the wild and 1 in 100 from the gacha. A gallery of normal and shiny forms.'
+        title, desc = 'Shinies in PokéSurvivor: odds and how to get them', 'How to get shiny Pokémon in PokéSurvivor: 1 in 4096 in the wild and 3 in 100 from the gacha. A gallery of normal and shiny forms.'
     write(pid, lang, page(pid, lang, title, desc, body, {'@context': 'https://schema.org', '@graph': [crumbs(pid, lang, h1)]}))
 
 # ================= tabla de tipos =================

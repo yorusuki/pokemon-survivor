@@ -28,7 +28,7 @@ test('活動開關明確 true／false；權重與異色率正確，非法設定�
   assert.throws(()=>gameConfig('TRUE'));assert.throws(()=>gameConfig('1'));
   const G=gacha(normal);assert.equal(G.Gacha.pull(save(),1)[0].rarity,4);
   G.Backend.gameRules=event;assert.equal(G.Gacha.pull(save(),1)[0].rarity,5);
-  assert.equal(G.Gacha.RATES[0][1],40);assert.equal(G.Gacha.SHINY_RATE,1/100);
+  assert.equal(G.Gacha.RATES[0][1],40);assert.equal(G.Gacha.SHINY_RATE,3/100);
   const pity=save();pity.pity[1]=69;assert.equal(G.Gacha.pull(pity,1)[0].rarity,5);
 });
 test('設定 API 為同源公開資料，不需登入；兩種開關都回傳對應值',async()=>{
@@ -104,4 +104,15 @@ test('拉霸依 CSS 尺寸與 DPR 建立 backing canvas，文字使用可讀字�
   assert.ok(texts.every(x=>!x.font.includes('Pixelify')));
   assert.ok(transforms.some(args=>args[0]===6 && args[3]===6));
   width=264;events.get('resize')();assert.equal(canvas.width,528);
+});
+
+test('抽卡異色為星級決定後的獨立 3%，不改星級或保底',()=>{
+ for(const enabled of ['false','true']) for(const rarityRoll of [.1,.6,.8,.9,.99]) {
+  const results=[];
+  for(const shinyRoll of [.029999,.03]) {
+   const G={Backend:{gameRules:gameConfig(enabled)},DEX:[1,2,3,4,5].map(r=>({dex:r,rarity:r,gen:1})),SPRITE_META:{1:1,2:1,3:1,4:1,5:1},Sprites:{hasShiny:()=>true},U:{pick:list=>list[0]}};
+   const values=[rarityRoll,shinyRoll];vm.runInNewContext(fs.readFileSync(path.join(root,'js/systems/gacha.js'),'utf8'),{G,Math:Object.assign(Object.create(Math),{random:()=>values.shift()})});results.push(G.Gacha.pull(save(),1)[0]);
+  }
+  assert.equal(results[0].rarity,results[1].rarity);assert.equal(results[0].shiny,true);assert.equal(results[1].shiny,false);
+ }
 });

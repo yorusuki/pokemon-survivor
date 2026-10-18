@@ -58,7 +58,7 @@ G.GachaUI = (() => {
     $('gacha-rates').innerHTML = (G.Backend?.gameRules?.eventBoostEnabled ? '<p class="note">'+G.T('活動機率已啟用')+'</p>' : '') + '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) => `
       <div><span style="color:${G.Gacha.RARITY_COLOR[r]}">${G.UI.stars(r, 10)} ${G.Gacha.RARITY_NAME[r]}</span>
       <span>${w}% · ${G.Gacha.pool(r, gen).length}</span></div>`).join('') +
-      `<div><span>${G.Icons.html('shiny', 12)} Shiny</span><span>1%</span></div>
+      `<div><span>${G.Icons.html('shiny', 12)} Shiny</span><span>${(G.Gacha.SHINY_RATE*100).toFixed(0)}%</span></div>
        <p class="note">· La tirada ×10 garantiza al menos una Épica.<br>
        · ${G.I18n.f('Cada banner garantiza una Legendaria en un máximo de {x} tiradas.', G.Gacha.PITY_5)}<br>
        · Los repetidos dan Pokémonedas. Los shiny no se repiten.<br>
