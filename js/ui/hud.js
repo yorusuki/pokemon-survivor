@@ -58,7 +58,6 @@ G.HUD = (() => {
     if(G.DB.survivor(pl.dex)) {
       ctx.save();
       const width=ctx.measureText(pl.mon.name).width;
-      ctx.strokeStyle='#ffd76b';ctx.lineWidth=1;ctx.strokeRect(px-3,py-3,width+6,17);
       ctx.fillStyle='#ffe599';ctx.fillText(pl.mon.name,px,py+10);
       const glow=G.Settings.get('calm')?.6:.2+.8*(.5+.5*Math.sin(performance.now()/380));
       ctx.globalAlpha=glow;ctx.strokeStyle='#fff7ce';

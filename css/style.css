@@ -856,7 +856,7 @@ html[lang="zh-Hant"] .topbar .pill { white-space: nowrap; }
 }
 
 /* The milestone decorates the name itself; it does not add a badge. */
-.survivor-name{position:relative;display:inline-block;padding:0 .22em;border:1px solid #ffd76b;border-radius:.25em;color:#ffe599;text-shadow:0 0 5px #f9c54e88;box-shadow:0 0 4px #ffd76b66;background-color:#402f1440;white-space:nowrap}
+.survivor-name{position:relative;display:inline-block;color:#ffe599;text-shadow:0 0 5px #f9c54e88;white-space:nowrap}
 .survivor-name::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 1.5px 6px at 22% 30%,#fff 65%,transparent 75%),radial-gradient(ellipse 6px 1.5px at 22% 30%,#fff 65%,transparent 75%),radial-gradient(ellipse 1.5px 5px at 78% 65%,#fff7bf 65%,transparent 75%),radial-gradient(ellipse 5px 1.5px at 78% 65%,#fff7bf 65%,transparent 75%);animation:survivor-sparkle 2.4s ease-in-out infinite}
 @keyframes survivor-sparkle{0%,100%{opacity:.4}50%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.survivor-name::after{animation:none;opacity:.5}}

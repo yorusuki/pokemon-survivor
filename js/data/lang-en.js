@@ -711,3 +711,5 @@ G.I18n.add({
 G.I18n.add({'El interruptor de Repertorio aparece en una fila aparte; al comprarlo desaparece el indicador de nivel máximo.':'The Repertoire toggle is on its own row; after purchase the maximum-level indicator is hidden.'});
 
 G.I18n.add({"Los nombres conmemorativos muestran el marco dorado y los destellos con más claridad en la selección de Pokémon.": "Commemorative names show clearer golden frames and sparkles in Pokémon selection."});
+
+G.I18n.add({"Los nombres conmemorativos conservan el texto dorado y los destellos, sin marco.": "Commemorative names keep golden text and sparkles without a frame.", "Texto dorado sin marco": "Golden text without a frame"});
