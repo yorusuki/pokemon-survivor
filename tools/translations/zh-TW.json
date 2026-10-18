@@ -1548,5 +1548,9 @@
   "Co-op and visual options": "合作模式與畫面設定更新",
   "Reduced combat data during card selection and added round numbers to level confirmations.": "選卡暫停期間減少戰場資料傳輸，並依升級回合確認選擇，降低等待與錯誤恢復的風險。",
   "Per-Pokémon 30-minute badge for your account; old records without a Pokémon cannot be converted.": "每隻寶可夢達成生存 30 分鐘後，可在本帳號獲得名稱紀念徽章；無法辨認寶可夢的舊總紀錄不會自動補發。",
-  "Adjust allied attack opacity and place your health bar below your character in Settings → Graphics.": "可在「設定 → 畫面」調整己方攻擊特效不透明度，並將血條與血量數字移至角色下方。"
+  "Adjust allied attack opacity and place your health bar below your character in Settings → Graphics.": "可在「設定 → 畫面」調整己方攻擊特效不透明度，並將血條與血量數字移至角色下方。",
+  "Enemy support balance": "敵方治療與護盾平衡調整",
+  "Healers no longer scale healing with your attack or heal each other.": "治療者不再隨玩家攻擊提高回血，也不再互相治療。",
+  "Healing and shields share a per-enemy recovery budget to prevent fights from losing all progress.": "同一敵人的治療與護盾補充共用回復上限，避免傷害進度被反覆抵銷。",
+  "Healers and shielders do not spawn in the first two minutes; healing does not stack on the same target.": "開場兩分鐘不出現一般治療者與護盾者；多名治療者不再對同一目標疊加補血。"
 }

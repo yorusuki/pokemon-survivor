@@ -626,3 +626,10 @@ G.I18n.add({
   "Insignia de 30 minutos para cada Pokémon de tu cuenta; los récords antiguos sin Pokémon identificado no se convierten.": "Per-Pokémon 30-minute badge for your account; old records without a Pokémon cannot be converted.",
   "Ajusta la opacidad de ataques aliados y coloca tu barra de vida debajo del personaje en Ajustes → Gráficos.": "Adjust allied attack opacity and place your health bar below your character in Settings → Graphics."
 });
+
+G.I18n.add({
+  "Apoyos enemigos equilibrados": "Enemy support balance",
+  "Los sanadores ya no aumentan su curación con tu ataque ni se curan entre sí.": "Healers no longer scale healing with your attack or heal each other.",
+  "La curación y los escudos comparten un presupuesto por enemigo para evitar combates sin progreso.": "Healing and shields share a per-enemy recovery budget to prevent fights from losing all progress.",
+  "Los primeros dos minutos no aparecen sanadores ni protectores; su curación no se acumula sobre el mismo objetivo.": "Healers and shielders do not spawn in the first two minutes; healing does not stack on the same target."
+});

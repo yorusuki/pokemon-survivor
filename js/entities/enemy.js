@@ -69,6 +69,7 @@
       this.sparkT = 0;
       // personalidades
       this.sc = sc;                       // escala de la run (para sus invocaciones)
+      this.supportDamage = 0; this.supportRestored = 0; this.supportHealAt = -Infinity; this.supportInitialShield = false;
       this.shield = 0; this.shieldT = 0;  // escudo que absorbe daño
       this.skillCd = G.U.rand(1, 4);      // escudos / saltos
       this.minions = [];
@@ -112,10 +113,13 @@
       if (this.shield > 0) {
         const a = Math.min(this.shield, d);
         this.shield -= a;
+        this.supportDamage = (this.supportDamage || 0) + a;
         if (a >= d) { G.FX.dmgText(this.x, this.y - this.bodyH - 4, d, '#9fd8ff'); this.flash = 0.05; return; }
         amount = d - a;
       }
-      this.hp -= Math.max(1, Math.round(amount));
+      const loss = Math.max(1, Math.round(amount));
+      this.supportDamage = (this.supportDamage || 0) + Math.min(Math.max(0,this.hp),loss);
+      this.hp -= loss;
       G.Judgment.noteDmg(amount, this);
       this.showHurt(d, color, dirX, dirY, eff);
       if (knock > 0 && !this.boss) {
@@ -588,33 +592,64 @@
       }
     }
 
+    // Shared per-target budget; only the authoritative enemy may restore HP/shield.
+    receiveSupport(kind, now) {
+      if(this.remote || this.dead || this.boss || this.legend || this.judge) return 0;
+      const budget=Math.max(0,0.30*(this.supportDamage||0)-(this.supportRestored||0));
+      if(kind==='heal') {
+        if(this.behavior==='healer' || now-(this.supportHealAt ?? -Infinity)<5) return 0;
+        const value=Math.min(this.maxHp*0.04,Math.max(0,this.maxHp-this.hp),budget);
+        if(value<=0) return 0;
+        this.hp+=value; this.supportRestored=(this.supportRestored||0)+value;this.supportHealAt=now;
+        return value;
+      }
+      if(kind!=='shield') return 0;
+      const missing=Math.max(0,this.maxHp*0.10-(this.shield||0));
+      const value=this.supportInitialShield ? Math.min(missing,budget) : missing;
+      if(value<=0) return 0;
+      if(this.supportInitialShield) this.supportRestored=(this.supportRestored||0)+value;
+      this.supportInitialShield=true;this.shield=(this.shield||0)+value;this.shieldT=8;
+      return value;
+    }
+
+    supportVisibleTo(target) {
+      const dx=target.x-this.x,dy=target.y-this.y,steps=Math.ceil(Math.hypot(dx,dy)/8);
+      for(let i=1;i<steps;i++) if(G.World.isWall(this.x+dx*i/steps,this.y+dy*i/steps)) return false;
+      return true;
+    }
+
     healAround() {
-      // 7 % de la vida (era 15 %: con varios curanderos curaban más de lo que
-      // pegabas), y más cuanto más fuerte pegas, pero cada vez menos: con el
-      // doble de ataque cura un 27 % más, con 10 veces más un 124 %, y como
-      // mucho ×2,5. (Como los enemigos que tienen más vida si haces más daño.)
-      const pow = Math.max(1, ...G.Game.everyone().map(p => (p.atk > 0 && p.baseAtk > 0 ? p.atk / p.baseAtk : 1)));
-      const k = 0.07 * Math.min(2.5, Math.pow(pow, 0.35));
-      let n = 0;
-      for (const e of G.EnemyMgr.queryCircle(this.x, this.y, 150)) {
-        if (e.dead || e.hp >= e.maxHp) continue;
-        e.hp = Math.min(e.maxHp, e.hp + e.maxHp * k);
-        G.FX.burst(e.x, e.y - e.bodyH * 0.6, '#7dffb0', 5, 60);
-        n++;
+      if(this.remote) return;
+      const now=G.Game.st.time;
+      const near=G.EnemyMgr.queryCircle(this.x,this.y,150)
+        .filter(e=>!e.dead && !e.remote && !e.boss && !e.legend && !e.judge && e.behavior!=='healer' && e.hp<e.maxHp && G.U.dist2(e.x,e.y,this.x,this.y)<=150*150 && this.supportVisibleTo(e))
+        .sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp || a.id-b.id);
+      let n=0;
+      for(const e of near) {
+        if(n>=5) break;
+        if(e.receiveSupport('heal',now)<=0) continue;
+        G.FX.burst(e.x,e.y-e.bodyH*0.6,'#7dffb0',5,60);n++;
       }
       this.anim.play('Charge');
-      G.FX.ring(this.x, this.y, 8, 150, '#5fe08a', 0.5, 3);
-      if (G.Coop.isHost) G.Coop.broadcast(['fxr', Math.round(this.x), Math.round(this.y), 150, '#5fe08a']);
-      if (n && G.Camera.sees(this.x, this.y, 0)) G.Audio.sfx('heal');
+      if(n) {
+        G.FX.ring(this.x,this.y,8,150,'#5fe08a',0.5,3);
+        if(G.Coop.isHost) G.Coop.broadcast(['fxr',Math.round(this.x),Math.round(this.y),150,'#5fe08a']);
+        if(G.Camera.sees(this.x,this.y,0)) G.Audio.sfx('heal');
+      }
     }
 
     castShields() {
-      const near = G.EnemyMgr.queryCircle(this.x, this.y, 160).filter(e => !e.dead)
-        .sort((a, b) => G.U.dist2(a.x, a.y, this.x, this.y) - G.U.dist2(b.x, b.y, this.x, this.y)).slice(0, 6);
-      for (const e of near) { e.shield = Math.max(e.shield, e.maxHp * 0.35); e.shieldT = 8; }
+      if(this.remote) return;
+      const near=G.EnemyMgr.queryCircle(this.x,this.y,160)
+        .filter(e=>!e.dead && !e.remote && !e.boss && !e.legend && !e.judge && G.U.dist2(e.x,e.y,this.x,this.y)<=160*160 && this.supportVisibleTo(e))
+        .sort((a,b)=>G.U.dist2(a.x,a.y,this.x,this.y)-G.U.dist2(b.x,b.y,this.x,this.y));
+      let n=0;
+      for(const e of near) {if(n>=6) break;if(e.receiveSupport('shield',G.Game.st.time)>0)n++;}
       this.anim.play('Charge');
-      G.FX.ring(this.x, this.y, 8, 160, '#7fc8ff', 0.5, 3);
-      if (G.Coop.isHost) G.Coop.broadcast(['fxr', Math.round(this.x), Math.round(this.y), 160, '#7fc8ff']);
+      if(n) {
+        G.FX.ring(this.x,this.y,8,160,'#7fc8ff',0.5,3);
+        if(G.Coop.isHost) G.Coop.broadcast(['fxr',Math.round(this.x),Math.round(this.y),160,'#7fc8ff']);
+      }
     }
 
     summon() {
