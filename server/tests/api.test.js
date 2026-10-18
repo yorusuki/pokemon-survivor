@@ -224,3 +224,10 @@ test('最愛存檔伺服器拒絕超過 100 與不合法欄位，取消標記可
   assert.equal((await set(a,'saves/'+uid,{...data,save:{...data.save,favorites}})).status,403);
  }
 });
+
+test('招式儲備偏好伺服器驗證布林、圖鑑 ID 與時間戳',async()=>{
+ const a=client(),uid=await register(a,'ReserveUser');
+ const data={v:3,updatedAt:stamp,save:{name:'ReserveUser',coins:500,tickets:{t1:0,t10:0},moveReserve:{1:{enabled:false,at:1}}}};
+ assert.equal((await set(a,'saves/'+uid,data)).status,200);
+ for(const moveReserve of [{0:{enabled:true,at:1}},{1026:{enabled:true,at:1}},{1:{enabled:'false',at:1}},{1:{enabled:true,at:-1}},{1:{enabled:true,at:1,extra:1}}]) assert.equal((await set(a,'saves/'+uid,{...data,save:{...data.save,moveReserve}})).status,403);
+});

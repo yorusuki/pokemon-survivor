@@ -55,7 +55,16 @@ G.HUD = (() => {
     ctx.font = F(800, 13);
     ctx.fillStyle = '#eaf2ff';
     ctx.textAlign = 'left';
-    ctx.fillText(pl.mon.name + (G.DB.survivor(pl.dex) ? ' ✦30′' : ''), px, py + 10);
+    if(G.DB.survivor(pl.dex)) {
+      ctx.save();
+      const width=ctx.measureText(pl.mon.name).width;
+      ctx.strokeStyle='#ffd76b';ctx.lineWidth=1;ctx.strokeRect(px-3,py-3,width+6,17);
+      ctx.fillStyle='#ffe599';ctx.fillText(pl.mon.name,px,py+10);
+      const glow=G.Settings.get('calm')?.6:.2+.8*(.5+.5*Math.sin(performance.now()/380));
+      ctx.globalAlpha=glow;ctx.strokeStyle='#fff7ce';
+      for(const [x,y] of [[px+width*.25,py],[px+width*.8,py+9]]){ctx.beginPath();ctx.moveTo(x-3,y);ctx.lineTo(x+3,y);ctx.moveTo(x,y-3);ctx.lineTo(x,y+3);ctx.stroke();}
+      ctx.restore();
+    } else ctx.fillText(pl.mon.name, px, py + 10);
 
     ctx.font = F(700, 11);
     ctx.fillStyle = '#ffcb3d';

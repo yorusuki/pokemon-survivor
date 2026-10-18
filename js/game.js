@@ -121,7 +121,7 @@ G.Game = (() => {
     // Mejora "Veto": movimientos que no quieres que te salgan.
     pl.banned = new Set((save.pban && save.pban[mon.dex] || []).slice(0, perks.bans));
     // Mejora "Repertorio": un segundo movimiento de ataque al azar.
-    if (perks.startMoves >= 2) {
+    if (perks.startMoves >= 2 && G.DB.reserveEnabled(mon.dex)) {
       const pool = G.Moves.poolFor(mon).filter(id => !pl.hasMove(id) && !pl.banned.has(id) && G.Moves.BY_ID[id].kind !== 'buff');
       if (pool.length) pl.addMove(G.U.pick(pool));
       pl.setActive(0);
@@ -434,10 +434,10 @@ G.Game = (() => {
     if (laterItems.length) offerItem(laterItems.shift());
   }
 
-  /** Has cogido un objeto: si no llevas ninguno te lo pones; si no, eliges. */
+  /** Every new item requires a choice, even with an empty equipment slot. */
   function offerItem(id) {
     if (!pl || !G.Items.BY[id]) return;
-    if (state === 'levelup' || G.UI.isOpen('scr-levelup')) { laterItems.push(id); return; }
+    if (openItem || state === 'levelup' || G.UI.isOpen('scr-levelup')) { laterItems.push(id); return; }
     let mine = false;            // esta elección es la que ha parado el juego
     const take = got => {
       openItem = null;
@@ -451,7 +451,6 @@ G.Game = (() => {
       if (G.Coop.active) G.Coop.holdEnd();
       afterLevelUp();
     };
-    if (!pl.item) { take(id); return; }
     if (pl.item === id) { G.Spawner.say('Ya llevas ' + G.Items.BY[id].name, 2, true); return; }
     // Se para el juego mientras eliges; en grupo, para todos (como con las
     // fusiones). Antes en grupo seguía y te pegaban mientras elegías.

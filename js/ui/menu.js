@@ -1,7 +1,7 @@
 /* ============ menu.js — menú principal, colección y mejoras ============ */
 G.MenuUI = (() => {
   const $ = G.UI.$;
-  const survivorBadge = dex => G.DB.survivor(dex) ? `<span class="survivor-badge" title="${G.U.escapeHTML(G.T('Superviviente de 30 minutos'))}" aria-label="${G.U.escapeHTML(G.T('Superviviente de 30 minutos'))}">✦ 30′</span>` : '';
+  const survivorName = (dex,name) => G.DB.survivor(dex) ? `<span class="survivor-name" title="${G.U.escapeHTML(G.T('Superviviente de 30 minutos'))}">${G.U.escapeHTML(name)}</span>` : G.U.escapeHTML(name);
   const GEN_NAMES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar', 'Paldea'];
   let dexFilter = 'all', dexGen = 1, dexSel = null;
 
@@ -42,7 +42,7 @@ G.MenuUI = (() => {
     G.UI.sprite($('menu-partner'), mon.dex, { lively: true, scale: 4, hero: true, shiny });
     $('menu-partner').style.setProperty('--stage-c', shiny ? '#9ae6ff' : G.U.TYPE_COLOR[mon.types[0]]);
     $('menu-partner').classList.toggle('shiny', shiny);
-    $('menu-partner-name').innerHTML = mon.name + survivorBadge(mon.dex) + (shiny ? ' ' + G.Icons.html('shiny', 24) : '');
+    $('menu-partner-name').innerHTML = survivorName(mon.dex,mon.name) + (shiny ? ' ' + G.Icons.html('shiny', 24) : '');
     $('menu-partner-info').innerHTML = G.UI.typeChips(mon.types) + ' ' + G.UI.stars(mon.rarity);
     // Normal / shiny a mano, aquí mismo (en el móvil no se encontraba en la ficha).
     const seg = $('menu-shiny');
@@ -169,7 +169,7 @@ G.MenuUI = (() => {
       else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
       const useShiny = sh && p.dex === s.partner && s.partnerShiny;
       cell.appendChild(G.UI.spriteCanvas(p.dex, 92, 80, { scale: 2, silhouette: !own, shadow: own, shiny: useShiny }));
-      cell.insertAdjacentHTML('beforeend', `<b>${own ? p.name + survivorBadge(p.dex) : '???'}</b>${G.UI.stars(p.rarity, 9)}`);
+      cell.insertAdjacentHTML('beforeend', `<b>${own ? survivorName(p.dex,p.name) : '???'}</b>${G.UI.stars(p.rarity, 9)}`);
       cell.onclick = () => {
         dexSel = p.dex;
         grid.querySelectorAll('.cell').forEach(c => c.classList.remove('on'));
@@ -210,7 +210,7 @@ G.MenuUI = (() => {
           <button class="${viewShiny ? 'on' : ''}" data-v="1">${G.Icons.html('shiny', 12)} Shiny</button></div>` : ''}
       <div class="center">
         <div style="color:var(--muted);font-size:13px">Nº ${String(p.dex).padStart(3, '0')} · ${GEN_NAMES[p.gen - 1]}</div>
-        <h3>${own ? p.name + survivorBadge(p.dex) : '???'}</h3>
+        <h3>${own ? survivorName(p.dex,p.name) : '???'}</h3>
         <div style="color:${G.Gacha.RARITY_COLOR[p.rarity]}">${G.UI.stars(p.rarity, 24)} ${G.Gacha.RARITY_NAME[p.rarity]}</div>
         <div style="margin:6px 0">${own ? G.UI.typeChips(p.types) : ''}</div>
       </div>
@@ -287,9 +287,11 @@ G.MenuUI = (() => {
           <div class="pips">${Array.from({ length: u.max }, (_, i) => `<i class="${i < lvl ? 'on' : ''}"></i>`).join('')}</div>
         </div>
         <div class="upg-btns">
+          ${u.id === 'moves' && lvl > 0 ? `<button class="btn small" data-reserve aria-pressed="${G.DB.reserveEnabled(upgDex)}">${G.T(G.DB.reserveEnabled(upgDex)?'Reserva activada':'Reserva desactivada')}</button>` : ''}
           ${u.id === 'ban' && lvl > 0 ? `<button class="btn small" data-ban>Elegir (${banList().length}/${lvl})</button>` : ''}
           <button class="btn small ${maxed ? '' : 'gold'}" data-buy data-sfx="none" ${maxed || s.coins < cost ? 'disabled' : ''}>
           ${maxed ? 'Máx.' : `<span class="coin"></span> ${cost}`}</button></div>`;
+      if(u.id==='moves' && lvl>0)el.querySelector('[data-reserve]').onclick=()=>{if(!G.DB.setReserveEnabled(upgDex,!G.DB.reserveEnabled(upgDex)))G.UI.toast(G.T('No se pudo cambiar la reserva.'));renderUpgrades();};
       if (u.id === 'ban' && lvl > 0) el.querySelector('[data-ban]').onclick = () => { banOpen = !banOpen; renderUpgrades(); };
       el.querySelector('[data-buy]').onclick = () => {
         // Se vuelve a leer todo al pulsar (la partida puede haber cambiado desde que se dibujó).

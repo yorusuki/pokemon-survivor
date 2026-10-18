@@ -676,3 +676,17 @@ G.I18n.add({
 });
 
 G.I18n.add({'Ninguno':'None'});
+
+G.I18n.add({
+  "Reserva activada": "Reserve: on",
+  "Reserva desactivada": "Reserve: off",
+  "No equipar": "Do not equip",
+  "Equipar": "Equip",
+  "Seguir sin objeto equipado.": "Continue without a held item.",
+  "Nombres dorados y decisiones de equipo": "Golden names and equipment choices",
+  "Los Pokémon que sobreviven 30 minutos lucen un nombre dorado con destellos.": "Pokémon that survive 30 minutes now have golden names with sparkles.",
+  "Tras comprar Repertorio puedes activar o desactivar el segundo movimiento inicial para cada Pokémon.": "After buying Repertoire, toggle the second starting move for each Pokémon.",
+  "El primer objeto también te pregunta si quieres equiparlo.": "Your first item also asks whether you want to equip it."
+});
+
+G.I18n.add({'No se pudo cambiar la reserva.':'Could not change the reserve setting.'});

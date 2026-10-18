@@ -855,7 +855,12 @@ html[lang="zh-Hant"] .topbar .pill { white-space: nowrap; }
   html[lang="zh-Hant"] #btn-support span { display: none; }
 }
 
-.survivor-badge{display:inline-block;margin-left:.4em;padding:.1em .4em;border:1px solid #ffd76b;border-radius:.5em;color:#ffe599;background:#3d2e11;font:700 .7em system-ui,sans-serif;box-shadow:0 0 7px #ffd76b66;vertical-align:middle;white-space:nowrap}
+/* The milestone decorates the name itself; it does not add a badge. */
+.survivor-name{position:relative;display:inline-block;padding:0 .22em;border:1px solid #ffd76b;border-radius:.25em;color:#ffe599;text-shadow:0 0 5px #f9c54e88;white-space:nowrap}
+.survivor-name::after{content:"";position:absolute;inset:-2px;pointer-events:none;background:radial-gradient(ellipse 1px 5px at 22% 30%,#fff 65%,transparent 75%),radial-gradient(ellipse 5px 1px at 22% 30%,#fff 65%,transparent 75%),radial-gradient(ellipse 1px 4px at 78% 65%,#fff7bf 65%,transparent 75%),radial-gradient(ellipse 4px 1px at 78% 65%,#fff7bf 65%,transparent 75%);animation:survivor-sparkle 2.4s ease-in-out infinite}
+@keyframes survivor-sparkle{0%,100%{opacity:.15}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.survivor-name::after{animation:none;opacity:.5}}
+
 
 @font-face{font-family:"Cubic 11";src:url('../assets/fonts/Cubic_11.woff2') format('woff2');font-weight:100 900;font-display:swap}
 html[data-font="pixel"]{--font:"Cubic 11","Pixelify",system-ui,sans-serif}

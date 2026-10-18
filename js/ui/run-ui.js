@@ -160,12 +160,12 @@ G.RunUI = (() => {
   function showItemChoice(cur, next, cb) {
     const box = $('item-cards');
     box.innerHTML = '';
-    [[cur, 'Quedarme con'], [next, 'Cambiar a']].forEach(([id, verb], i) => {
-      const it = G.Items.BY[id];
+    [[cur, cur?'Quedarme con':'No equipar'], [next, cur?'Cambiar a':'Equipar']].forEach(([id, verb], i) => {
+      const it = G.Items.BY[id] || {name:'',desc:G.T('Seguir sin objeto equipado.')};
       const el = document.createElement('div');
       el.className = 'card' + (i === 1 ? ' evo' : '');
-      el.innerHTML = `<div class="ico">${G.Icons.html(id, 36)}</div>
-        <div class="txt"><div class="nm">${verb} ${it.name}</div><div class="ds">${it.desc}</div></div>
+      el.innerHTML = `<div class="ico">${id?G.Icons.html(id, 36):''}</div>
+        <div class="txt"><div class="nm">${G.T(verb)} ${it.name}</div><div class="ds">${it.desc}</div></div>
         <div class="key">${i + 1}</div>`;
       el.onclick = () => { G.UI.hide('scr-item'); cb(id); };
       box.appendChild(el);

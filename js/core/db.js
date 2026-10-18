@@ -54,6 +54,14 @@ G.DB = (() => {
     return out;
   }
 
+  function normalizeReserve(value) {
+    const out={};
+    if(value && typeof value==='object' && !Array.isArray(value))for(const [dex,e] of Object.entries(value)) {
+      if(/^[1-9][0-9]{0,3}$/.test(dex)&&+dex<=1025&&e&&typeof e.enabled==='boolean'&&Number.isSafeInteger(e.at)&&e.at>=0&&e.at<=1e15)out[dex]={enabled:e.enabled,at:e.at};
+    }
+    return out;
+  }
+
   function newSave(name) {
     return {
       v: VERSION,
@@ -69,6 +77,7 @@ G.DB = (() => {
       personality: null,      // { trait, scores }
       upgrades: {},           // (antiguo) mejoras de la cuenta; ahora van por Pokémon
       favorites: {},          // dex -> {on,at}; separate from public profile.favs
+      moveReserve: {},       // per-Pokemon purchased reserve preference
       survivalBest: {},       // dex -> best survival seconds for this account
       pupg: {},               // dex -> { id -> nivel }: mejoras de cada Pokémon
       tickets: { t1: 0, t10: 0 },   // tickets del gacha (x1 y x10)
@@ -113,6 +122,7 @@ G.DB = (() => {
    */
   function sanitize(s) {
     s.favorites=normalizeFavorites(s.favorites);
+    s.moveReserve=normalizeReserve(s.moveReserve);
     const n = v => (Number.isFinite(+v) && +v > 0 ? Math.floor(+v) : 0);
     s.coins = n(s.coins);
     s.tickets.t1 = n(s.tickets.t1);
@@ -254,6 +264,11 @@ G.DB = (() => {
       if(!current || entry.at>current.at || (entry.at===current.at && !entry.on)) favorites[dex]=entry;
     }
     r.favorites=normalizeFavorites(favorites);
+    r.moveReserve=normalizeReserve(r.moveReserve);
+    for(const [dex,e] of Object.entries(normalizeReserve(older.moveReserve))) {
+      const current=r.moveReserve[dex];
+      if(!current||e.at>current.at||(e.at===current.at&&!e.enabled))r.moveReserve[dex]=e;
+    }
     r.survivalBest=r.survivalBest||{};
     for(const [dex,value] of Object.entries(older.survivalBest||{})) if(/^\d{1,4}$/.test(dex) && Number.isFinite(value) && value>=0 && value<=1e9) r.survivalBest[dex]=Math.max(r.survivalBest[dex]||0,value);
     r.pupgDone = r.pupgDone || older.pupgDone;
@@ -789,6 +804,13 @@ G.DB = (() => {
     save.favorites[dex]={on,at:Math.max(Date.now(),(save.favorites[dex]?.at||0)+1)};
     commit(true);return {ok:true,on};
   }
+  function reserveEnabled(dex) { return save?.moveReserve?.[dex]?.enabled!==false; }
+  function setReserveEnabled(dex,enabled) {
+    if(!save||!Number.isInteger(dex)||!G.DEX_BY[dex]||typeof enabled!=='boolean'||!(upgradesOf(dex).moves>0))return false;
+    save.moveReserve=normalizeReserve(save.moveReserve);
+    save.moveReserve[dex]={enabled,at:Math.max(Date.now(),(save.moveReserve[dex]?.at||0)+1)};
+    commit(true);return true;
+  }
   function survivor(dex) { return !!save && Number.isFinite(save.survivalBest?.[dex]) && save.survivalBest[dex]>=1800; }
   function recordSurvival(dex,seconds) {
     if(!save || !save.owned[dex] || !Number.isInteger(dex) || !Number.isFinite(seconds) || seconds<0 || seconds>1e9) return false;
@@ -813,7 +835,7 @@ G.DB = (() => {
 
   return {
     ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, flush: () => pushNow(true),
-    isFavorite, favoriteCount, toggleFavorite, survivor, recordSurvival, owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
+    isFavorite, favoriteCount, toggleFavorite, reserveEnabled, setReserveEnabled, survivor, recordSurvival, owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
     /** Acceso de bajo nivel para los módulos de red (sólo en modo nube). */

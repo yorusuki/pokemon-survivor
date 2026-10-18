@@ -1544,7 +1544,7 @@
   "Below character": "角色下方",
   "Show health numbers": "顯示血量數字",
   "Show current and maximum health next to the bar.": "在血條旁顯示目前血量與最大血量。",
-  "30-minute survivor": "生存 30 分鐘紀念徽章",
+  "30-minute survivor": "生存 30 分鐘紀念名稱",
   "Co-op and visual options": "合作模式與畫面設定更新",
   "Reduced combat data during card selection and added round numbers to level confirmations.": "選卡暫停期間減少戰場資料傳輸，並依升級回合確認選擇，降低等待與錯誤恢復的風險。",
   "Per-Pokémon 30-minute badge for your account; old records without a Pokémon cannot be converted.": "每隻寶可夢達成生存 30 分鐘後，可在本帳號獲得名稱紀念徽章；無法辨認寶可夢的舊總紀錄不會自動補發。",
@@ -1591,5 +1591,15 @@
   "Double-tap to favorite up to 100 Pokémon; use the heart filter to browse them.": "快速點兩下寶可夢即可加入或取消最愛，上限 100 隻；可用左側最愛篩選跨地區查看。",
   "Choose Cubic 11 in Settings and inspect your bonuses during runs and card selection.": "可在設定切換 Cubic 11 像素字型，並在遊戲角落及選卡畫面查看累計能力加成。",
   "The health bar below your character has been moved down slightly to clear attack animations.": "角色下方的血條再向下移動一些，減少與攻擊動畫重疊。",
-  "None": "無"
+  "None": "無",
+  "Reserve: on": "招式儲備：開啟",
+  "Reserve: off": "招式儲備：關閉",
+  "Do not equip": "不裝備",
+  "Equip": "裝備",
+  "Continue without a held item.": "維持未裝備道具的狀態。",
+  "Golden names and equipment choices": "金色紀念名稱與裝備選擇",
+  "Pokémon that survive 30 minutes now have golden names with sparkles.": "存活達 30 分鐘的寶可夢，名稱改為金字、金框與閃光效果。",
+  "After buying Repertoire, toggle the second starting move for each Pokémon.": "購買招式儲備後，可為每隻寶可夢切換是否攜帶第二個初始招式。",
+  "Your first item also asks whether you want to equip it.": "首次拾取道具時也會詢問是否裝備，不再自動裝備。",
+  "Could not change the reserve setting.": "無法變更招式儲備設定，請重新開啟強化頁面再試。"
 }
