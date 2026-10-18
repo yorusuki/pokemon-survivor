@@ -1690,5 +1690,11 @@
   "The Repertoire toggle is on its own row; after purchase the maximum-level indicator is hidden.": "招式儲備開關改至獨立下一行，購買後不再顯示已達上限與單格進度點。",
   "Commemorative names show clearer golden frames and sparkles in Pokémon selection.": "寶可夢選擇畫面的紀念名稱金框與閃光更清楚，遊戲 HUD 也保留呈現。",
   "Commemorative names keep golden text and sparkles without a frame.": "紀念名稱移除外框與底色，保留金字及閃光。",
-  "Golden text without a frame": "金字閃光保留、移除外框"
+  "Golden text without a frame": "金字閃光保留、移除外框",
+  "Los sanadores curan del 5 al 12% según el nivel, sin curarse a sí mismos; pueden curar a otros sanadores y enemigos especiales a través de paredes. Los apoyos normales aparecen tras el primer minuto.": "治療者依玩家等級回復 5～12% 生命，不能治療自己，但可隔牆治療其他治療者及特殊敵人；一般支援敵人在開局一分鐘後出現。",
+  "Healers restore 5–12% based on player level, cannot heal themselves, and can heal other healers and special enemies through walls. Normal supports spawn after the first minute.": "治療者依玩家等級回復 5～12% 生命，不能治療自己，但可隔牆治療其他治療者及特殊敵人；一般支援敵人在開局一分鐘後出現。",
+  "Las novedades se agrupan por fecha y categoría; los cambios del mismo día se reúnen en una sola entrada.": "更新紀錄依日期與類別整理，同一天的變更合併在同一筆紀錄。",
+  "Updates are grouped by date and category; same-day changes share one entry.": "更新紀錄依日期與類別整理，同一天的變更合併在同一筆紀錄。",
+  "Novedades por fecha": "依日期整理更新紀錄",
+  "Updates by date": "依日期整理更新紀錄"
 }

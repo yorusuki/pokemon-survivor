@@ -1,6 +1,6 @@
 # 敵方支援原始模式封存
 
-這是本專案目前可追溯的最早 Git 快照 **9d6b8d9**，不是推測更早上游版本。原註解提到「以前 15%」只是歷史註解，該快照實際使用 7% 起算。此文件不會切換目前遊戲模式，也沒有新增 runtime 開關。
+原始模式以原作者 [JPTER78/pokesurvivor 的固定提交 5bbc3b2](https://github.com/JPTER78/pokesurvivor/blob/5bbc3b29288d6af4596f21188fb8b54e0e9b739f/js/entities/enemy.js) 為依據。原註解提到「以前 15%」只是歷史註解，該版本實際使用 7% 起算。此文件不會切換目前遊戲模式，也沒有新增 runtime 開關。
 
 ## 原始規則
 

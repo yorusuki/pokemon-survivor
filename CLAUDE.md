@@ -7,5 +7,6 @@
 - Cloudflare TURN 僅由後端以 `.env` 內的憑證申請短期 ICE 資料；不可把長期 token 放到前端。
 - Docker 外部網路供 Cloudflare Tunnel connector 與網站服務通訊；部署者自行設定公開 hostname 與 origin。
 - 修改後執行 `server/` 的 `npm run check`、`npm test`，依變更執行建置與設定驗證。
+- 更新紀錄按日期合併、同日分類及原作比較表維護規則見 [AGENTS.md](AGENTS.md)。
 - 介面／玩法修正同步更新 `js/data/changelog.js`；伺服器及資料庫變更記錄於根目錄 `CHANGELOG.md`。
 - 不自行建立 remote 或 push；遵循使用者提供的 AGENTS.md。

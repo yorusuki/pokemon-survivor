@@ -30,7 +30,7 @@ docker compose up -d
 
 ## 更新紀錄與文件
 
-功能更新及修正見 [CHANGELOG.md](CHANGELOG.md)。
+功能更新及修正見 [CHANGELOG.md](CHANGELOG.md)，按日期分類；完整功能差異見 [原作與目前版本比較表](docs/UPSTREAM_COMPARISON.md)。
 
 | 主題 | 文件 |
 |---|---|

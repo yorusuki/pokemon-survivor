@@ -6,15 +6,104 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
-  {"d": "2026-10-18", "title": ["2.0.0 — Apodos, amigos y Vidasfera", "2.0.0 — Nicknames, friends and Life Orb"], "new": [["Las cuentas registradas pueden cambiar su apodo cada 24 horas; el anterior se reserva durante 7 días. El nombre de acceso no cambia.", "Registered accounts can change nicknames every 24 hours; the previous name is reserved for 7 days. Login names stay the same."], ["Copia tu código de amigo y compártelo; añade amigos pegando su código, aunque cambien de apodo.", "Copy and share your friend code; add friends by pasting their code, even if their nickname changes."]], "chg": [["No se puede cambiar el apodo dentro de una sala o durante una partida.", "Nicknames cannot be changed in a room or during a run."], ["Vidasfera da +30% de daño y -20% de vida máxima, sin perder vida al atacar.", "Life Orb gives +30% damage and -20% maximum HP, without draining HP on attacks."]]},
-  {"d": "2026-10-18", "title": ["Favoritos y curación progresiva", "Favorites and progressive healing"], "chg": [["La ficha muestra una indicación centrada para añadir o quitar favoritos con un doble toque en la lista.", "Details show a centered hint for adding or removing favorites by double-tapping the list."], ["El intervalo de curación por objetivo aumenta de 2 a 8 segundos durante los primeros 30 minutos; todos los sanadores comparten ese intervalo.", "The healing interval per target increases from 2 to 8 seconds over the first 30 minutes; all healers share that interval."]]},
-  {"d": "2026-10-18", "title": ["Texto dorado sin marco", "Golden text without a frame"], "chg": [["Los nombres conmemorativos conservan el texto dorado y los destellos, sin marco.", "Commemorative names keep golden text and sparkles without a frame."]]},
-  {"d": "2026-10-18", "title": ["Armadura corregida y escudos reforzados", "Armor fixes and stronger shields"], "chg": [["La armadura, los objetos y los efectos temporales ya no se restan entre sí; la reducción total, incluido el cuerpo a cuerpo, tiene un máximo del 90%.", "Armor, items and temporary effects no longer subtract from each other; total defense reduction including melee is capped at 90%."], ["Los protectores dan escudos del 10 al 40% según el nivel, sin autoescudo; cada objetivo sólo recibe un escudo cada 2,5 segundos.", "Shielders grant 10–40% shields based on level, cannot shield themselves, and share a 2.5-second cooldown per target."], ["Sanadores y protectores tienen un límite de 25 de cada tipo. Cubic 11 es la fuente predeterminada para nuevos ajustes.", "Healers and shielders are capped at 25 each. Cubic 11 is the default font for new settings."]], "fix": [["El interruptor de Repertorio aparece en una fila aparte; al comprarlo desaparece el indicador de nivel máximo.", "The Repertoire toggle is on its own row; after purchase the maximum-level indicator is hidden."], ["Los nombres conmemorativos muestran el marco dorado y los destellos con más claridad en la selección de Pokémon.", "Commemorative names show clearer golden frames and sparkles in Pokémon selection."]]},
-  {"d": "2026-10-18", "title": ["Sanadores reforzados y shiny al 3%", "Stronger healers and 3% gacha shinies"], "chg": [["Los sanadores curan del 5 al 12% según el nivel; cada objetivo recibe curación como máximo una vez cada 3 segundos.", "Healers restore 5–12% based on player level; each target can be healed at most once every 3 seconds."], ["Los sanadores pueden curarse entre sí y a enemigos especiales, atraviesan paredes y aparecen tras el primer minuto, hasta 10 a la vez.", "Healers can heal each other and special enemies through walls; they can spawn after one minute, up to 10 at a time."], ["La probabilidad shiny del gacha sube al 3%; las probabilidades de estrellas y las garantías no cambian.", "Gacha shiny chance increases to 3%; star rates and guarantees stay unchanged."]]},
-  {"d": "2026-10-18", "title": ["Nombres dorados y decisiones de equipo", "Golden names and equipment choices"], "chg": [["Los Pokémon que sobreviven 30 minutos lucen un nombre dorado con destellos.", "Pokémon that survive 30 minutes now have golden names with sparkles."], ["Tras comprar Repertorio puedes activar o desactivar el segundo movimiento inicial para cada Pokémon.", "After buying Repertoire, toggle the second starting move for each Pokémon."], ["El primer objeto también te pregunta si quieres equiparlo.", "Your first item also asks whether you want to equip it."]]},
-  {d:'2026-10-18',title:['Favoritos, fuente y bonificaciones','Favorites, font and bonuses'],new:[["Marca hasta 100 Pokémon como favoritos con dos pulsaciones rápidas; filtra tu colección con el corazón.", "Double-tap to favorite up to 100 Pokémon; use the heart filter to browse them."], ["Elige Cubic 11 en Ajustes y consulta tus bonificaciones durante la partida y al elegir cartas.", "Choose Cubic 11 in Settings and inspect your bonuses during runs and card selection."], ["La barra de vida bajo el personaje se ha bajado un poco para evitar las animaciones de ataque.", "The health bar below your character has been moved down slightly to clear attack animations."]]},
-  { d:'2026-10-18', title:['Apoyos enemigos equilibrados','Enemy support balance'], chg:[["Los sanadores ya no aumentan su curación con tu ataque ni se curan entre sí.", "Healers no longer scale healing with your attack or heal each other."], ["La curación y los escudos comparten un presupuesto por enemigo para evitar combates sin progreso.", "Healing and shields share a per-enemy recovery budget to prevent fights from losing all progress."], ["Los primeros dos minutos no aparecen sanadores ni protectores; su curación no se acumula sobre el mismo objetivo.", "Healers and shielders do not spawn in the first two minutes; healing does not stack on the same target."]] },
-  { d: '2026-10-18', title: ['Cooperativo y opciones visuales','Co-op and visual options'], chg: [["Menos datos de combate durante la elección de cartas y confirmaciones de nivel con número de ronda.", "Reduced combat data during card selection and added round numbers to level confirmations."], ["Insignia de 30 minutos para cada Pokémon de tu cuenta; los récords antiguos sin Pokémon identificado no se convierten.", "Per-Pokémon 30-minute badge for your account; old records without a Pokémon cannot be converted."], ["Ajusta la opacidad de ataques aliados y coloca tu barra de vida debajo del personaje en Ajustes → Gráficos.", "Adjust allied attack opacity and place your health bar below your character in Settings → Graphics."]] },
+  {"d": "2026-10-19", "title": ["Novedades por fecha", "Updates by date"], "chg": [["Las novedades se agrupan por fecha y categoría; los cambios del mismo día se reúnen en una sola entrada.", "Updates are grouped by date and category; same-day changes share one entry."]]},
+  {
+    "d": "2026-10-18",
+    "title": [
+      "2.0.0",
+      "2.0.0"
+    ],
+    "new": [
+      [
+        "Las cuentas registradas pueden cambiar su apodo cada 24 horas; el anterior se reserva durante 7 días. El nombre de acceso no cambia.",
+        "Registered accounts can change nicknames every 24 hours; the previous name is reserved for 7 days. Login names stay the same."
+      ],
+      [
+        "Copia tu código de amigo y compártelo; añade amigos pegando su código, aunque cambien de apodo.",
+        "Copy and share your friend code; add friends by pasting their code, even if their nickname changes."
+      ],
+      [
+        "Marca hasta 100 Pokémon como favoritos con dos pulsaciones rápidas; filtra tu colección con el corazón.",
+        "Double-tap to favorite up to 100 Pokémon; use the heart filter to browse them."
+      ],
+      [
+        "Elige Cubic 11 en Ajustes y consulta tus bonificaciones durante la partida y al elegir cartas.",
+        "Choose Cubic 11 in Settings and inspect your bonuses during runs and card selection."
+      ],
+      [
+        "La barra de vida bajo el personaje se ha bajado un poco para evitar las animaciones de ataque.",
+        "The health bar below your character has been moved down slightly to clear attack animations."
+      ]
+    ],
+    "chg": [
+      [
+        "No se puede cambiar el apodo dentro de una sala o durante una partida.",
+        "Nicknames cannot be changed in a room or during a run."
+      ],
+      [
+        "Vidasfera da +30% de daño y -20% de vida máxima, sin perder vida al atacar.",
+        "Life Orb gives +30% damage and -20% maximum HP, without draining HP on attacks."
+      ],
+      [
+        "La ficha muestra una indicación centrada para añadir o quitar favoritos con un doble toque en la lista.",
+        "Details show a centered hint for adding or removing favorites by double-tapping the list."
+      ],
+      [
+        "El intervalo de curación por objetivo aumenta de 2 a 8 segundos durante los primeros 30 minutos; todos los sanadores comparten ese intervalo.",
+        "The healing interval per target increases from 2 to 8 seconds over the first 30 minutes; all healers share that interval."
+      ],
+      [
+        "Los nombres conmemorativos conservan el texto dorado y los destellos, sin marco.",
+        "Commemorative names keep golden text and sparkles without a frame."
+      ],
+      [
+        "La armadura, los objetos y los efectos temporales ya no se restan entre sí; la reducción total, incluido el cuerpo a cuerpo, tiene un máximo del 90%.",
+        "Armor, items and temporary effects no longer subtract from each other; total defense reduction including melee is capped at 90%."
+      ],
+      [
+        "Los protectores dan escudos del 10 al 40% según el nivel, sin autoescudo; cada objetivo sólo recibe un escudo cada 2,5 segundos.",
+        "Shielders grant 10–40% shields based on level, cannot shield themselves, and share a 2.5-second cooldown per target."
+      ],
+      [
+        "Sanadores y protectores tienen un límite de 25 de cada tipo. Cubic 11 es la fuente predeterminada para nuevos ajustes.",
+        "Healers and shielders are capped at 25 each. Cubic 11 is the default font for new settings."
+      ],
+      [
+        "La probabilidad shiny del gacha sube al 3%; las probabilidades de estrellas y las garantías no cambian.",
+        "Gacha shiny chance increases to 3%; star rates and guarantees stay unchanged."
+      ],
+      [
+        "Los Pokémon que sobreviven 30 minutos lucen un nombre dorado con destellos.",
+        "Pokémon that survive 30 minutes now have golden names with sparkles."
+      ],
+      [
+        "Tras comprar Repertorio puedes activar o desactivar el segundo movimiento inicial para cada Pokémon.",
+        "After buying Repertoire, toggle the second starting move for each Pokémon."
+      ],
+      [
+        "El primer objeto también te pregunta si quieres equiparlo.",
+        "Your first item also asks whether you want to equip it."
+      ],
+      [
+        "Menos datos de combate durante la elección de cartas y confirmaciones de nivel con número de ronda.",
+        "Reduced combat data during card selection and added round numbers to level confirmations."
+      ],
+      [
+        "Ajusta la opacidad de ataques aliados y coloca tu barra de vida debajo del personaje en Ajustes → Gráficos.",
+        "Adjust allied attack opacity and place your health bar below your character in Settings → Graphics."
+      ],
+      [
+        "Los sanadores curan del 5 al 12% según el nivel, sin curarse a sí mismos; pueden curar a otros sanadores y enemigos especiales a través de paredes. Los apoyos normales aparecen tras el primer minuto.",
+        "Healers restore 5–12% based on player level, cannot heal themselves, and can heal other healers and special enemies through walls. Normal supports spawn after the first minute."
+      ]
+    ],
+    "fix": [
+      [
+        "El interruptor de Repertorio aparece en una fila aparte; al comprarlo desaparece el indicador de nivel máximo.",
+        "The Repertoire toggle is on its own row; after purchase the maximum-level indicator is hidden."
+      ]
+    ]
+  },
   { d: '2026-10-17', title: ['Traducción al chino tradicional', 'Traditional Chinese localization'], new: [
     ['Idioma chino tradicional: nombres de Pokémon, movimientos y objetos contrastados con PokéAPI; interfaz y guía traducidas.',
      'Traditional Chinese: Pokémon, move and item names matched against PokéAPI; translated interface and guide.']
