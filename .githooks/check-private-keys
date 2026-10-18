@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+scan() {
+  if files=$(git grep -I -l -E -e '^[[:space:]]*-----BEGIN (OPENSSH |RSA |DSA |EC |ENCRYPTED )?PRIVATE KEY-----' "$@"); then
+    printf 'Blocked: private key header found in tracked content:\n%s\n' "$files" >&2
+    exit 1
+  else
+    result=$?
+    if [ "$result" -ne 1 ]; then
+      printf 'Private key check failed; refusing to continue.\n' >&2
+      exit 1
+    fi
+  fi
+}
+case "${1-}" in
+  staged) scan --cached ;;
+  push)
+    while read -r local_ref local_sha remote_ref remote_sha; do
+      case "$local_sha$remote_sha" in *[!0-9a-f]*) exit 1 ;; esac
+      case "$local_sha" in ''|0000000000000000000000000000000000000000) continue ;; esac
+      case "$remote_sha" in
+        0000000000000000000000000000000000000000) range=$local_sha ;;
+        *) range=$remote_sha..$local_sha ;;
+      esac
+      commits=$(git rev-list "$range") || exit 1
+      for commit in $commits; do scan "$commit"; done
+    done
+    ;;
+  *) printf 'Usage: check-private-keys staged|push\n' >&2; exit 1 ;;
+esac
