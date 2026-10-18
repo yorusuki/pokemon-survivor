@@ -303,6 +303,7 @@ G.Game = (() => {
 
     save.coins += coins;
     bankTickets(false);
+    G.DB.recordSurvival(pl.dex,time);
     save.stats.runs++;
     save.stats.totalKills += pl.kills;
     save.stats.bestTime = Math.max(save.stats.bestTime, Math.floor(time));
@@ -633,6 +634,7 @@ G.Game = (() => {
       return;
     }
     time += dt;
+    if(time>=1800 && !G.DB.survivor(pl.dex) && G.DB.recordSurvival(pl.dex,time)) G.DB.commit('run');
 
     const b = Math.floor(time / 240);
     if (b !== biome && !G.Rift.inArena && !G.Judgment.active) {

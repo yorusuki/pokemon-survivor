@@ -77,10 +77,12 @@ G.RunUI = (() => {
     const me = G.Social.me ? G.Social.me.name : '';
     const others = names.filter(n => n !== me);
     const list = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : a[0];
-    $('lvl-wait').textContent = !names.length ? ''
+    const message = !names.length ? ''
       : !others.length ? 'Elige tu carta'
       : names.includes(me) ? 'Faltan por elegir: ' + list([...others, 'tú'])
       : 'Esperando a ' + list(others) + '…';
+    const translated=G.T(message);
+    if($('lvl-wait').textContent!==translated) $('lvl-wait').textContent=translated;
   }
 
   function closeLevelUp() {

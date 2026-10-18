@@ -854,3 +854,5 @@ html[lang="zh-Hant"] .topbar .pill { white-space: nowrap; }
   html[lang="zh-Hant"] .topbar .btn.small { padding: 4px 6px; }
   html[lang="zh-Hant"] #btn-support span { display: none; }
 }
+
+.survivor-badge{display:inline-block;margin-left:.4em;padding:.1em .4em;border:1px solid #ffd76b;border-radius:.5em;color:#ffe599;background:#3d2e11;font:700 .7em system-ui,sans-serif;box-shadow:0 0 7px #ffd76b66;vertical-align:middle;white-space:nowrap}

@@ -11,6 +11,9 @@ G.FX = (() => {
   // Topes según la calidad (Ajustes → Gráficos): bajo, medio, alto.
   const CAP_PARTS = [350, 800, 1400], CAP_SPRITES = [110, 210, 320], CAP_TEXTS = [25, 45, 70], DENS = [0.35, 0.65, 1];
   const q = () => G.Settings.fx;
+  let attackScope=false;
+  function withAttack(fn,enabled=true) {const old=attackScope;attackScope=enabled;try{return fn();}finally{attackScope=old;}}
+  const attackAlpha = effect => effect.attack ? (G.Settings.get('attackOpacity') ?? 1) : 1;
   let parts = [], sprites = [], texts = [], rings = [], slashes = [], beams = [];
 
   function clear() { parts = []; sprites = []; texts = []; rings = []; slashes = []; beams = []; }
@@ -22,7 +25,7 @@ G.FX = (() => {
   /** Partícula cuadrada. o: { vx, vy, life, size (en píxeles de arte), grav, drag } */
   function px(x, y, color, o = {}) {
     if (parts.length >= CAP_PARTS[q()]) return;
-    parts.push({ x, y, vx: o.vx || 0, vy: o.vy || 0, t: 0, life: o.life || 0.4, color,
+    parts.push({ attack:attackScope, x, y, vx: o.vx || 0, vy: o.vy || 0, t: 0, life: o.life || 0.4, color,
                  s: (o.size || 1) * PX, grav: o.grav || 0, drag: o.drag == null ? 0.9 : o.drag });
   }
 
@@ -46,7 +49,7 @@ G.FX = (() => {
   /** Sprite de efecto suelto. o: { vx, vy, life, scale, angle, spin, grav, frameRate, fade } */
   function sp(shape, pal, x, y, o = {}) {
     if (sprites.length >= CAP_SPRITES[q()]) return;
-    sprites.push({ shape, pal, x, y, vx: o.vx || 0, vy: o.vy || 0, t: 0, life: o.life || 0.4,
+    sprites.push({ attack:attackScope, shape, pal, x, y, vx: o.vx || 0, vy: o.vy || 0, t: 0, life: o.life || 0.4,
                    scale: o.scale || 1, angle: o.angle || 0, spin: o.spin || 0, grav: o.grav || 0,
                    fr: o.frameRate || 10, fade: o.fade !== false });
   }
@@ -54,7 +57,7 @@ G.FX = (() => {
   /** Centelleo de shiny (cruz de píxeles que nace y se apaga). */
   function twinkle(x, y) {
     if (sprites.length >= CAP_SPRITES[q()]) return;
-    sprites.push({ twinkle: true, x, y, vx: 0, vy: -8, t: 0, life: G.U.rand(0.45, 0.7) });
+    sprites.push({ attack:attackScope, twinkle: true, x, y, vx: 0, vy: -8, t: 0, life: G.U.rand(0.45, 0.7) });
   }
 
   /** Partículas de estela de los proyectiles, según el material. */
@@ -84,13 +87,13 @@ G.FX = (() => {
 
   /** Anillo de onda (puntos de píxel). */
   function ring(x, y, r0, r1, color, life = 0.3, width = 3) {
-    rings.push({ x, y, r0, r1, color, life, t: 0, width });
+    rings.push({ attack:attackScope, x, y, r0, r1, color, life, t: 0, width });
   }
 
   /** Golpe cuerpo a cuerpo. fx: { pal, melee } (ver G.VFX.forMove). */
   function slash(x, y, angle, radius, arc, color, fx = {}) {
     const pal = fx.pal || 'normal';
-    slashes.push({ x, y, angle, radius, arc, pal, t: 0, life: 0.22 });
+    slashes.push({ attack:attackScope, x, y, angle, radius, arc, pal, t: 0, life: 0.22 });
     const mx = x + Math.cos(angle) * radius * 0.7, my = y + Math.sin(angle) * radius * 0.7;
     switch (fx.melee) {
       case 'impact': sp('impact', pal, mx, my, { life: 0.2, scale: 1.5, frameRate: 12, fade: false }); break;
@@ -109,7 +112,7 @@ G.FX = (() => {
 
   /** Rayo recto. fx: { pal, beam } — beam = forma que viaja por él o 'lightning'. */
   function beam(x, y, angle, len, width, color, fx = {}) {
-    beams.push({ x, y, angle, len, width, pal: fx.pal || 'normal', shape: fx.beam || null, t: 0, life: 0.2, seed: Math.random() * 100 });
+    beams.push({ attack:attackScope, x, y, angle, len, width, pal: fx.pal || 'normal', shape: fx.beam || null, t: 0, life: 0.2, seed: Math.random() * 100 });
     sp('impact', fx.pal || 'normal', x + Math.cos(angle) * 10, y + Math.sin(angle) * 10, { life: 0.12, scale: 1 });
     sp('impact', fx.pal || 'normal', x + Math.cos(angle) * len, y + Math.sin(angle) * len, { life: 0.18, scale: 1.5 });
   }
@@ -160,7 +163,7 @@ G.FX = (() => {
     ctx.save();
     ctx.translate(snap(b.x), snap(b.y));
     ctx.rotate(a);
-    ctx.globalAlpha = step(k);
+    ctx.globalAlpha = step(k) * attackAlpha(b);
     const seg = PX * 2, now = performance.now() / 1000;
 
     if (b.shape === 'lightning') {
@@ -201,7 +204,7 @@ G.FX = (() => {
     const half = Math.min(s.arc, 6.2832) / 2;
     const r = s.radius * (0.72 + 0.28 * (1 - k));
     const n = Math.max(8, Math.ceil(r * half * 2 / PX));
-    ctx.globalAlpha = step(k);
+    ctx.globalAlpha = step(k) * attackAlpha(s);
     for (let i = 0; i <= n; i++) {
       const u = i / n, a = s.angle - half + u * half * 2;
       const thick = Math.round(Math.sin(Math.PI * u) * 3 * k);      // grosor en píxeles de arte
@@ -219,7 +222,7 @@ G.FX = (() => {
     const rad = G.U.lerp(r.r0, r.r1, k);
     const n = Math.max(10, Math.ceil(rad * 6.2832 / (PX * 2)));
     const size = r.width >= 4 ? PX * 2 : PX;
-    ctx.globalAlpha = step(1 - k);
+    ctx.globalAlpha = step(1 - k) * attackAlpha(r);
     ctx.fillStyle = r.color;
     for (let i = 0; i < n; i++) {
       const a = i / n * 6.2832;
@@ -234,7 +237,7 @@ G.FX = (() => {
     for (const r of rings) drawRing(ctx, r);
 
     for (const p of parts) {
-      ctx.globalAlpha = step(1 - p.t / p.life);
+      ctx.globalAlpha = step(1 - p.t / p.life) * attackAlpha(p);
       ctx.fillStyle = p.color;
       ctx.fillRect(snap(p.x), snap(p.y), p.s, p.s);
     }
@@ -244,7 +247,7 @@ G.FX = (() => {
       const k = 1 - s.t / s.life;
       if (s.twinkle) { G.Icons.twinkle(ctx, s.x, s.y, s.t / s.life, PX); continue; }
       G.VFX.draw(ctx, s.shape, s.pal, s.x, s.y, {
-        angle: s.angle, scale: s.scale, alpha: s.fade ? step(k) : 1,
+        angle: s.angle, scale: s.scale, alpha: (s.fade ? step(k) : 1) * attackAlpha(s),
         frame: Math.floor(s.t * s.fr)
       });
     }
@@ -265,6 +268,6 @@ G.FX = (() => {
     }
   }
 
-  return { clear, px, burst, spark, sp, twinkle, trail, dmgText, ring, slash, beam, update, draw,
+  return { withAttack, clear, px, burst, spark, sp, twinkle, trail, dmgText, ring, slash, beam, update, draw,
            get count() { return parts.length + sprites.length + texts.length; } };
 })();

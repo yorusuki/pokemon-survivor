@@ -611,3 +611,18 @@ G.I18n.add({
 });
 
 G.I18n.add({"Cada banner garantiza una Legendaria en un máximo de {x} tiradas.": "Each banner guarantees a Legendary within {x} pulls."});
+
+G.I18n.add({
+  "Opacidad de ataques aliados": "Allied attack opacity",
+  "Solo cambia los efectos visuales; no reduce el daño ni oculta ataques enemigos.": "Only changes visual effects; damage and enemy attacks remain unchanged.",
+  "Vida del personaje": "Character health display",
+  "Esquina superior": "Top corner",
+  "Debajo del personaje": "Below character",
+  "Mostrar vida numérica": "Show health numbers",
+  "Muestra la vida actual y máxima junto a la barra.": "Show current and maximum health next to the bar.",
+  "Superviviente de 30 minutos": "30-minute survivor",
+  "Cooperativo y opciones visuales": "Co-op and visual options",
+  "Menos datos de combate durante la elección de cartas y confirmaciones de nivel con número de ronda.": "Reduced combat data during card selection and added round numbers to level confirmations.",
+  "Insignia de 30 minutos para cada Pokémon de tu cuenta; los récords antiguos sin Pokémon identificado no se convierten.": "Per-Pokémon 30-minute badge for your account; old records without a Pokémon cannot be converted.",
+  "Ajusta la opacidad de ataques aliados y coloca tu barra de vida debajo del personaje en Ajustes → Gráficos.": "Adjust allied attack opacity and place your health bar below your character in Settings → Graphics."
+});

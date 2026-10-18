@@ -18,6 +18,7 @@ G.NetProtocol = (() => {
   function state(a) { return Array.isArray(a) && a.length >= 13 && a.length <= 15 && a.every((v,i) => i === 7 ? typeof v === 'string' && v.length <= 80 : num(v)); }
   function event(e) {
     if (!Array.isArray(e) || e.length > 16 || !events.has(e[0])) return false;
+    if (['lp','lr'].includes(e[0])) return e.length===2 && Number.isSafeInteger(e[1]) && e[1]>0;
     if (e[0] === 'ov') return obj(e[1]) && Object.entries(e[1]).every(([k,v]) => k === 'why' ? ['host','dead'].includes(v) : ['ki','bo','co','lv','t1','t10','t'].includes(k) && num(v));
     if (['lw','hp'].includes(e[0])) return list(e[1],4,x => typeof x === 'string' && x.length <= 32);
     return true;

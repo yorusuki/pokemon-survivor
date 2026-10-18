@@ -16,9 +16,13 @@
  */
 G.Settings = (() => {
   const KEY = 'ps.settings';
-  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null };
+  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, stickMode: 'float', pad: null, attackOpacity: 1, healthPosition: 'hud', healthNumbers: true };
   let s = Object.assign({}, DEF);
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
+  const opacity = v => typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(1,v)) : 1;
+  s.attackOpacity=opacity(s.attackOpacity);
+  if(!['hud','below'].includes(s.healthPosition)) s.healthPosition='hud';
+  if(typeof s.healthNumbers!=='boolean') s.healthNumbers=true;
   const fns = new Set();
 
   // Calidad automática: empieza alta (media en móvil) y baja si va a tirones.
@@ -28,7 +32,7 @@ G.Settings = (() => {
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* nada */ } }
   function get(k) { return s[k]; }
-  function set(k, v) { s[k] = v; save(); fns.forEach(fn => { try { fn(k, v); } catch (e) { /* nada */ } }); }
+  function set(k, v) { if(k==='attackOpacity') v=opacity(v); if(k==='healthPosition'&&!['hud','below'].includes(v)) return; if(k==='healthNumbers'&&typeof v!=='boolean') return; s[k] = v; save(); fns.forEach(fn => { try { fn(k, v); } catch (e) { /* nada */ } }); }
 
   /** Lo llama el bucle del juego en cada fotograma (sólo durante la partida). */
   function sample(dt) {

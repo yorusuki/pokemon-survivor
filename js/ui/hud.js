@@ -28,6 +28,16 @@ G.HUD = (() => {
   function draw(ctx, w, h, pl, st) {
     ctx.save();
     ctx.textBaseline = 'alphabetic';
+    if(G.Settings.get('healthPosition')==='below') {
+      const cam=G.Camera, x=G.U.clamp((pl.x-cam.left()+cam._sx)*cam.scale,40,w-40);
+      const y=G.U.clamp((pl.y-cam.top()+cam._sy)*cam.scale+12,12,h-28);
+      bar(ctx,x-36,y,72,8,pl.hp/Math.max(1,pl.maxHp),'#ff6b7a');
+      if(G.Settings.get('healthNumbers')) {
+        ctx.font=F(700,11);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=3;
+        const label=Math.ceil(pl.hp)+' / '+Math.round(pl.maxHp);
+        ctx.strokeText(label,x,y+21);ctx.fillText(label,x,y+21);
+      }
+    }
     G.Touch.clearButtons();
     const touch = G.Touch.active;
 
@@ -45,17 +55,20 @@ G.HUD = (() => {
     ctx.font = F(800, 13);
     ctx.fillStyle = '#eaf2ff';
     ctx.textAlign = 'left';
-    ctx.fillText(pl.mon.name, px, py + 10);
+    ctx.fillText(pl.mon.name + (G.DB.survivor(pl.dex) ? ' ✦30′' : ''), px, py + 10);
 
     ctx.font = F(700, 11);
     ctx.fillStyle = '#ffcb3d';
     ctx.fillText('Nv. ' + pl.level, px, py + 26);
 
+    if(G.Settings.get('healthPosition')!=='below') {
     bar(ctx, px + 48, py + 17, 168, 11, pl.hp / pl.maxHp, '#ff5f6d');
     ctx.font = F(700, 10);
     ctx.fillStyle = 'rgba(255,255,255,.95)';
     ctx.textAlign = 'center';
-    ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.round(pl.maxHp), px + 48 + 84, py + 26);
+    if(G.Settings.get('healthNumbers')) ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.round(pl.maxHp), px + 48 + 84, py + 26);
+
+    }
 
     // buffs activos
     const COL = { atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };

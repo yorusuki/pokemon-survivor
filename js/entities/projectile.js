@@ -82,7 +82,7 @@ G.Projectiles = (() => {
       p.px = p.x; p.py = p.y;          // para la colisión barrida (ver combat.js)
       if (p.vis && p.vis.trail && G.Camera.sees(p.x, p.y, 20)) {
         p.trailT = (p.trailT || 0) - dt;
-        if (p.trailT <= 0) { p.trailT = 0.04; G.FX.trail(p.vis.trail, p.vis.pal, p.x, p.y - G.LIFT, p.vx, p.vy); }
+        if (p.trailT <= 0) { p.trailT = 0.04; G.FX.withAttack(()=>G.FX.trail(p.vis.trail, p.vis.pal, p.x, p.y - G.LIFT, p.vx, p.vy),!!p.friendly); }
       }
       p.x += p.vx * dt;
       p.y += p.vy * dt;
@@ -112,8 +112,10 @@ G.Projectiles = (() => {
     // Sombras primero, todas juntas.
     ctx.fillStyle = 'rgba(0,0,0,.25)';
     for (const p of list) {
+      ctx.globalAlpha=p.friendly ? (G.Settings.get('attackOpacity') ?? 1) : 1;
       ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r * 0.9, p.r * 0.38, 0, 0, 6.2832); ctx.fill();
     }
+    ctx.globalAlpha=1;
     // Los disparos enemigos llevan un aro rojo en el suelo: "esto te hace daño".
     ctx.fillStyle = 'rgba(255,60,80,.35)';
     for (const p of list) {
@@ -128,7 +130,7 @@ G.Projectiles = (() => {
       if (G.VFX.isDir(shape)) angle = p.orb ? p.oa + Math.PI / 2 : Math.atan2(p.vy, p.vx);
       else if (G.VFX.spins(shape)) angle = p.t * 9;
       G.VFX.draw(ctx, shape, v.pal, p.x, p.y - L, {
-        angle, alpha: a, scale: p.r >= 8 ? 1.5 : 1,
+        angle, alpha: a * (p.friendly ? (G.Settings.get('attackOpacity') ?? 1) : 1), scale: p.r >= 8 ? 1.5 : 1,
         frame: Math.floor(p.t * 12)
       });
     }

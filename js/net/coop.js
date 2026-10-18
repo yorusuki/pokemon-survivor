@@ -180,7 +180,7 @@ G.Coop = (() => {
     }
     const ev = m.q; m.q = [];
     const f = { k: 'f', t: r2(st.time), lv: st.level, xp: r2(st.xp), xn: st.xpNext, ki: st.kills, bo: st.bosses, co: st.coins, tk: [st.t1, st.t10],
-                p, e: enemyList(m.pl), ev };
+                p, e: waiting.size || holds.size ? [] : enemyList(m.pl), ev };
     const ja = G.Judgment.netState();       // Arceus en la Sentencia
     if (ja) f.ja = ja;
     // Siempre: quién está eligiendo y, si hay cartas de nivel, cuáles (ver arriba).
@@ -205,7 +205,7 @@ G.Coop = (() => {
         if (!m.connected) continue;
         m.flushT -= dt;
         if (m.flushT > 0) continue;
-        m.flushT = rateFor(m.uid);
+        m.flushT = waiting.size || holds.size ? 0.2 : rateFor(m.uid);
         G.Net.send(m.uid, hostFrame(m));
       }
     } else {
@@ -280,7 +280,7 @@ G.Coop = (() => {
           G.World.breakAt(ev[1], ev[2]);
           emit(['pb', ev[1], ev[2]], from);
           break;
-        case 'lp': picked(from); break;
+        case 'lp': if(ev[1]===levelSeq) picked(from); break;
         case 'hs': holdOn(from); break;
         case 'he': holdOff(from); break;
         case 're': G.Rift.enterRequest(); break;
@@ -371,7 +371,7 @@ G.Coop = (() => {
       case 'heal': if (!local.dead) { local.heal(local.maxHp * ev[1]); G.FX.ring(local.x, local.y, 6, 60, '#5fe08a', 0.4, 3); } break;
       case 'lu': if (!ev[2] || ev[2] > seenSeq) { seenSeq = ev[2] || seenSeq; api.levelStart(ev[1]); } break;
       case 'lw': api.waiting(ev[1]); break;
-      case 'lr': api.resume(); break;
+      case 'lr': if(ev[1]>=seenSeq) api.resume(); break;
       case 'hp': lastHo = (ev[1] || []).join('|'); api.hold && api.hold(ev[1]); break;
       case 'ha': hostAway = !!ev[1]; updateAway(); break;
       case 'sh': api.shiny(ev[1]); break;
@@ -450,8 +450,8 @@ G.Coop = (() => {
   /** Alguien ha elegido carta (anfitrión). */
   function picked(u) {
     if (!waiting.delete(u)) return;
-    if (waiting.size) { sendWaiting(); return; }
-    emit(['lr']);
+    if (waiting.size) { sendWaiting(); flushAll(); return; }
+    emit(['lr',levelSeq]);
     flushAll();
     api.resume();
   }
@@ -483,7 +483,7 @@ G.Coop = (() => {
   /** Has elegido tu carta. */
   function localPicked() {
     if (host) picked(me);
-    else { doneSeq = seenSeq; outEv.push(['lp']); flushClient(true); }
+    else { doneSeq = seenSeq; outEv.push(['lp',doneSeq]); flushClient(true); }
   }
 
   /** Anfitrión: se acabó para todos. */

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T14:25:28.585654+00:00",
+  "generatedAt": "2026-10-18T04:08:10.769985+00:00",
   "sources": [
     {
       "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv",
@@ -10068,7 +10068,7 @@
       "url": "https://tw.portal-pokemon.com/pokedex/0001/"
     }
   ],
-  "editorialTextCount": 1538,
+  "editorialTextCount": 1550,
   "missingEditorialTexts": 0,
   "guidePages": 10
 }

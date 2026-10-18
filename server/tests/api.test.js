@@ -205,3 +205,12 @@ test('多人診斷需登入、固定列舉、每分鐘限流',async()=>{
  for(let i=0;i<30;i++)assert.equal((await a('network-events',{event:'connected',reason:'none',route:'direct'})).status,200);
  assert.equal((await a('network-events',{event:'failed',reason:'timeout',route:'unknown'})).status,429);
 });
+
+test('寶可夢生存紀錄通過伺服器邊界驗證，拒絕負數、錯誤 ID 與非整數',async()=>{
+ const a=client(),uid=await register(a,'SurvivalUser');
+ const data={v:3,updatedAt:stamp,save:{name:'SurvivalUser',coins:500,tickets:{t1:0,t10:0},survivalBest:{1:1800}}};
+ assert.equal((await set(a,'saves/'+uid,data)).status,200);
+ for(const invalid of [{1:-1},{1:1800.5},{1026:1800},{'__bad':1800}]) {
+  assert.equal((await set(a,'saves/'+uid,{...data,save:{...data.save,survivalBest:invalid}})).status,403);
+ }
+});

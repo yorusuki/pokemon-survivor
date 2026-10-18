@@ -57,6 +57,7 @@ G.DB = (() => {
       starter: null,          // dex que te tocó en el test
       personality: null,      // { trait, scores }
       upgrades: {},           // (antiguo) mejoras de la cuenta; ahora van por Pokémon
+      survivalBest: {},       // dex -> best survival seconds for this account
       pupg: {},               // dex -> { id -> nivel }: mejoras de cada Pokémon
       tickets: { t1: 0, t10: 0 },   // tickets del gacha (x1 y x10)
       pity: {},               // generación del banner -> tiradas sin ★5
@@ -234,6 +235,8 @@ G.DB = (() => {
       const mine = r.pupg[d] = r.pupg[d] || {};
       for (const k in older.pupg[d]) mine[k] = Math.max(mine[k] || 0, older.pupg[d][k]);
     }
+    r.survivalBest=r.survivalBest||{};
+    for(const [dex,value] of Object.entries(older.survivalBest||{})) if(/^\d{1,4}$/.test(dex) && Number.isFinite(value) && value>=0 && value<=1e9) r.survivalBest[dex]=Math.max(r.survivalBest[dex]||0,value);
     r.pupgDone = r.pupgDone || older.pupgDone;
     // Lo conseguido nunca se pierde: unión de legendarios, arenas, objetos, logros...
     for (const coll of ['legends', 'arenas', 'itemsFound', 'evoMoves', 'ach']) {
@@ -757,6 +760,14 @@ G.DB = (() => {
   function ownsShiny(dex) { return !!(save && save.shiny && save.shiny[dex]); }
 
   /** Mejoras compradas para un Pokémon: { id -> nivel }. */
+  function survivor(dex) { return !!save && Number.isFinite(save.survivalBest?.[dex]) && save.survivalBest[dex]>=1800; }
+  function recordSurvival(dex,seconds) {
+    if(!save || !save.owned[dex] || !Number.isInteger(dex) || !Number.isFinite(seconds) || seconds<0 || seconds>1e9) return false;
+    save.survivalBest=save.survivalBest||{};
+    const previous=save.survivalBest[dex]||0;
+    save.survivalBest[dex]=Math.max(previous,Math.floor(seconds));
+    return previous<1800 && seconds>=1800;
+  }
   function upgradesOf(dex) {
     if (!save) return {};
     save.pupg = save.pupg || {};
@@ -773,7 +784,7 @@ G.DB = (() => {
 
   return {
     ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, flush: () => pushNow(true),
-    owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
+    survivor, recordSurvival, owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
     /** Acceso de bajo nivel para los módulos de red (sólo en modo nube). */

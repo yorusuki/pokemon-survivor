@@ -79,6 +79,11 @@ G.SettingsUI = (() => {
              `<button class="chip ${G.I18n.lang === v ? 'on' : ''}" data-lang="${v}">${l}</button>`).join('')}</div>`
         + section('Calidad', G.I18n.f('Ajusta los efectos y las partículas. En modo automático, la calidad baja si el juego pierde fluidez. Calidad actual: {x}.', G.T(auto)))
         + choice('quality', [['auto', 'Auto'], ['high', 'Alta'], ['mid', 'Media'], ['low', 'Baja']])
+        + section('Opacidad de ataques aliados', 'Solo cambia los efectos visuales; no reduce el daño ni oculta ataques enemigos.')
+        + `<div class="set-row"><input aria-label="${esc(G.T('Opacidad de ataques aliados'))}" type="range" min="0" max="100" step="5" id="set-attack-opacity" value="${Math.round(G.Settings.get('attackOpacity')*100)}"><output id="set-attack-value">${Math.round(G.Settings.get('attackOpacity')*100)}%</output></div>`
+        + section('Vida del personaje')
+        + choice('healthPosition', [['hud','Esquina superior'],['below','Debajo del personaje']])
+        + toggle('healthNumbers','Mostrar vida numérica','Muestra la vida actual y máxima junto a la barra.')
         + section('Pantalla')
         + toggle('dmgNumbers', 'Números de daño', 'Los números que salen al golpear y al recibir daño.')
         + toggle('calm', 'Menos sacudidas y destellos', 'La cámara tiembla menos y los fogonazos son suaves.')
@@ -152,6 +157,8 @@ G.SettingsUI = (() => {
   }
 
   function wire(box) {
+    const opacity=$('set-attack-opacity');
+    if(opacity) opacity.oninput=()=>{ G.Settings.set('attackOpacity',Number(opacity.value)/100); $('set-attack-value').textContent=Math.round(G.Settings.get('attackOpacity')*100)+'%'; };
     box.querySelectorAll('.switch[data-k]').forEach(b => { b.onclick = () => { G.Settings.set(b.dataset.k, !G.Settings.get(b.dataset.k)); render(); }; });
     box.querySelectorAll('.chip[data-k]').forEach(b => {
       b.onclick = () => { const v = b.dataset.v; G.Settings.set(b.dataset.k, isNaN(+v) ? v : +v); render(); };

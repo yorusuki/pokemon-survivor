@@ -414,31 +414,33 @@ G.Combat = (() => {
     for (const f of fields) {
       if (!G.Camera.sees(f.x, f.y, 60)) continue;
       ctx.save();
+      const opacity=G.Settings.get('attackOpacity') ?? 1;
+      ctx.globalAlpha*=opacity;
       if (f.kind === 'patch') {
         const a = Math.min(1, (f.life - f.t) * 2, f.t * 6);
-        ctx.globalAlpha = 0.32 * a;
+        ctx.globalAlpha = (0.32 * a) * opacity;
         ctx.fillStyle = f.col;
         ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r, f.r * 0.62, 0, 0, 6.2832); ctx.fill();
-        ctx.globalAlpha = 0.5 * a;
+        ctx.globalAlpha = (0.5 * a) * opacity;
         ctx.strokeStyle = f.col; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r * 0.8, f.r * 0.5, 0, 0, 6.2832); ctx.stroke();
       } else if (f.kind === 'mine') {
         const armed = f.t >= f.arm, blink = armed && Math.sin(now * 8 + f.x) > 0.3;
-        ctx.globalAlpha = 0.18;
+        ctx.globalAlpha = (0.18) * opacity;
         ctx.fillStyle = f.col;
         ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r * 0.45, f.r * 0.28, 0, 0, 6.2832); ctx.fill();
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha = (1) * opacity;
         G.VFX.draw(ctx, f.vis.proj, f.vis.pal, f.x, f.y - 4, { scale: 1, alpha: blink ? 1 : 0.75, frame: 0 });
       } else if (f.kind === 'meteor') {
         const k = G.U.clamp(f.t / f.fall, 0, 1);
-        ctx.globalAlpha = 0.2 + k * 0.3;
+        ctx.globalAlpha = (0.2 + k * 0.3) * opacity;
         ctx.fillStyle = '#000';
         ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r * (0.3 + k * 0.7), f.r * 0.6 * (0.3 + k * 0.7), 0, 0, 6.2832); ctx.fill();
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = (0.6) * opacity;
         ctx.strokeStyle = f.col; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
         ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r, f.r * 0.6, 0, 0, 6.2832); ctx.stroke();
       } else if (f.kind === 'turret') {
-        ctx.globalAlpha = 0.3;
+        ctx.globalAlpha = (0.3) * opacity;
         ctx.fillStyle = '#000';
         ctx.beginPath(); ctx.ellipse(f.x, f.y, 11, 4.5, 0, 0, 6.2832); ctx.fill();
       }
@@ -448,6 +450,8 @@ G.Combat = (() => {
 
   /** Lo de los campos que va por encima (meteoros cayendo, torretas). */
   function drawAirFields(ctx) {
+    ctx.save();
+    ctx.globalAlpha*=G.Settings.get('attackOpacity') ?? 1;
     const now = performance.now() / 1000;
     for (const f of fields) {
       if (!G.Camera.sees(f.x, f.y, 200)) continue;
@@ -461,6 +465,7 @@ G.Combat = (() => {
         G.VFX.draw(ctx, f.vis.proj, f.vis.pal, f.x, f.y - 16 + bob, { scale: 1.5, alpha: fade, frame: Math.floor(now * 8) });
       }
     }
+    ctx.restore();
   }
 
   function clearFields(owner) { fields = owner ? fields.filter(f => f.owner !== owner) : []; }
@@ -558,13 +563,13 @@ G.Combat = (() => {
       // --- disparos enemigos: paredes y objetos sólidos dan cobertura ---
       if (!p.friendly) {
         if (G.World.projectileBlock(p.x, p.y, p.r)) {
-          G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 70);
+          G.FX.withAttack(()=>G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 70),false);
           projectiles.splice(i, 1);
           continue;
         }
         if (G.U.dist2(p.x, p.y, pl.x, pl.y) < (p.r + pl.r) * (p.r + pl.r)) {
-          pl.hurt(p.dmg, p.mtype);
-          G.FX.burst(p.x, p.y - G.LIFT, p.color, 7, 110);
+          G.FX.withAttack(()=>pl.hurt(p.dmg, p.mtype),false);
+          G.FX.withAttack(()=>G.FX.burst(p.x, p.y - G.LIFT, p.color, 7, 110),false);
           projectiles.splice(i, 1);
         }
         continue;
@@ -663,14 +668,15 @@ G.Combat = (() => {
       if (G.U.dist2(e.x, e.y, pl.x, pl.y) > (e.r + pl.r) * (e.r + pl.r)) continue;
       if (e.touchCd > 0 || e.behavior === 'thief') continue;
       e.touchCd = 0.55;
-      e.strike(pl);
-      pl.hurt(e.dmg, e.atkType);
+      G.FX.withAttack(()=>e.strike(pl),false);
+      G.FX.withAttack(()=>pl.hurt(e.dmg, e.atkType),false);
       if (pl.hasItem('rockyhelmet')) e.hurt(15 + pl.level * 4, '#9aa6b5', e.x - pl.x, e.y - pl.y, 80);
       const [nx, ny] = G.U.norm(e.x - pl.x, e.y - pl.y);
       e.kx += nx * 150; e.ky += ny * 150;
     }
   }
 
-  return { tick, resolve, ghostCast, ghostOrbit, updateFields, drawGroundFields, drawAirFields, clearFields,
+  const attack = fn => (...args) => G.FX.withAttack(()=>fn(...args));
+  return { tick:attack(tick), resolve:attack(resolve), ghostCast:attack(ghostCast), ghostOrbit:attack(ghostOrbit), updateFields:attack(updateFields), drawGroundFields, drawAirFields, clearFields,
            get fieldCount() { return fields.length; } };
 })();

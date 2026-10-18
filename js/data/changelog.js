@@ -6,6 +6,7 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-18', title: ['Cooperativo y opciones visuales','Co-op and visual options'], chg: [["Menos datos de combate durante la elección de cartas y confirmaciones de nivel con número de ronda.", "Reduced combat data during card selection and added round numbers to level confirmations."], ["Insignia de 30 minutos para cada Pokémon de tu cuenta; los récords antiguos sin Pokémon identificado no se convierten.", "Per-Pokémon 30-minute badge for your account; old records without a Pokémon cannot be converted."], ["Ajusta la opacidad de ataques aliados y coloca tu barra de vida debajo del personaje en Ajustes → Gráficos.", "Adjust allied attack opacity and place your health bar below your character in Settings → Graphics."]] },
   { d: '2026-10-17', title: ['Traducción al chino tradicional', 'Traditional Chinese localization'], new: [
     ['Idioma chino tradicional: nombres de Pokémon, movimientos y objetos contrastados con PokéAPI; interfaz y guía traducidas.',
      'Traditional Chinese: Pokémon, move and item names matched against PokéAPI; translated interface and guide.']
