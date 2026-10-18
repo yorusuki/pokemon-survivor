@@ -12,7 +12,17 @@ G.RunUI = (() => {
     $('cards').classList.remove('done');
     renderCards(list);
     $('lvl-reroll').onclick = reroll;
+    updateBonusSummary(true);
     G.UI.show('scr-levelup');
+  }
+
+  function updateBonusSummary(reset) {
+    let box=$('level-bonus-summary');
+    if(!box){box=document.createElement('details');box.id='level-bonus-summary';box.className='level-bonus-summary';box.appendChild(document.createElement('summary'));box.appendChild(document.createElement('div'));$('cards').parentElement.appendChild(box);}
+    const rows=G.Bonuses.rows(G.Game.player);
+    box.hidden=!rows.length;if(reset)box.open=false;
+    box.firstElementChild.textContent=G.T('Bonificaciones actuales')+' ('+rows.length+')';
+    box.lastElementChild.textContent=rows.map(r=>r.label+': '+r.value).join(' · ');
   }
 
   /**
@@ -53,6 +63,9 @@ G.RunUI = (() => {
         `<div class="ico" style="background:${c.color}33">${G.Icons.html(c.icon, 32)}</div>
          <div class="txt"><div class="nm">${c.title} ${tag}</div><div class="ds">${c.desc}</div></div>
          <div class="key">${i + 1}</div>`;
+      const preview=G.Bonuses.cardSummary(c,G.Game.player);
+      if(c.type==='stat'&&preview)el.querySelector('.ds').textContent=preview;
+      else if(preview){const current=document.createElement('small');current.className='card-current';current.textContent=preview;el.querySelector('.txt').appendChild(current);}
       el.dataset.sfx = 'none';             // el juego pone su propio sonido al elegir
       el.onclick = () => pick(i);
       box.appendChild(el);
@@ -70,6 +83,7 @@ G.RunUI = (() => {
       $('cards').classList.add('done');
     } else G.UI.hide('scr-levelup');
     cb(c);
+    updateBonusSummary(false);
   }
 
   /** Cooperativo: quién falta por elegir. */

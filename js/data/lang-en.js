@@ -633,3 +633,46 @@ G.I18n.add({
   "La curación y los escudos comparten un presupuesto por enemigo para evitar combates sin progreso.": "Healing and shields share a per-enemy recovery budget to prevent fights from losing all progress.",
   "Los primeros dos minutos no aparecen sanadores ni protectores; su curación no se acumula sobre el mismo objetivo.": "Healers and shielders do not spawn in the first two minutes; healing does not stack on the same target."
 });
+
+G.I18n.add({
+  "Fuente de la interfaz": "Interface font",
+  "Suave": "Smooth",
+  "Cubic 11 · Píxel": "Cubic 11 · Pixel",
+  "Panel de bonificaciones": "Bonus panel",
+  "Abajo a la izquierda": "Bottom left",
+  "Abajo a la derecha": "Bottom right",
+  "No mostrar": "Hide",
+  "Favoritos": "Favorites",
+  "Favorito": "Favorite",
+  "Añadir a favoritos": "Add to favorites",
+  "Quitar de favoritos": "Remove favorite",
+  "Añadido a favoritos": "Added to favorites",
+  "Eliminado de favoritos": "Removed from favorites",
+  "Puedes guardar hasta 100 favoritos.": "You can save up to 100 favorites.",
+  "Pokémon no válido.": "Invalid Pokémon.",
+  "Bonificaciones actuales": "Current bonuses",
+  "Vida máxima": "Maximum HP",
+  "Recarga general": "General cooldown",
+  "Reducción de daño": "Damage reduction",
+  "Regeneración fija": "Fixed regeneration",
+  "Probabilidad crítica": "Critical chance",
+  "Experiencia personal": "Personal XP bonus",
+  "Radio de recogida": "Pickup radius",
+  "Cambios restantes": "Rerolls remaining",
+  "Movimientos vetados": "Excluded moves",
+  "Actualmente": "Currently",
+  "Elegidas": "Times selected",
+  "Nivel actual": "Current level",
+  "Daño de la técnica": "Move damage",
+  "Recarga base": "Base cooldown",
+  "Sin aprender": "Not learned",
+  "Objeto equipado": "Held item",
+  "Poder temporal": "Temporary power",
+  "Tipos, clima de daño, órbitas y daño puro se calculan aparte.": "Type matchups, weather damage, orbit cooldowns and pure damage use separate rules.",
+  "Favoritos, fuente y bonificaciones": "Favorites, font and bonuses",
+  "Marca hasta 100 Pokémon como favoritos con dos pulsaciones rápidas; filtra tu colección con el corazón.": "Double-tap to favorite up to 100 Pokémon; use the heart filter to browse them.",
+  "Elige Cubic 11 en Ajustes y consulta tus bonificaciones durante la partida y al elegir cartas.": "Choose Cubic 11 in Settings and inspect your bonuses during runs and card selection.",
+  "La barra de vida bajo el personaje se ha bajado un poco para evitar las animaciones de ataque.": "The health bar below your character has been moved down slightly to clear attack animations."
+});
+
+G.I18n.add({'Ninguno':'None'});

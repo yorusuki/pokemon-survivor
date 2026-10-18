@@ -30,7 +30,7 @@ G.HUD = (() => {
     ctx.textBaseline = 'alphabetic';
     if(G.Settings.get('healthPosition')==='below') {
       const cam=G.Camera, x=G.U.clamp((pl.x-cam.left()+cam._sx)*cam.scale,40,w-40);
-      const y=G.U.clamp((pl.y-cam.top()+cam._sy)*cam.scale+12,12,h-28);
+      const y=G.U.clamp((pl.y-cam.top()+cam._sy)*cam.scale+24,24,h-28);
       bar(ctx,x-36,y,72,8,pl.hp/Math.max(1,pl.maxHp),'#ff6b7a');
       if(G.Settings.get('healthNumbers')) {
         ctx.font=F(700,11);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=3;

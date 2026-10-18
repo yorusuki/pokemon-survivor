@@ -102,6 +102,12 @@ G.MenuUI = (() => {
 
   // ---------------- colección ----------------
 
+  let dexFavorites=false, lastFavoriteDex=null, lastFavoriteAt=0;
+  function toggleFavorite(dex) {
+    const result=G.DB.toggleFavorite(dex);
+    G.UI.toast(G.T(result.ok ? (result.on?'Añadido a favoritos':'Eliminado de favoritos') : result.error));
+    if(result.ok) {lastFavoriteDex=null;openDex();}
+  }
   function openDex() {
     G.UI.show('scr-dex', true);
     const s = G.DB.save;
@@ -112,14 +118,18 @@ G.MenuUI = (() => {
     // Pestañas de generación, con cuántos tienes de cada una.
     const tabs = $('dex-gens');
     tabs.innerHTML = '';
+    const favorites=document.createElement('button');
+    favorites.className='gen-tab favorites-tab'+(dexFavorites?' on':'');
+    favorites.innerHTML='<b>'+G.U.escapeHTML(G.T('Favoritos'))+'</b><small>'+G.DB.favoriteCount()+'/100</small>';
+    favorites.onclick=()=>{dexFavorites=true;dexFilter='all';openDex();};tabs.appendChild(favorites);
     GEN_NAMES.forEach((name, i) => {
       const g = i + 1;
       const total = G.DEX.filter(p => p.gen === g).length;
       const have = G.DEX.filter(p => p.gen === g && s.owned[p.dex]).length;
       const b = document.createElement('button');
-      b.className = 'gen-tab' + (g === dexGen ? ' on' : '');
+      b.className = 'gen-tab' + (!dexFavorites && g === dexGen ? ' on' : '');
       b.innerHTML = `<b>${name}</b><small>${have}/${total}</small>`;
-      b.onclick = () => { dexGen = g; openDex(); };
+      b.onclick = () => { dexFavorites=false;dexGen = g; openDex(); };
       tabs.appendChild(b);
     });
 
@@ -144,7 +154,7 @@ G.MenuUI = (() => {
     const grid = $('dex-grid');
     grid.innerHTML = '';
     for (const p of G.DEX) {
-      if (p.gen !== dexGen) continue;
+      if(dexFavorites ? !G.DB.isFavorite(p.dex) : p.gen!==dexGen) continue;
       const own = !!s.owned[p.dex], sh = !!(s.shiny && s.shiny[p.dex]);
       if (dexFilter === 'own' && !own) continue;
       if (dexFilter === 'miss' && own) continue;
@@ -153,6 +163,7 @@ G.MenuUI = (() => {
 
       const cell = document.createElement('div');
       cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
+      if(G.DB.isFavorite(p.dex)) cell.insertAdjacentHTML('beforeend', `<span class="favorite-heart" aria-label="${G.U.escapeHTML(G.T('Favorito'))}">♥</span>`);
       cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}</span>`);
       if (p.dex === s.partner) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Compañero">${G.Icons.html('crown', 14)}</span>`);
       else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
@@ -164,6 +175,9 @@ G.MenuUI = (() => {
         grid.querySelectorAll('.cell').forEach(c => c.classList.remove('on'));
         cell.classList.add('on');
         showDetail(p.dex);
+        const now=performance.now();
+        if(lastFavoriteDex===p.dex && now-lastFavoriteAt<350) toggleFavorite(p.dex);
+        else {lastFavoriteDex=p.dex;lastFavoriteAt=now;}
       };
       grid.appendChild(cell);
     }
@@ -219,6 +233,9 @@ G.MenuUI = (() => {
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });
+    const favoriteButton=document.createElement('button');favoriteButton.className='btn small favorite-action';
+    favoriteButton.textContent=G.T(G.DB.isFavorite(dex)?'Quitar de favoritos':'Añadir a favoritos');
+    favoriteButton.onclick=()=>toggleFavorite(dex);box.appendChild(favoriteButton);
     const pick = $('dex-pick');
     if (pick) pick.onclick = () => {
       s.partner = dex;

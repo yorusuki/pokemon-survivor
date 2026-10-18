@@ -140,3 +140,7 @@ licencia en `assets/fonts/OFL.txt`). El juego usa una versión modificada,
 
 Pokémon es propiedad de Nintendo, Creatures Inc. y GAME FREAK.
 Este es un proyecto de fan sin ánimo de lucro.
+
+## Cubic 11
+
+Cubic 11／俐方體11號：ACh-K/Cubic-11，Cubic_11.woff2；授權及上游聲明見 [Cubic11-OFL.txt](assets/fonts/Cubic11-OFL.txt)。上游：https://github.com/ACh-K/Cubic-11 。字型未修改，與 Pixelify Sans 並列為可選字型。

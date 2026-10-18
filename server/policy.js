@@ -26,6 +26,7 @@ async function authorize(db, path, before, after, uid) {
       ok = own && (d === null || (keys(d, ['save', 'updatedAt', 'v', 'ban', 'sus']) && object(d.save) && Number.isInteger(d.v)
         && (d.save.name === undefined || (typeof d.save.name === 'string' && /^[\p{L}\p{N}_]{3,16}$/u.test(d.save.name)))
         && (d.save.stats === undefined || (object(d.save.stats) && Object.values(d.save.stats).every(Number.isFinite)))
+        && (d.save.favorites===undefined || (object(d.save.favorites) && Object.keys(d.save.favorites).length<=1025 && Object.entries(d.save.favorites).every(([dex,e])=>/^[1-9][0-9]{0,3}$/.test(dex) && Number(dex)<=1025 && object(e) && keys(e,['on','at']) && typeof e.on==='boolean' && Number.isSafeInteger(e.at) && e.at>=0 && e.at<=1e15) && Object.values(d.save.favorites).filter(e=>e.on).length<=100))
         && (d.save.survivalBest===undefined || (object(d.save.survivalBest) && Object.keys(d.save.survivalBest).length<=1025 && Object.entries(d.save.survivalBest).every(([dex,t])=>/^[1-9][0-9]{0,3}$/.test(dex) && Number(dex)<=1025 && Number.isInteger(t) && t>=0 && t<=1e9)))
         && num(d.save.coins) && num(d.save.tickets?.t1 ?? 0) && num(d.save.tickets?.t10 ?? 0)
         && !!d.ban === !!before?.ban));

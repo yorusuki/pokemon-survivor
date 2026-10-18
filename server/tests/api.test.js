@@ -214,3 +214,13 @@ test('寶可夢生存紀錄通過伺服器邊界驗證，拒絕負數、錯誤 I
   assert.equal((await set(a,'saves/'+uid,{...data,save:{...data.save,survivalBest:invalid}})).status,403);
  }
 });
+
+test('最愛存檔伺服器拒絕超過 100 與不合法欄位，取消標記可保留',async()=>{
+ const a=client(),uid=await register(a,'FavoriteUser');
+ const data={v:3,updatedAt:stamp,save:{name:'FavoriteUser',coins:500,tickets:{t1:0,t10:0},favorites:{1:{on:true,at:1},2:{on:false,at:2}}}};
+ assert.equal((await set(a,'saves/'+uid,data)).status,200);
+ const tooMany=Object.fromEntries(Array.from({length:101},(_,i)=>[i+1,{on:true,at:1}]));
+ for(const favorites of [tooMany,{0:{on:true,at:1}},{1:{on:'yes',at:1}},{1:{on:true,at:-1}},{1:{on:true,at:1,extra:true}}]) {
+  assert.equal((await set(a,'saves/'+uid,{...data,save:{...data.save,favorites}})).status,403);
+ }
+});

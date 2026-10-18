@@ -604,6 +604,7 @@ G.Game = (() => {
     if (G.Coop.active && pl && state !== 'ui' && state !== 'over') G.Coop.tick(dt);
 
     if (pl && state !== 'ui') render(); else Backdrop.render(ctx, w, h, dpr, dt);
+    G.Bonuses.update(pl,state==='playing'||state==='held');
     G.UI.tick(dt);
 
     G.Input.endFrame();

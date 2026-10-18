@@ -77,6 +77,10 @@ G.SettingsUI = (() => {
       box.innerHTML = section('Idioma', 'El juego se recarga al cambiarlo.')
         + `<div class="chips set-chips" translate="no">${[['es', 'Español'], ['en', 'English'], ['zh-TW', '繁體中文']].map(([v, l]) =>
              `<button class="chip ${G.I18n.lang === v ? 'on' : ''}" data-lang="${v}">${l}</button>`).join('')}</div>`
+        + section('Fuente de la interfaz')
+        + choice('fontStyle', [['smooth','Suave'],['pixel','Cubic 11 · Píxel']])
+        + section('Panel de bonificaciones')
+        + choice('bonusPosition', [['left','Abajo a la izquierda'],['right','Abajo a la derecha'],['hidden','No mostrar']])
         + section('Calidad', G.I18n.f('Ajusta los efectos y las partículas. En modo automático, la calidad baja si el juego pierde fluidez. Calidad actual: {x}.', G.T(auto)))
         + choice('quality', [['auto', 'Auto'], ['high', 'Alta'], ['mid', 'Media'], ['low', 'Baja']])
         + section('Opacidad de ataques aliados', 'Solo cambia los efectos visuales; no reduce el daño ni oculta ataques enemigos.')
@@ -116,7 +120,7 @@ G.SettingsUI = (() => {
              <li><b>Sprites:</b> PMD SpriteCollab y sus artistas (CC BY-NC 4.0).</li>
              <li><b>Datos de los Pokémon:</b> PokéAPI.</li>
              <li><b>Música y sonidos:</b> originales, generados por el propio juego.</li>
-             <li><b>Fuente:</b> Pixelify Sans (OFL).</li>
+             <li><b>Fuente:</b> Pixelify Sans / Cubic 11 (OFL).</li>
            </ul>`
         + `<div class="row wrap" style="justify-content:center;gap:8px">
              ${window.PS_PAGES ? `<a class="btn small" href="${G.I18n.lang === 'zh-TW' ? 'zh-TW/guide/' : G.I18n.lang === 'en' ? 'en/guide/' : 'guia/'}" target="_blank">Guía y preguntas</a>
