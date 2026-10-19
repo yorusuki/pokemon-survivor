@@ -69,3 +69,5 @@ node tools/security-headers.js
 新增字型 [Cubic 11／俐方體11號](https://github.com/ACh-K/Cubic-11) 由 ACh-K 維護，採 SIL Open Font License 1.1，隨附 [完整字型授權](assets/fonts/Cubic11-OFL.txt)。Pixelify Sans 的原有授權與署名亦保留。字型授權不取代程式、其他素材或商標的授權條件。
 
 Pokémon 及相關角色與名稱屬原權利人所有；本專案不代表 Nintendo、Creatures、GAME FREAK 或 The Pokémon Company。
+
+原作最新待決策內容：[新增差異審查（803125d）](docs/UPSTREAM_REVIEW_2026-10-19_803125d.md)。僅比較，尚未整合。

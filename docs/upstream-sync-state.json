@@ -3,8 +3,8 @@
   "repository": "JPTER78/pokesurvivor",
   "initialBaseline": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
   "reviewedThrough": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
-  "lastInspected": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
-  "decisionStatus": "reviewed_selectively_integrated",
+  "lastInspected": "803125dfdf3066fe6cf65f490f1e7b577871a295",
+  "decisionStatus": "awaiting_selection",
   "note": "玩法依e4ba0e1，保留生命寶珠、最愛及自架架構；所有項目已決策，reviewedThrough不代表全量merge。",
   "items": {
     "G01": "implemented",
@@ -29,5 +29,21 @@
   "excluded": [
     "Firebase services and write throttling",
     "Leaderboard reset"
-  ]
+  ],
+  "pendingReview": {
+    "base": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
+    "head": "803125dfdf3066fe6cf65f490f1e7b577871a295",
+    "report": "UPSTREAM_REVIEW_2026-10-19_803125d.md",
+    "items": {
+      "N01": "pending",
+      "N02": "pending",
+      "N03": "pending",
+      "N04": "pending",
+      "N05": "pending",
+      "N06": "pending",
+      "N07": "pending",
+      "N08": "pending",
+      "N09": "pending"
+    }
+  }
 }
