@@ -1,78 +1,31 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const root=path.join(__dirname,'../..');
+const read=p=>fs.readFileSync(path.join(__dirname,'../..',p),'utf8');
 function fixture(){
- const G={Game:{st:{time:0},everyone:()=>[{level:1}]},U:{dist2:(x,y,a,b)=>(x-a)**2+(y-b)**2},World:{isWall:()=>false},FX:{burst(){},ring(){},dmgText(){}},Coop:{isHost:false},Camera:{sees:()=>false},Audio:{sfx(){}},Judgment:{noteDmg(){}}};
- const c={G,console};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(root,'js/entities/enemy.js'),'utf8'),c);
- const make=(extra={})=>Object.assign(Object.create(G.Enemy.prototype),{id:1,x:0,y:0,hp:1000,maxHp:1000,shield:0,bodyH:20,behavior:'chase',anim:{play(){}},showHurt(){},die(){this.dead=true;}},extra);
- return {G,make};
+ const G={Game:{st:{time:0},everyone:()=>[{atk:1,baseAtk:1}]},U:{dist2:(x,y,a,b)=>(x-a)**2+(y-b)**2,clamp:(v,a,b)=>Math.max(a,Math.min(b,v))},World:{isWall:()=>false},FX:{burst(){},ring(){},dmgText(){}},Coop:{isHost:false,hit(){}},Camera:{sees:()=>false},Audio:{sfx(){}},Judgment:{noteDmg(){}}};
+ const c={G,console};vm.createContext(c);vm.runInContext(read('js/entities/enemy.js'),c);
+ const make=(extra={})=>Object.assign(Object.create(G.Enemy.prototype),{id:1,x:0,y:0,r:10,hp:1000,maxHp:1000,shield:0,shieldT:0,rd:0,bodyH:20,behavior:'chase',bob:0,anim:{play(){},update(){}},showHurt(){},die(){this.dead=true;}},extra);return {G,make};
 }
-test('護盾先吸收傷害；遠端不能自行補盾',()=>{
- const {make,G}=fixture(),a=make({hp:50,shield:10});a.hurt(1000);assert.equal(a.dead,true);
- const b=make({shield:100});b.hurt(20);assert.equal(b.shield,80);assert.equal(b.hp,1000);
- G.Coop.hit=()=>{};const c=make({remote:true});c.hurt(20);assert.equal(c.receiveSupport('shield',1),0);
+test('原作一般治療7～17.5%依攻擊倍率成長，允許自療及跨來源重複治療',()=>{
+ for(const [power,rate] of [[1,.07],[2,.07*2**.35],[100,.175]]){const {G,make}=fixture(),a=make({hp:100}),h=make({hp:100,behavior:'healer'});G.Game.everyone=()=>[{atk:power,baseAtk:1}];G.EnemyMgr={queryCircle:()=>[a,h]};h.healAround();assert.ok(Math.abs(a.hp-(100+1000*rate))<1e-8);assert.ok(h.hp>100);make().healAround();assert.ok(a.hp>100+1000*rate);}
 });
-test('玩家等級決定每次 5～12%，不依攻擊，合作取存活最高等級',()=>{
- for(const [players,expected] of [[[{level:1,atk:999}],50],[[{level:50.5}],85],[[{level:100}],120],[[{level:999}],120],[[{level:1},{level:100,dead:true}],50]]) {
-  const {G,make}=fixture(),a=make({hp:500}),h=make({behavior:'healer'});G.Game.everyone=()=>players;G.EnemyMgr.queryCircle=()=>[a];h.healAround();assert.ok(Math.abs(a.hp-500-expected)<1e-8);
- }
+test('頭目回血按近期DPS×0.4封頂，普通敵人仍按百分比；不回血已死亡／滿血目標',()=>{
+ const {G,make}=fixture(),h=make(),boss=make({hp:100,maxHp:100000,boss:true,rd:6000}),normal=make({hp:100,maxHp:100000}),dead=make({hp:100,dead:true});G.EnemyMgr={queryCircle:()=>[boss,normal,dead]};h.healAround();assert.equal(boss.hp,500);assert.ok(Math.abs(normal.hp-7100)<1e-8);assert.equal(dead.hp,100);boss.rd=0;h.healAround();assert.equal(boss.hp,500);
 });
-test('同一目標來自不同治療者，開局 2 秒內最多一次',()=>{
- const {G,make}=fixture(),a=make({hp:500}),h1=make({behavior:'healer'}),h2=make({behavior:'healer'});G.EnemyMgr.queryCircle=()=>[a];
- h1.healAround();assert.equal(a.hp,550);h2.healAround();assert.equal(a.hp,550);G.Game.st.time=1.999;h2.healAround();assert.equal(a.hp,550);G.Game.st.time=2;h2.healAround();assert.equal(a.hp,600);
+test('原作普通護盾35%、可自盾；最近六個目標，頭目護盾DPS×1.2且共享6秒補盾間隔',()=>{
+ const {G,make}=fixture(),h=make(),boss=make({id:2,boss:true,maxHp:100000,rd:6000}),other=make({id:3});const targets=[h,boss,other,...Array.from({length:6},(_,i)=>make({id:i+4,x:10+i}))];G.EnemyMgr={queryCircle:()=>targets};h.castShields();assert.equal(h.shield,350);assert.equal(boss.shield,1200);assert.equal(targets.filter(e=>e.shield>0).length,6);
+ boss.shield=0;boss.shieldT=2.01;h.castShields();assert.equal(boss.shield,0);boss.shieldT=2;h.castShields();assert.equal(boss.shield,1200);
 });
-
-test('受療間隔隨場次 0～30 分鐘由 2 增至 8 秒，鎖定上次成功受療時的間隔',()=>{
- for(const [start,interval] of [[0,2],[60,2.2],[300,3],[900,5],[1800,8],[3600,8]]) {
-  const {make}=fixture(),a=make({hp:100});
-  assert.equal(a.receiveSupport('heal',start,.05),50);
-  assert.equal(a.receiveSupport('heal',start+interval-.001,.12),0);
-  assert.equal(a.receiveSupport('heal',start+interval,.05),50);
-  assert.equal(a.receiveSupport('heal',start+interval,.05),0);
- }
+test('打到護盾仍計入頭目近期傷害，完整吸收時不減生命；遠端命中轉送主機',()=>{
+ const {G,make}=fixture(),e=make({boss:true,shield:100});e.hurt(20);assert.equal(e.shield,80);assert.equal(e.hp,1000);assert.equal(e.rd,20);let hit=0;G.Coop.hit=()=>hit++;const remote=make({remote:true,boss:true});remote.hurt(20);assert.equal(hit,1);assert.equal(remote.rd,0);
 });
-
-test('滿血、死亡、遠端及異常時間不消耗受療間隔，暫停不推進冷卻',()=>{
- const {make}=fixture(),a=make();
- assert.equal(a.receiveSupport('heal',900,.05),0);a.hp=500;
- for(const now of [NaN,Infinity,-Infinity])assert.equal(a.receiveSupport('heal',now,.05),0);
- assert.equal(a.receiveSupport('heal',900,.05),50);
- for(let i=0;i<10;i++)assert.equal(a.receiveSupport('heal',900,.05),0);
- assert.equal(a.receiveSupport('heal',904.999,.05),0);assert.equal(a.receiveSupport('heal',905,.05),50);
- for(const state of [{dead:true},{remote:true}])assert.equal(make({...state,hp:500}).receiveSupport('heal',900,.05),0);
+test('生成上限：單人與四人均治療、護盾、召喚者各三隻，沒有額外開場60秒排除',()=>{
+ for(const n of [1,4]){const all=[],bag=['healer','shielder','summoner','chase'].map((behavior,i)=>({dex:i+1,behavior}));const G={U:{pick:a=>a[0],rand:a=>a,dist2:(x,y,a,b)=>(x-a)**2+(y-b)**2},Camera:{outerRadius:()=>100},World:{isFree:()=>true},Sprites:{hovers:()=>false,hasShiny:()=>false,preload(){}},Enemies:{bagAt:()=>bag,scale:()=>({hp:1}),upcomingDex:()=>[],BOSSES:[]},Coop:{scaleRate:()=>1,scaleHp:()=>1},Rift:{inArena:false},Judgment:{active:false},Events:{golden:false},Audio:{sfx(){}},EnemyMgr:{all:()=>all,get count(){return all.length;},bossAlive:()=>false,add:e=>all.push(e)},Enemy:class{constructor(def){Object.assign(this,def,{maxHp:100,hp:100,dmg:1,xp:1});}}};vm.runInNewContext(read('js/systems/spawner.js'),{G});G.Spawner.update(100,Array.from({length:n},()=>({x:0,y:0})),0);for(const kind of ['healer','shielder','summoner'])assert.equal(all.filter(e=>e.behavior===kind).length,3);}
 });
-test('不自療但能互補，原範圍內不限人數、隔牆與特殊敵人可補',()=>{
- const {G,make}=fixture(),h=make({behavior:'healer',hp:500}),other=make({behavior:'healer',hp:500}),targets=Array.from({length:20},()=>make({hp:500})),special=['boss','legend','judge'].map(k=>make({[k]:true,hp:500}));
- G.World.isWall=()=>true;let radius;G.EnemyMgr.queryCircle=(x,y,r)=>{radius=r;return [h,other,...targets,...special];};h.healAround();assert.equal(radius,150);assert.equal(h.hp,500);assert.equal(other.hp,550);assert.ok([...targets,...special].every(e=>e.hp===550));
+test('中毒有效血量：六萬以下不變、24萬為12萬、600萬為60萬',()=>{
+ const source=read('js/entities/enemy.js');const formula=source.match(/const PCT_REF = [\s\S]*?const pctHp = [^;]+;/)[0];const calc=vm.runInNewContext('(()=>{'+formula+'return hp=>pctHp({maxHp:hp});})()');for(const [hp,value] of [[1000,1000],[60000,60000],[240000,120000],[6000000,600000]])assert.equal(calc(hp),value);
 });
-test('遠端與死亡副本不能回復；滿血受療不消耗間隔',()=>{
- const {make}=fixture();assert.equal(make({remote:true,hp:1}).receiveSupport('heal',0),0);assert.equal(make({dead:true,hp:1}).receiveSupport('heal',0),0);
- const a=make();assert.equal(a.receiveSupport('heal',0),0);a.hp=900;assert.equal(a.receiveSupport('heal',0),50);
-});
-test('護盾等級 10～40%，跨來源 2.5 秒限制且總盾不超過當前比例',()=>{
- const {make}=fixture(),a=make();assert.equal(a.receiveSupport('shield',0,.4),400);a.hurt(100);assert.equal(a.receiveSupport('shield',2.499,.4),0);assert.equal(a.receiveSupport('shield',2.5,.4),100);assert.equal(a.shield,400);assert.equal(a.receiveSupport('shield',5,.4),0);assert.equal(a.receiveSupport('shield',5,.1),0);assert.equal(a.shield,400);
- a.shield=0;assert.equal(a.receiveSupport('shield',5,.1),100);assert.equal(a.shield,100);assert.equal(a.shieldT,8);
-});
-test('護盾不能自施，可穿牆與補特殊敵人，單次保留最多六個目標',()=>{
- for(const [level,shield] of [[1,100],[100,400]]) {
- const {G,make}=fixture(),h=make({behavior:'shielder'}),targets=['boss','legend','judge'].map((k,i)=>make({id:i+2,[k]:true}));for(let i=0;i<7;i++)targets.push(make({id:i+5}));
- G.Game.everyone=()=>[{level}];G.World.isWall=()=>true;G.EnemyMgr.queryCircle=()=>[h,...targets];h.castShields();assert.equal(h.shield,0);assert.equal(targets.filter(e=>e.shield>0).length,6);assert.ok(targets.slice(0,3).every(e=>Math.abs(e.shield-shield)<1e-8));
- }
-});
-test('無回復總額限制時，低輸出確實可能被持續治療抵銷',()=>{
- const {make}=fixture(),a=make({hp:500});for(let t=0;t<100;t++){a.hurt(1);a.receiveSupport('heal',t,.12);}assert.equal(a.dead,undefined);assert.ok(a.hp>900);
-});
-test('生成器：前 60 秒排除支援，治療與護盾單人合作各上限 25',()=>{
- for(const [n,time,expected] of [[1,59,0],[1,60,25],[4,60,25]]){
-  const all=[],bag=[{dex:1,behavior:'healer'},{dex:2,behavior:'shielder'},{dex:3,behavior:'chase'}];
-  const G={U:{pick:a=>a[0],rand:a=>a,dist2:(x,y,a,b)=>(x-a)**2+(y-b)**2},Camera:{outerRadius:()=>100},World:{isFree:()=>true},Sprites:{hovers:()=>false,hasShiny:()=>false,preload(){}},Enemies:{bagAt:()=>bag,scale:()=>({hp:1}),upcomingDex:()=>[],BOSSES:[]},Coop:{scaleRate:()=>1,scaleHp:()=>1},Rift:{inArena:false},Judgment:{active:false},Events:{golden:false},Audio:{sfx(){}},EnemyMgr:{all:()=>all,get count(){return all.length;},bossAlive:()=>false,add:e=>all.push(e)},Enemy:class{constructor(def){Object.assign(this,def,{maxHp:100,hp:100,dmg:1,xp:1});}}};
-  const c={G,console};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(root,'js/systems/spawner.js'),'utf8'),c);
-  G.Spawner.update(100,Array.from({length:n},()=>({x:0,y:0})),time);
-  assert.equal(all.filter(e=>e.behavior==='healer').length,expected);assert.equal(all.filter(e=>e.behavior==='shielder').length,expected);if(!expected)assert.ok(all.every(e=>e.behavior==='chase'));
- }
-});
-
-test('原始治療半徑包含目標體積，150+r 邊界仍可受療',()=>{
- const {G,make}=fixture(),h=make({id:1,behavior:'healer',hp:500,r:10}),inside=make({id:2,x:160,r:10,hp:500}),outside=make({id:3,x:160.01,r:10,hp:500});
- for(const e of [h,inside,outside])G.EnemyMgr.add(e);G.EnemyMgr.rebuildGrid();h.healAround();assert.equal(h.hp,500);assert.equal(inside.hp,550);assert.equal(outside.hp,500);
+test('制裁速度軟上限與37→40分鐘觸碰成長；35分鐘以前不額外加速',()=>{
+ const G={};vm.runInNewContext(read('js/systems/judgment.js'),{G});for(const [speed,value] of [[100,100],[130,130],[170,140],[250,160],[290,170]])assert.equal(G.Judgment.capSpd(speed),value);
+ const source=read('js/systems/judgment.js'),fn=source.match(/const touchPct = [^;]+;/)[0],calc=vm.runInNewContext('(()=>{const TOUCH=.4;let arenaT=0;'+fn+'return t=>{arenaT=t;return touchPct();};})()');for(const [time,rate] of [[0,.4],[420,.4],[480,.6],[540,.8],[600,1],[900,1]])assert.ok(Math.abs(calc(time)-rate)<1e-9);
 });

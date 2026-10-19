@@ -781,3 +781,47 @@ G.I18n.add({
 });
 
 G.I18n.add({"Daño":"Damage"});
+
+G.I18n.add({
+  "No hace daño: acumula ATAQUE (físico) más rápido que Danza Espada.": "Deals no damage: builds (physical) ATTACK faster than Swords Dance.",
+  "No hace daño: acumula ATAQUE (físico) mientras esté activo.": "Deals no damage: builds (physical) ATTACK while active.",
+  "No hace daño: acumula ATAQUE ESPECIAL mientras esté activo.": "Deals no damage: builds SPECIAL ATTACK while active.",
+  "Maquinación": "Nasty Plot",
+  "desplazar las listas": "scroll lists",
+  "Buscar por nombre o número": "Search by name or number",
+  "Limpiar": "Clear",
+  "Todas": "All",
+  "Orden:": "Sort:",
+  "Nº": "No.",
+  "Rareza": "Rarity",
+  "Recién conseguidos": "Recently caught",
+  "Más usados": "Most played",
+  "Todos los tipos": "All types",
+  "Ninguno con estos filtros.": "None with these filters.",
+  "{x} Pokémon": "{x} Pokémon",
+  "1 Pokémon": "1 Pokémon",
+  "Físico": "Physical",
+  "Especial": "Special",
+  "At. Esp.": "Sp. Atk",
+  "Defensa": "Defense",
+  "Def. Esp.": "Sp. Def",
+  "Pega mejor con ataques": "Hits harder with",
+  "especiales": "special moves",
+  "físicos": "physical moves",
+  "Con {x} rinde un {x} %: pega mejor con ataques especiales.": "With {x} it deals {x} %: it hits harder with special moves.",
+  "Con {x} rinde un {x} %: pega mejor con ataques físicos.": "With {x} it deals {x} %: it hits harder with physical moves.",
+  "Crítico": "Critical",
+  "Recarga": "Cooldown",
+  "Regeneración": "Regeneration",
+  "{x} físico": "{x} physical",
+  "{x} especial": "{x} special",
+  "Ataque físico": "Physical attack",
+  "Ataque especial": "Special attack",
+  "Reducción física": "Physical damage reduction",
+  "Reducción especial": "Special damage reduction",
+  "Los valores negativos de reducción indican daño adicional.": "Negative damage reduction means increased damage taken."
+});
+
+G.I18n.add({"Todas las generaciones":"All generations"});
+
+G.I18n.add({"Nombre del Pokémon":"Pokémon name","Tipo de Pokémon":"Pokémon type"});

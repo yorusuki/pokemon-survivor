@@ -26,7 +26,7 @@ test('連續施放、多段與增益不再扣血，極低血量裝卸不致死�
  near(p.hp,.9);p.equip(null);near(p.hp,1);p.hp=0;p.dead=true;p.equip('lifeorb');assert.equal(p.hp,0);assert.equal(p.dead,true);
 });
 test('相同防禦下承傷仍受減傷，治療封頂降低後最大生命；換其他道具不殘留寶珠來源',()=>{
- const {p}=fixture();p.hp=100;p.dmgReduce=.9;p.equip('lifeorb');near(p.hp,90);p.hurt(100);near(p.hp,80);
+ const {p}=fixture();p.hp=100;p.dmgReduce=.9;p.equip('lifeorb');near(p.hp,90);p.hurt(100);near(p.hp,70);
  p.heal(100);near(p.hp,90);p.equip('assaultvest');near(p.maxHp,100);near(p.atk,10);near(p.itemDmgReduce,.2);
  p.equip('lifeorb');near(p.maxHp,90);near(p.itemDmgReduce,0);near(p.atk,13);
 });

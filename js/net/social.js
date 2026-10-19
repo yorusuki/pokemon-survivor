@@ -553,11 +553,11 @@ G.Social = (() => {
   async function getProfile(other) {
     if (!fb) return null;
     // El tuyo sale de tu partida (sin leer nada y siempre al día).
-    if (other === uid && me) return Object.assign(profileData(), { name: me.name });
+    if (other === uid && me) return G.PublicData.profile(Object.assign(profileData(), { name: me.name }));
     const c = profCache.get(other);
     if (c && Date.now() - c.at < 10 * 60 * 1000) return c.v;     // lo leído vale 10 min
-    const d = await fb.fs.collection('profiles').doc(other).get().catch(() => null);
-    const v = d && d.exists ? d.data() : null;
+    const d = await fb.fs.collection('profiles').doc(other).get().catch(() => {console.warn('[Social] profile_read_failed');return null;});
+    const v = d && d.exists ? G.PublicData.profile(d.data()) : null;
     profCache.set(other, { at: Date.now(), v });
     return v;
   }

@@ -258,10 +258,10 @@ G.RunUI = (() => {
     const time=G.Game.st.time;
     const moves=pl.moves.map(m=>{
       const seconds=Math.max(5,time-(m.since||0)),buff=m.kind==='buff';
-      return `<tr><td>${G.Icons.html('move:'+m.id,18)} ${esc(m.name)} <small>${t('Nivel')} ${n(m.lvl)}</small></td><td class="num">${buff?'—':n(m.dealt||0)}</td><td class="num">${buff?'—':n((m.dealt||0)/seconds,1)+'/s'}</td></tr>`;
+      return `<tr><td>${G.Icons.html('move:'+m.id,18)} ${esc(m.name)}${m.cat?' · '+t(G.Stats.NAME[m.cat]):''} <small>${t('Nivel')} ${n(m.lvl)}</small></td><td class="num">${buff?'—':n(m.dealt||0)}</td><td class="num">${buff?'—':n((m.dealt||0)/seconds,1)+'/s'}</td></tr>`;
     }).join('');
-    const stats=[['Vida',n(pl.hp)+' / '+n(pl.maxHp)],['Ataque',n(pl.atk,2)],['Velocidad',n(pl.spd,1)]];
-    if(pl.effectiveReduction>0)stats.push(['Reducción de daño',n(pl.effectiveReduction*100,1)+'%']);
+    const stats=[['Vida',n(pl.hp)+' / '+n(pl.maxHp)],['Ataque físico',n(pl.atkFor({cat:'physical'}),2)],['Ataque especial',n(pl.atkFor({cat:'special'}),2)],['Velocidad',n(pl.spd,1)]];
+    for(const [cat,label] of [['physical','Reducción física'],['special','Reducción especial']])stats.push([label,n((1-(1-pl.effectiveReduction)*G.Stats.taken(pl.mon,cat))*100,1)+'%']);
     if(pl.critChance>0)stats.push(['Crítico',n(pl.critChance*100,1)+'%']);
     if(pl.cdMul<1)stats.push(['Recarga',n((1-pl.cdMul)*100,1)+'%']);
     if(pl.regen>0)stats.push(['Regeneración',n(pl.regen,1)+'/s']);
@@ -273,7 +273,7 @@ G.RunUI = (() => {
     const it=pl.item&&G.Items.BY[pl.item];
     return `<h3>${t('Tus ataques')}</h3><table class="sum-moves"><thead><tr><th>${t('Movimiento')}</th><th class="num">${t('Daño')}</th><th class="num">${t('Por segundo')}</th></tr></thead><tbody>${moves}</tbody></table>
       <p class="summary-note">${t('Daño directo, incluido el exceso de daño; sin veneno, quemaduras ni objetos del mapa. DPS medio desde que aprendiste el movimiento; mínimo 5 segundos.')}</p>
-      <h3>${t('Tus estadísticas')}</h3><div class="sum-stats">${stats.map(([label,value])=>`<div><span>${t(label)}</span><b>${esc(value)}</b></div>`).join('')}</div>
+      <h3>${t('Tus estadísticas')}</h3><p class="summary-note">${t('Los valores negativos de reducción indican daño adicional.')}</p><div class="sum-stats">${stats.map(([label,value])=>`<div><span>${t(label)}</span><b>${esc(value)}</b></div>`).join('')}</div>
       <h3>${t('Objeto y cartas')}</h3><p class="sub">${it?'<b>'+esc(it.name)+'</b>: '+esc(it.desc):t('Sin objeto.')}</p><div class="chips">${cards||'<span class="sub">'+t('Aún no has cogido cartas de mejora.')+'</span>'}</div>`;
   }
 

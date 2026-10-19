@@ -14,8 +14,8 @@ test('升級、重抽、連結與道具都阻擋初始 600ms，允許時間邊�
  f.G.RunUI.showItemChoice(null,'orb',()=>picks++);f.$('item-cards').children.at(-1).onclick();assert.equal(picks,1);f.setTime(1800);const choose=f.$('item-cards').children.at(-1).onclick;choose();choose();assert.equal(picks,2);
  const a={name:'a',type:'normal',id:'a',lvl:1},b={...a,name:'b',id:'b'};f.G.U.TYPE_COLOR={normal:'#fff'};f.G.RunUI.showBond({mode:'pair',loose:[a,b]},()=>picks++);f.G.RunUI.pickBond(0);f.setTime(2400);f.G.RunUI.pickBond(0);f.G.RunUI.pickBond(0);assert.equal(picks,2);f.setTime(3000);f.G.RunUI.pickBond(0);assert.equal(picks,3);
 });
-test('暫停摘要只顯示現行能力、不啟用物特，轉義動態名稱；DPS 按遊戲時間計',()=>{
- const {G}=runUI();G.Game.player={moves:[{name:'<img>',id:'x',kind:'melee',lvl:2,since:10,dealt:100}],hp:90,maxHp:100,atk:1.3,spd:100,effectiveReduction:.9,critChance:0,cdMul:1,regen:0,statsTaken:{}};
+test('暫停摘要只顯示現行能力、顯示物特，轉義動態名稱；DPS 按遊戲時間計',()=>{
+ const {G}=runUI();G.Stats={taken:()=>1,NAME:{physical:'physical',special:'special'}};G.Game.player={mon:{},atkFor:()=>1.3,moves:[{name:'<img>',id:'x',kind:'melee',lvl:2,since:10,dealt:100}],hp:90,maxHp:100,atk:1.3,spd:100,effectiveReduction:.9,critChance:0,cdMul:1,regen:0,statsTaken:{}};
  const html=G.RunUI.pauseSummary();assert.match(html,/&lt;img&gt;/);assert.doesNotMatch(html,/<img>/);assert.match(html,/5\/s/);assert.match(html,/90%/);assert.doesNotMatch(html,/At\. Esp\.|Def\. Esp\.|Crítico/);assert.equal(G.RunUI.pauseSummary(),html);
 });
 function padFixture(){let sample=null;const keys=[],listeners={};const G={Settings:{get:()=>true},Game:{state:'playing'},Input:{virtual:k=>keys.push(k)}};
@@ -48,13 +48,13 @@ test('舊榜缺少或部分 shiny 陣列按一般外觀補齊，既有異色與 
  let top={old:{t:30,uids:['a'],names:['old'],dex:[1,25],lv:1,kills:1},mixed:{t:20,uids:['b'],names:['mixed'],dex:[1,25],shiny:[true],lv:1,kills:1}};
  const G={Backend:{cloud:()=>({uid:'a',fs:{collection:()=>({doc:()=>({get:async()=>({exists:true,data:()=>({top})})})})}})},Social:{friends:[]},DB:{save:{},user:'a'}};
  G.DB.online=true;G.DB.fb=G.Backend.cloud();
- vm.runInNewContext(read('js/net/ranking.js'),{G,localStorage:{getItem:()=>null,setItem(){}},console});const rows=await G.Ranking.top('s','a');assert.deepEqual(Array.from(rows[0].shiny),[false,false]);assert.deepEqual(Array.from(rows[1].shiny),[true,false]);assert.match(G.Ranking.board('s','a'),/all2/);assert.doesNotMatch(G.Ranking.board('s','a'),/all3/);
+ vm.runInNewContext(read('js/core/public-data.js')+'\n'+read('js/net/ranking.js'),{G,localStorage:{getItem:()=>null,setItem(){}},console});const rows=await G.Ranking.top('s','a');assert.deepEqual(Array.from(rows[0].shiny),[false,false]);assert.deepEqual(Array.from(rows[1].shiny),[true,false]);assert.match(G.Ranking.board('s','a'),/all2/);assert.doesNotMatch(G.Ranking.board('s','a'),/all3/);
 });
 test('手動方向招式無目標可施放，連鎖仍等待目標，近戰與投射物傷害回填正確招式',()=>{
  const shots=[],foe={id:1,x:10,y:0,r:10,bodyH:1,types:['normal'],dead:false,touchCd:1,hurt(d){this.received=(this.received||0)+d;}};
  const G={U:{TYPE_COLOR:{normal:'#fff'},dist:(x,y,a,b)=>Math.hypot(x-a,y-b),dist2:(x,y,a,b)=>(x-a)**2+(y-b)**2,rand:()=>0},LIFT:0,FX:new Proxy({withAttack:fn=>fn()},{get:(o,k)=>o[k]||(()=>{})}),VFX:{forMove:()=>({})},World:{propsInCircle:()=>[],projectileBlock:()=>null},EnemyMgr:{queryCircle:()=>[foe]},Projectiles:{all:()=>shots,spawn:p=>shots.push({...p,friendly:true})},Types:{mult:()=>1,label:()=>null},Weather:{mult:()=>1},Coop:{active:false}};
- vm.runInNewContext(read('js/systems/combat.js'),{G,performance:{now:()=>10}});
- let casts=0;const m={kind:'melee',type:'normal',cd:1,t:0,dmg:10,radius:30,arc:6.2832};const p={x:0,y:0,r:1,aim:0,atk:2,cdMul:1,dmgDealt:0,dead:false,activeGroup:()=>[m],cast:()=>casts++,onDealt(){}};
+ G.Stats={taken:()=>1};vm.runInNewContext(read('js/systems/combat.js'),{G,performance:{now:()=>10}});
+ let casts=0;const m={kind:'melee',type:'normal',cd:1,t:0,dmg:10,radius:30,arc:6.2832};const p={x:0,y:0,r:1,aim:0,atk:2,atkFor:()=>2,cdMul:1,dmgDealt:0,dead:false,activeGroup:()=>[m],cast:()=>casts++,onDealt(){}};
  G.Combat.tick(.1,p,0);assert.equal(casts,0);p.manualAim=true;G.Combat.tick(.1,p,0);assert.equal(casts,1);assert.equal(m.dealt,20);
  const projectile={...m,kind:'projectile',t:0,count:1,speed:100,size:4,life:1,dealt:0};p.activeGroup=()=>[projectile];G.Combat.tick(.1,p,1);assert.equal(shots[0].src,projectile);G.Combat.resolve(.1,p,1);assert.equal(projectile.dealt,20);assert.equal(m.dealt,20);
  const chain={...m,kind:'chain',t:0};p.activeGroup=()=>[chain];G.Combat.tick(.1,p,2);assert.equal(casts,2);

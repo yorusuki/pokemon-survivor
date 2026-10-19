@@ -2,28 +2,32 @@
   "schemaVersion": 1,
   "repository": "JPTER78/pokesurvivor",
   "initialBaseline": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
-  "reviewedThrough": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
+  "reviewedThrough": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
   "lastInspected": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
-  "decisionStatus": "partial_implementation_pending_decisions",
-  "note": "已選項目依 2.1.0 移植；其餘等待決定，未推進 reviewedThrough，未清榜。",
+  "decisionStatus": "reviewed_selectively_integrated",
+  "note": "玩法依e4ba0e1，保留生命寶珠、最愛及自架架構；所有項目已決策，reviewedThrough不代表全量merge。",
   "items": {
-    "G01": "pending_details_decision",
-    "G02": "pending_details_decision",
-    "G03": "pending_details_decision",
-    "G04": "pending_details_decision",
+    "G01": "implemented",
+    "G02": "implemented",
+    "G03": "implemented",
+    "G04": "implemented",
     "G05": "implemented",
     "G06": "implemented",
     "G07": "implemented",
-    "G08": "pending_details_decision",
+    "G08": "implemented_keep_custom_favorites",
     "G09": "implemented",
     "G10": "implemented",
-    "G11": "pending_details_decision",
-    "G12": "pending_details_decision",
-    "G13": "pending_details_decision",
-    "G14": "pending_details_decision",
+    "G11": "implemented",
+    "G12": "implemented",
+    "G13": "implemented",
+    "G14": "implemented",
     "G15": "implemented",
-    "G16": "implemented",
-    "G17": "pending_details_decision"
+    "G16": "implemented_no_reset",
+    "G17": "implemented"
   },
-  "release": "2.1.0"
+  "release": "2.2.0",
+  "excluded": [
+    "Firebase services and write throttling",
+    "Leaderboard reset"
+  ]
 }

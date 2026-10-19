@@ -20,6 +20,7 @@ COPY deployment/nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=game-build /game/deployment/security-headers.conf /etc/nginx/security-headers.conf
 COPY --from=game-build /game/index.html /usr/share/nginx/html/index.html
 COPY --from=game-build /game/js/app.min.js /usr/share/nginx/html/js/app.min.js
+COPY --from=game-build /game/js/core/boot.js /usr/share/nginx/html/js/core/boot.js
 COPY --from=game-build /game/version.json /usr/share/nginx/html/version.json
 COPY oauth-result.html /usr/share/nginx/html/oauth-result.html
 COPY js/oauth-result.js /usr/share/nginx/html/js/oauth-result.js

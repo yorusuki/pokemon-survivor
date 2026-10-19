@@ -3,7 +3,7 @@ G.Bonuses = (() => {
   const finite = v => Number.isFinite(v) ? v : 0;
   const n = (v,d=0) => finite(v).toFixed(d);
   const t = s => G.T ? G.T(s) : s;
-  const effective=p=>Number.isFinite(p.effectiveReduction)?p.effectiveReduction:Math.min(.9,Math.max(0,1-(1-finite(p.reduction))*(p.activeGroup?.().some(m=>m.kind==='melee')?.75:1)));
+  const effective=p=>Number.isFinite(p.effectiveReduction)?p.effectiveReduction:Math.max(0,1-(1-finite(p.reduction))*(p.activeGroup?.().some(m=>m.kind==='melee')?.75:1));
   let panel=null, lastAt=-Infinity, lastHTML='';
   function rows(pl) {
     if(!pl) return [];
@@ -12,10 +12,15 @@ G.Bonuses = (() => {
     const add=(id,label,value)=>result.push({id,label:t(label),value});
     const changed=(a,b)=>Number.isFinite(a)&&Math.abs(a-b)>.00001;
     if(changed(pl.maxHp,pl.mon?.hp||pl.maxHp)) add('hp','Vida máxima',n(pl.maxHp));
-    if(changed(pl.atk,pl.baseAtk)) add('atk','Ataque',n(pl.atk,2));
+    if(pl.atkFor&&pl.mon?.pa!=null){
+      if(changed(pl.atkFor({cat:'physical'}),pl.mon.pa))add('atk','Ataque físico',n(pl.atkFor({cat:'physical'}),2));
+      if(changed(pl.atkFor({cat:'special'}),pl.mon.sa))add('satk','Ataque especial',n(pl.atkFor({cat:'special'}),2));
+    }else if(changed(pl.atk,pl.baseAtk))add('atk','Ataque',n(pl.atk,2));
     if(changed(pl.spd,pl.baseSpd)) add('spd','Velocidad',n(pl.spd));
     if(changed(pl.cdMul,1)) add('cd','Recarga general',n(pl.cdMul*100,1)+'%');
-    if(pl.reduction>0||melee) add('def','Reducción de daño',n(effective(pl)*100,1)+'%');
+    const guard=cat=>1-(1-effective(pl))*(G.Stats?.taken(pl.mon,cat)??1);
+    if(pl.mon?.df!=null){add('def','Reducción física',n(guard('physical')*100,1)+'%');add('sdef','Reducción especial',n(guard('special')*100,1)+'%');}
+    else if(pl.reduction>0||melee)add('def','Reducción de daño',n(effective(pl)*100,1)+'%');
     if(pl.regen>0) add('rgn','Regeneración fija',n(pl.regen,1)+'/s');
     if(pl.critChance>0) add('crit','Probabilidad crítica',n(pl.critChance*100,1)+'%');
     if(changed(pl.xpMul,1)) add('xp','Experiencia personal',n(pl.xpMul*100,1)+'%');
@@ -40,14 +45,16 @@ G.Bonuses = (() => {
       rule.apply(after);
       const value=(p)=>{
         switch(id){
-          case 'hp':return n(p.maxHp);case 'atk':return n(p.atk,2);case 'spd':return n(p.spd);
+          case 'hp':return n(p.maxHp);case 'atk':return p.atkFor&&p.mon?.pa!=null?n(p.atkFor({cat:'physical'}),2)+' / '+n(p.atkFor({cat:'special'}),2):n(p.atk,2);case 'spd':return n(p.spd);
           case 'cd':return n(p.cdMul*100,1)+'%';
-          case 'def':return n(effective(p)*100,1)+'%';
+          case 'def':return p.mon?.df!=null?n((1-(1-effective(p))*G.Stats.taken(p.mon,'physical'))*100,1)+'% / '+n((1-(1-effective(p))*G.Stats.taken(p.mon,'special'))*100,1)+'%':n(effective(p)*100,1)+'%';
           case 'rgn':return n(p.regen,1)+'/s';case 'mag':return n(p.magnet);
           case 'xp':return n(p.xpMul*100,1)+'%';case 'heal':return n(p.hp);
           default:return '';
         }
       };
+      if(pl.mon?.pa!=null && id==='atk')return ['physical','special'].map(cat=>t(cat==='physical'?'Ataque físico':'Ataque especial')+': '+n(pl.atkFor({cat}),2)+' → '+n(after.atkFor({cat}),2)).join(' · ');
+      if(pl.mon?.df!=null && id==='def')return ['physical','special'].map(cat=>t(cat==='physical'?'Reducción física':'Reducción especial')+': '+n((1-(1-effective(pl))*G.Stats.taken(pl.mon,cat))*100,1)+'% → '+n((1-(1-effective(after))*G.Stats.taken(after.mon,cat))*100,1)+'%').join(' · ');
       const labels={hp:'Vida máxima',atk:'Ataque',spd:'Velocidad',cd:'Recarga general',def:'Reducción de daño',rgn:'Regeneración fija',mag:'Radio de recogida',xp:'Experiencia personal',heal:'Vida'};
       return t(labels[id])+': '+value(pl)+' → '+value(after)+(id==='def'&&effective(after)===effective(pl)?' · '+t('Límite actual'):'');
     }

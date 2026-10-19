@@ -43,6 +43,8 @@ G.Player = class Player {
 
     this.buffs = {
       atk: { n: 0, t: 0, amount: 0 },
+      patk: { n: 0, t: 0, amount: 0 },
+      satk: { n: 0, t: 0, amount: 0 },
       spd: { n: 0, t: 0, amount: 0 },
       def: { n: 0, t: 0, amount: 0 },
       regen: { n: 0, t: 0, amount: 0 }
@@ -98,16 +100,20 @@ G.Player = class Player {
     this.hp=fraction*this.maxHp;
   }
   get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
+  atkFor(m) {
+    const cat = m && m.cat, b = cat === 'physical' ? this.buffs.patk : cat === 'special' ? this.buffs.satk : null;
+    return this.atk * (G.Stats?.fit(this.mon, cat) ?? 1) * (b ? 1 + b.n * b.amount : 1);
+  }
   get spd() {
     const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount) * (this.slowT > 0 ? 0.5 : 1);
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
-    return s * slow * w;
+    return G.Judgment && G.Judgment.active ? G.Judgment.capSpd(s * slow * w) : s * slow * w;
   }
-  get reduction() { return Math.min(0.9, Math.max(0,this.dmgReduce + (this.itemDmgReduce||0) + this.buffs.def.n * this.buffs.def.amount)); }
+  get reduction() { return Math.min(0.8, Math.max(0,this.dmgReduce + (this.itemDmgReduce||0) + this.buffs.def.n * this.buffs.def.amount)); }
   get effectiveReduction() {
     const close=this.activeGroup().some(m=>m.kind==='melee')?0.75:1;
-    return Math.min(0.9,Math.max(0,1-(1-this.reduction)*close));
+    return Math.max(0,1-(1-this.reduction)*close);
   }
   get regen() { return this.regenFlat + this.buffs.regen.n * this.buffs.regen.amount; }
 
@@ -238,8 +244,9 @@ G.Player = class Player {
    * @param type  tipo del ataque (tabla de tipos y clima); sin tipo, daño tal cual
    * @param pure  daño que no baja con la defensa ni el cuerpo a cuerpo (Arceus)
    */
-  hurt(amount, type = null, pure = false) {
+  hurt(amount, type = null, pure = false, cat = null) {
     if (this.invuln > 0 || this.dead) return;
+    if (!pure) amount *= G.Stats?.taken(this.mon, cat) ?? 1;
     let eff = null;
     if (type) {
       const k = G.Types.mult(type, this.mon.types);
@@ -508,7 +515,7 @@ G.Player = class Player {
     this.anim.draw(ctx, this.x, this.y, { flash: this.flash > 0, softFlash: true, alpha, color: '#ffcb3d' });
 
     // Arcos de buff alrededor de los pies.
-    const COL = { atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
+    const COL = { patk: '#ff6b4d', satk: '#c47bff', atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
     let i = 0;
     for (const k in this.buffs) {
       const b = this.buffs[k];

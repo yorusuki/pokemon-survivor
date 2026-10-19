@@ -43,3 +43,9 @@ npm --prefix server audit
 ## 2.0.0 帳號與好友
 
 改名需登入與同源驗證，以單一交易套用 24 小時冷卻、7 天保留及房間限制；一般文件 API 不得繞過。好友代碼為獨立 80-bit 隨機值，只作可分享的查詢識別碼，並非授權秘密；查詢具每帳號限流。新增的私有資料表不透過 documents API 開放。交易錯誤不記錄原始名稱、代碼或 SQL。
+
+## 2.2.0公開資料讀取整合
+
+公開排行榜、個人資料及檢舉摘要增加型別、有限數值、字串長度與陣列長度正規化；保留Unicode暱稱、UID／好友代碼與既有後端驗證。文字仍由既有DOM輸出轉義，正規化不等於HTML消毒，也不替代授權。啟動程式移至外部boot.js並保留繁中，CSP雜湊重新產生，不加入unsafe-eval或放寬script-src。
+
+參考 [OWASP DOM XSS指引](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html)與 [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP)。本次聚焦資料讀取與輸出相容，未重新進行外部滲透測試或全面CVE掃描，也未改認證／資料庫權限。

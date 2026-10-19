@@ -157,8 +157,8 @@ G.Ranking = (() => {
 
   // ---------------- guardar ----------------
 
-  const rowOf = (id, v) => ({ id, t: v.t, uids: v.uids || [], names: v.names || [], dex: v.dex || [], shiny: (v.dex || []).map((_, i) => v.shiny?.[i] === true), lv: v.lv, kills: v.kills });
-  const sorted = top => Object.entries(top || {}).map(([id, v]) => rowOf(id, v)).sort((a, b) => b.t - a.t);
+  const rowOf = (id,v) => G.PublicData.rank(id,v);
+  const sorted = top => G.PublicData.rows(top);
   const now = () => G.Backend.timestamp();
 
   // ---------------- anti-trampas ----------------
@@ -219,7 +219,7 @@ G.Ranking = (() => {
           let newTop = null;
           await fb.fs.runTransaction(async tx => {
             const s = await tx.get(sumRef(b));
-            const top = Object.assign({}, s.exists ? s.data().top : {});
+            const top = G.PublicData.top(s.exists ? s.data()?.top : {});
             // New summaries always carry one boolean per Pokémon; older rows may omit it.
             const mine = { t: entry.t, uids: entry.uids, names: entry.names, dex: entry.dex, shiny: entry.dex.map((_,i)=>entry.shiny?.[i]===true), lv: entry.lv, kills: entry.kills };
             let ev = '';
@@ -301,7 +301,7 @@ G.Ranking = (() => {
     if (c !== undefined) return c;
     if (!inflight.has(b)) {
       inflight.set(b, sumRef(b).get().then(s => {
-        const top = s.exists ? (s.data().top || {}) : {};
+        const top = G.PublicData.top(s.exists ? s.data()?.top : {});
         cacheSet('s:' + b, top);
         noteTop(b, top);
         return top;
@@ -436,8 +436,8 @@ G.Ranking = (() => {
     const s = await fbx().fs.collection('reports').orderBy('at', 'desc').limit(400).get();
     const by = new Map();
     for (const d of s.docs) {
-      const v = d.data(), k = v.board + '__' + v.e;
-      if (!by.has(k)) by.set(k, { board: v.board, e: v.e, names: v.names || [], t: v.t, n: 0, ids: [], at: v.at && v.at.toMillis ? v.at.toMillis() : 0 });
+      const v = G.PublicData.report(d.data()), k = v.board + '__' + v.e;
+      if (!by.has(k)) by.set(k, { board: v.board, e: v.e, names: v.names || [], t: v.t, n: 0, ids: [], at: v.at });
       const g = by.get(k); g.n++; g.ids.push(d.id);
     }
     return [...by.values()].sort((a, b) => b.n - a.n || b.at - a.at);
@@ -455,7 +455,7 @@ G.Ranking = (() => {
     await col(b).doc(e).delete().catch(() => {});
     await fb.fs.runTransaction(async tx => {
       const s = await tx.get(sumRef(b));
-      const top = Object.assign({}, s.exists ? s.data().top : {});
+      const top = G.PublicData.top(s.exists ? s.data()?.top : {});
       if (!(e in top)) return;
       delete top[e];
       tx.set(sumRef(b), { top, me: '', ev: e });

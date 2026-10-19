@@ -3,7 +3,12 @@ G.MenuUI = (() => {
   const $ = G.UI.$;
   const survivorName = (dex,name) => G.DB.survivor(dex) ? `<span class="survivor-name" title="${G.U.escapeHTML(G.T('Superviviente de 30 minutos'))}">${G.U.escapeHTML(name)}</span>` : G.U.escapeHTML(name);
   const GEN_NAMES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar', 'Paldea'];
-  let dexFilter = 'all', dexGen = 1, dexSel = null;
+  let dexGen = 1, dexSel = null;
+  const DEX0 = () => ({ status: 'all', rar: new Set(), shiny: false, fav: false, type: '', q: '', sort: 'num' });
+  let dexF = DEX0();
+  const SORTS = [['num', 'Nº'], ['name', 'Nombre del Pokémon'], ['rar', 'Rareza'], ['new', 'Recién conseguidos'], ['used', 'Más usados']];
+
+
 
   function init() {
     const ICON = { play: 'ball', dex: 'book', upgrades: 'up', gacha: 'ball4', goals: 'medal3', friends: 'friends', rank: 'trophy', settings: 'gear' };
@@ -106,7 +111,7 @@ G.MenuUI = (() => {
   function toggleFavorite(dex) {
     const result=G.DB.toggleFavorite(dex);
     G.UI.toast(G.T(result.ok ? (result.on?'Añadido a favoritos':'Eliminado de favoritos') : result.error));
-    if(result.ok) {lastFavoriteDex=null;openDex();}
+    if(result.ok) {lastFavoriteDex=null;renderGrid(true);showDetail(dexSel);const count=$('dex-gens').querySelector('.favorites-tab small');if(count)count.textContent=G.DB.favoriteCount()+'/100';}
   }
   function openDex() {
     G.UI.show('scr-dex', true);
@@ -115,74 +120,137 @@ G.MenuUI = (() => {
     const owned = Object.keys(s.owned).filter(d => G.DEX_BY[d]).length;
     $('dex-total').textContent = `${owned} / ${G.DEX.length}`;
 
-    // Pestañas de generación, con cuántos tienes de cada una.
-    const tabs = $('dex-gens');
-    tabs.innerHTML = '';
-    const favorites=document.createElement('button');
-    favorites.className='gen-tab favorites-tab'+(dexFavorites?' on':'');
-    favorites.innerHTML='<b>'+G.U.escapeHTML(G.T('Favoritos'))+'</b><small>'+G.DB.favoriteCount()+'/100</small>';
-    favorites.onclick=()=>{dexFavorites=true;dexFilter='all';openDex();};tabs.appendChild(favorites);
-    GEN_NAMES.forEach((name, i) => {
-      const g = i + 1;
-      const total = G.DEX.filter(p => p.gen === g).length;
-      const have = G.DEX.filter(p => p.gen === g && s.owned[p.dex]).length;
+    const tabs = $('dex-gens');tabs.innerHTML='';
+    const favoriteTab=document.createElement('button');
+    favoriteTab.className='gen-tab favorites-tab'+(dexFavorites?' on':'');
+    favoriteTab.innerHTML='<b>'+G.U.escapeHTML(G.T('Favoritos'))+'</b><small>'+G.DB.favoriteCount()+'/100</small>';
+    favoriteTab.onclick=()=>{dexFavorites=true;openDex();};tabs.appendChild(favoriteTab);
+    ['Todas las generaciones', ...GEN_NAMES].forEach((name, g) => {
+      const list = g ? G.DEX.filter(p => p.gen === g) : G.DEX;
+      const have = list.filter(p => s.owned[p.dex]).length;
       const b = document.createElement('button');
-      b.className = 'gen-tab' + (!dexFavorites && g === dexGen ? ' on' : '');
-      b.innerHTML = `<b>${name}</b><small>${have}/${total}</small>`;
+      b.className = 'gen-tab' + (!dexFavorites && g === dexGen && !dexF.q ? ' on' : '');
+      b.innerHTML = `<b>${name}</b><small>${have}/${list.length}</small>`;
       b.onclick = () => { dexFavorites=false;dexGen = g; openDex(); };
       tabs.appendChild(b);
     });
 
-    const F = [['all', 'Todos'], ['own', 'Tengo'], ['miss', 'Me faltan'], ['shiny', 'Shiny'],
-               ['5', 5], ['4', 4], ['3', 3], ['2', 2], ['1', 1]];
+    // Tengo / me faltan (uno), rarezas (las que quieras), shiny y favoritos.
     const fb = $('dex-filters');
     fb.innerHTML = '';
-    for (const [k, label] of F) {
+    const chip = (html, on, fn) => {
       const c = document.createElement('button');
-      c.className = 'chip' + (k === dexFilter ? ' on' : '');
-      c.innerHTML = k === 'shiny' ? G.Icons.html('shiny', 12) + ' Shiny'
-                  : typeof label === 'number' ? G.Icons.rarity(label, 12) + ' ' + G.Gacha.RARITY_NAME[label] : label;
-      c.onclick = () => { dexFilter = k; openDex(); };
+      c.className = 'chip' + (on ? ' on' : '');
+      c.innerHTML = html;
+      c.onclick = () => { fn(); openDex(); };
       fb.appendChild(c);
+    };
+    for (const [k, label] of [['all', 'Todos'], ['own', 'Tengo'], ['miss', 'Me faltan']]) chip(label, dexF.status === k, () => { dexF.status = k; });
+    chip(G.Icons.html('shiny', 12) + ' Shiny', dexF.shiny, () => { dexF.shiny = !dexF.shiny; });
+    for (const r of [5, 4, 3, 2, 1]) {
+      chip(G.Icons.rarity(r, 12) + ' ' + G.Gacha.RARITY_NAME[r], dexF.rar.has(r), () => { dexF.rar.has(r) ? dexF.rar.delete(r) : dexF.rar.add(r); });
     }
+
+    // Orden.
+    const sb = $('dex-sort');
+    sb.innerHTML = '<span class="sub">Orden:</span>';
+    for (const [k, label] of SORTS) {
+      const c = document.createElement('button');
+      c.className = 'chip' + (dexF.sort === k ? ' on' : '');
+      c.textContent = label;
+      c.onclick = () => { dexF.sort = k; openDex(); };
+      sb.appendChild(c);
+    }
+
+    // Tipo y búsqueda (la búsqueda mira en todas las generaciones).
+    const ts = $('dex-type');
+    ts.innerHTML = `<option value="">Todos los tipos</option>` +
+      Object.keys(G.U.TYPE_NAME).map(t => `<option value="${t}">${G.U.TYPE_NAME[t]}</option>`).join('');
+    ts.value = dexF.type;
+    ts.onchange = () => { dexF.type = ts.value; openDex(); };
+    const q = $('dex-q');
+    if (q.value !== dexF.q) q.value = dexF.q;
+    q.oninput = () => {
+      clearTimeout(qT);
+      qT = setTimeout(() => {
+        dexF.q = q.value.slice(0,128); renderGrid();
+        $('dex-gens').querySelectorAll('.gen-tab').forEach((b,i)=>b.classList.toggle('on',i===0?dexFavorites:!dexFavorites&&i-1===dexGen&&!dexF.q));
+      }, 150);
+    };
+    q.onkeydown = e => { if (e.key === 'Escape') { e.stopPropagation(); q.blur(); } };
+    $('dex-clear').onclick = () => { dexF = DEX0();dexFavorites=false;openDex(); };
     renderGrid();
     showDetail(dexSel);
   }
 
-  function renderGrid() {
-    const s = G.DB.save;
-    const grid = $('dex-grid');
-    grid.innerHTML = '';
-    for (const p of G.DEX) {
-      if(dexFavorites ? !G.DB.isFavorite(p.dex) : p.gen!==dexGen) continue;
-      const own = !!s.owned[p.dex], sh = !!(s.shiny && s.shiny[p.dex]);
-      if (dexFilter === 'own' && !own) continue;
-      if (dexFilter === 'miss' && own) continue;
-      if (dexFilter === 'shiny' && !sh) continue;
-      if (/^\d$/.test(dexFilter) && p.rarity !== +dexFilter) continue;
+  /** Lo que se ve con la generación, los filtros y el orden de ahora. */
+  function dexList() { return G.Collection.list(G.DB.save,dexF,dexGen,dexFavorites); }
 
-      const cell = document.createElement('div');
-      cell.dataset.pad='';
-      cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
-      if(G.DB.isFavorite(p.dex)) cell.insertAdjacentHTML('beforeend', `<span class="favorite-heart" aria-label="${G.U.escapeHTML(G.T('Favorito'))}">♥</span>`);
-      cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}</span>`);
-      if (p.dex === s.partner) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Compañero">${G.Icons.html('crown', 14)}</span>`);
-      else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
-      const useShiny = sh && p.dex === s.partner && s.partnerShiny;
-      cell.appendChild(G.UI.spriteCanvas(p.dex, 92, 80, { scale: 2, silhouette: !own, shadow: own, shiny: useShiny }));
-      cell.insertAdjacentHTML('beforeend', `<b>${own ? survivorName(p.dex,p.name) : '???'}</b>${G.UI.stars(p.rarity, 9)}`);
-      cell.onclick = () => {
-        dexSel = p.dex;
-        grid.querySelectorAll('.cell').forEach(c => c.classList.remove('on'));
-        cell.classList.add('on');
-        showDetail(p.dex);
-        const now=performance.now();
-        if(lastFavoriteDex===p.dex && now-lastFavoriteAt<350) toggleFavorite(p.dex);
-        else {lastFavoriteDex=p.dex;lastFavoriteAt=now;}
-      };
-      grid.appendChild(cell);
-    }
-    if (!grid.children.length) grid.innerHTML = '<p class="sub" style="grid-column:1/-1">Ninguno con este filtro.</p>';
+  /*
+   * La rejilla se pinta por tandas de PAGE: con "Todas" son 966 Pokémon, cada
+   * uno con su animación y su hoja de sprites, y pintarlos de golpe paraba el
+   * juego (y la música) un segundo al borrar la búsqueda o cambiar el orden.
+   * Al acercarse al final de la lista se pinta la siguiente tanda.
+   * keep: volver a pintar los mismos que había (marcar un favorito no te
+   * devuelve arriba).
+   */
+  const PAGE = 48;
+  let qT = 0, gridList = [], gridShown = 0, gridIO = null;
+  function renderGrid(keep = false) {
+    const grid = $('dex-grid');
+    const want = keep ? Math.max(PAGE, gridShown) : PAGE;
+    const top = grid.scrollTop;
+    grid.innerHTML = '';
+    gridList = dexList();
+    gridShown = 0;
+    const f = dexF, busy = dexFavorites || f.q || f.status !== 'all' || f.shiny || f.fav || f.rar.size || f.type || f.sort !== 'num';
+    $('dex-count').textContent = gridList.length === 1 ? '1 Pokémon' : gridList.length + ' Pokémon';
+    $('dex-clear').classList.toggle('hidden', !busy);
+    if (!gridList.length) { grid.innerHTML = '<p class="sub" style="grid-column:1/-1">Ninguno con estos filtros.</p>'; return; }
+    moreCells(want);
+    if (keep) grid.scrollTop = top;
+  }
+
+  function moreCells(n = PAGE) {
+    const grid = $('dex-grid');
+    const old = grid.querySelector('.dex-more');
+    if (old) { if (gridIO) gridIO.unobserve(old); old.remove(); }
+    const end = Math.min(gridList.length, gridShown + n);
+    for (let i = gridShown; i < end; i++) grid.appendChild(dexCell(gridList[i]));
+    gridShown = end;
+    if (gridShown >= gridList.length) return;
+    // Marca al final: cuando se acerca a la vista, la siguiente tanda.
+    const more = document.createElement('div');
+    more.className = 'dex-more';
+    grid.appendChild(more);
+    if (!('IntersectionObserver' in window)) { moreCells(gridList.length); return; }
+    gridIO = gridIO || new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) moreCells(); }, { rootMargin: '300px' });
+    gridIO.observe(more);
+  }
+
+  function dexCell(p) {
+    const s = G.DB.save;
+    const own = !!s.owned[p.dex], sh = !!(s.shiny && s.shiny[p.dex]);
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
+    cell.dataset.pad = '1';
+    if(G.DB.isFavorite(p.dex))cell.insertAdjacentHTML('beforeend',`<span class="favorite-heart" aria-label="${G.U.escapeHTML(G.T('Favorito'))}">♥</span>`);
+    cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}${G.DB.isFavorite(p.dex) ? ' ' + G.Icons.html('star', 10) : ''}</span>`);
+    if (p.dex === s.partner) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Compañero">${G.Icons.html('crown', 14)}</span>`);
+    else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
+    const useShiny = sh && p.dex === s.partner && s.partnerShiny;
+    cell.appendChild(G.UI.spriteCanvas(p.dex, 92, 80, { scale: 2, silhouette: !own, shadow: own, shiny: useShiny }));
+    cell.insertAdjacentHTML('beforeend', `<b>${own ? survivorName(p.dex,p.name) : '???'}</b>${G.UI.stars(p.rarity, 9)}`);
+    cell.onclick = () => {
+      dexSel = p.dex;
+      $('dex-grid').querySelectorAll('.cell').forEach(c => c.classList.remove('on'));
+      cell.classList.add('on');
+      showDetail(p.dex);
+      const now=performance.now();
+      if(lastFavoriteDex===p.dex&&now-lastFavoriteAt<350)toggleFavorite(p.dex);
+      else {lastFavoriteDex=p.dex;lastFavoriteAt=now;}
+    };
+    return cell;
   }
 
   // Variante que se está viendo en la ficha (normal o shiny).
@@ -198,7 +266,7 @@ G.MenuUI = (() => {
     else if (isPartner && dex !== showDetail.last) viewShiny = !!s.partnerShiny;
     showDetail.last = dex;
 
-    const max = { hp: 183, atk: 1.55, spd: 137 };
+    const max = { hp: 183, atk: 1.55, spd: 137, def:160 };
     const bar = (label, v, m, txt) =>
       `<div class="stat"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div><span>${txt}</span></div>`;
     const usingThis = isPartner && (!hasSh || !!s.partnerShiny === viewShiny);
@@ -217,8 +285,12 @@ G.MenuUI = (() => {
       </div>
       ${own ? `
         ${bar('Vida', p.hp, max.hp, p.hp)}
-        ${bar('Ataque', p.atk, max.atk, '×' + p.atk.toFixed(2))}
+        ${bar('Ataque físico', p.pa, max.atk, '×' + p.pa.toFixed(2))}
+        ${bar('At. Esp.', p.sa, max.atk, '×' + p.sa.toFixed(2))}
+        ${bar('Defensa', p.df, max.def, p.df)}
+        ${bar('Def. Esp.', p.sd, max.def, p.sd)}
         ${bar('Velocidad', p.spd, max.spd, p.spd)}
+        <p class="sub center" style="margin:6px 0 0">Pega mejor con ataques <b class="gold">${G.Stats.sideOf(p) === 'special' ? 'especiales' : 'físicos'}</b></p>
         <p style="font-size:14px;margin:10px 0 4px">Empieza con <b class="gold">${G.Moves.BY_ID[G.startMoveOf(dex)].name}</b></p>
         <p class="move-icons" title="Movimientos que puede aprender">
           ${G.Moves.poolFor(p).map(id => `<span title="${G.Moves.BY_ID[id].name}">${G.Icons.html('move:' + id, 16)}</span>`).join('')}</p>

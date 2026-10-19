@@ -19,11 +19,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PokéSurvivor">
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preload" href="assets/fonts/PixelifyPS-400.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="assets/fonts/PixelifyPS-700.ttf" as="font" type="font/ttf" crossorigin>
 
-<link rel="stylesheet" href="css/style.css?v=3589a33d7f">
+<link rel="stylesheet" href="css/style.css?v=2c4141e9fb">
 </head>
 <body>
 
@@ -45,7 +44,7 @@
       <div class="tab" data-tab="register">Crear cuenta</div>
     </div>
     <form id="login-form" autocomplete="off">
-      <label for="f-user">Nombre</label>
+      <label for="f-user">Nombre de acceso</label>
       <input id="f-user" class="field" maxlength="16" spellcheck="false">
       <label for="f-pass">Contraseña</label>
       <input id="f-pass" class="field" type="password" maxlength="64">
@@ -247,19 +246,7 @@
     <p class="boot-ld">Cargando…</p>
   </div>
 </div>
-<script>
-  (function () {
-    var s = null; try { s = localStorage.getItem('ps.lang'); } catch (e) {}
-    var n = ((navigator.languages && navigator.languages[0]) || navigator.language || 'es').toLowerCase();
-    var l = s === 'es' || s === 'en' ? s : (/\/en(\/|$)/.test(location.pathname) ? 'en' : (n.indexOf('es') === 0 ? 'es' : 'en'));
-    document.documentElement.lang = l;
-    if (l === 'en') {
-      var p = document.querySelectorAll('#boot p');
-      p[0].textContent = 'A Pokémon survival game, free in your browser and on mobile.';
-      p[1].textContent = 'Loading…';
-    }
-  })();
-</script>
+<script src="js/core/boot.js"></script>
 <div id="tap-start" class="tapstart hidden">
   <div class="boot-in">
     <h1>PokéSurvivor</h1>
@@ -391,7 +378,14 @@
     <div class="gen-tabs" id="dex-gens"></div>
     <div class="split" style="margin-top:8px">
       <div>
+        <div class="dex-tools">
+          <input id="dex-q" maxlength="128" type="search" placeholder="Buscar por nombre o número" autocomplete="off" spellcheck="false">
+          <select id="dex-type" title="Tipo de Pokémon"></select>
+          <span id="dex-count" class="sub"></span>
+          <button class="btn small ghost hidden" id="dex-clear" type="button">Limpiar</button>
+        </div>
         <div class="filters" id="dex-filters"></div>
+        <div class="filters dex-sort" id="dex-sort"></div>
         <div class="grid" id="dex-grid"></div>
       </div>
       <div class="panel" id="dex-detail"></div>
@@ -503,6 +497,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=396cdf0308"></script>
+<script defer src="js/app.min.js?v=6749e2df92"></script>
 </body>
 </html>

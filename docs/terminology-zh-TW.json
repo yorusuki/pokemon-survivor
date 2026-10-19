@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T01:38:43.030188+00:00",
+  "generatedAt": "2026-10-19T12:25:07.044462+00:00",
   "sources": [
     {
       "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv",
@@ -39,8 +39,8 @@
       "total": 966
     },
     "moves": {
-      "matched": 64,
-      "total": 64
+      "matched": 65,
+      "total": 65
     },
     "items": {
       "matched": 11,
@@ -8775,6 +8775,15 @@
     },
     {
       "kind": "moves",
+      "gameId": "nasty-plot",
+      "sourceId": "417",
+      "original": "Maquinación",
+      "en": "Nasty Plot",
+      "zh-TW": "詭計",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
       "gameId": "agility",
       "sourceId": "97",
       "original": "Agilidad",
@@ -10079,7 +10088,7 @@
       "url": "https://tw.portal-pokemon.com/pokedex/0001/"
     }
   ],
-  "editorialTextCount": 1766,
+  "editorialTextCount": 1860,
   "missingEditorialTexts": 0,
   "guidePages": 10
 }

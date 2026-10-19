@@ -121,6 +121,7 @@ G.DB = (() => {
    * servidor (firestore.rules, saves).
    */
   function sanitize(s) {
+    s.pused=Object.fromEntries(Object.entries(isObj(s.pused)?s.pused:{}).filter(([d,n])=>/^[1-9][0-9]{0,3}$/.test(d)&&G.DEX_BY[d]&&Number.isSafeInteger(n)&&n>=0&&n<=1e9));
     s.favorites=normalizeFavorites(s.favorites);
     s.moveReserve=normalizeReserve(s.moveReserve);
     const n = v => (Number.isFinite(+v) && +v > 0 ? Math.floor(+v) : 0);
@@ -263,6 +264,8 @@ G.DB = (() => {
       const current=favorites[dex];
       if(!current || entry.at>current.at || (entry.at===current.at && !entry.on)) favorites[dex]=entry;
     }
+    r.pused=r.pused||{};
+    for(const [dex,n] of Object.entries(older.pused||{}))if(/^[1-9][0-9]{0,3}$/.test(dex)&&G.DEX_BY[dex]&&Number.isSafeInteger(n)&&n>=0&&n<=1e9)r.pused[dex]=Math.max(r.pused[dex]||0,n);
     r.favorites=normalizeFavorites(favorites);
     r.moveReserve=normalizeReserve(r.moveReserve);
     for(const [dex,e] of Object.entries(normalizeReserve(older.moveReserve))) {
