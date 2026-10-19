@@ -21,7 +21,7 @@ test('原作護甲卡最多12次，永久護甲本體70%',()=>{
  const {G,p}=fixture();p.dmgReduce=.7;p.slots=Array.from({length:4},()=>[]);p.moves=[];p.statsTaken={def:12};for(let i=0;i<30;i++)assert.ok(!G.LevelUp.offer(p,50).some(c=>c.key==='stat:def'));G.LevelUp.STATS.find(s=>s.id==='def').apply(p);near(p.dmgReduce,.7);
 });
 test('可學池依屬性固定，每次升級重抽候選而非場次鎖定，滿欄停止新招',()=>{
- const {G,p}=fixture();assert.equal(G.Moves.ALL.length,65);assert.equal(G.Moves.poolFor({types:['electric']}).length,12);assert.ok(!G.Moves.poolFor({types:['electric']}).includes('flamethrower'));
+ const {G,p}=fixture();assert.equal(G.Moves.ALL.length,103);assert.equal(G.Moves.poolFor({types:['electric']}).length,16);assert.ok(!G.Moves.poolFor({types:['electric']}).includes('flamethrower'));
  p.mon.types=['fire','flying'];const eligible=G.Moves.poolFor(p.mon);const seen=new Set();let offset=0;G.U.pickN=(a,n)=>{if(a.length===eligible.length){const out=Array.from({length:Math.min(n,a.length)},(_,i)=>a[(i+offset)%a.length]);offset+=6;return out;}return a.slice(0,n);};
  for(let i=0;i<500;i++)for(const c of G.LevelUp.offer(p,100))if(c.type==='new')seen.add(c.key.slice(4));assert.equal(seen.size,eligible.length);
  p.slots=Array.from({length:4},()=>[]);assert.ok(!G.LevelUp.offer(p,100).some(c=>c.type==='new'));

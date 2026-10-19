@@ -49,3 +49,7 @@ npm --prefix server audit
 公開排行榜、個人資料及檢舉摘要增加型別、有限數值、字串長度與陣列長度正規化；保留Unicode暱稱、UID／好友代碼與既有後端驗證。文字仍由既有DOM輸出轉義，正規化不等於HTML消毒，也不替代授權。啟動程式移至外部boot.js並保留繁中，CSP雜湊重新產生，不加入unsafe-eval或放寬script-src。
 
 參考 [OWASP DOM XSS指引](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html)與 [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP)。本次聚焦資料讀取與輸出相容，未重新進行外部滲透測試或全面CVE掃描，也未改認證／資料庫權限。
+
+## 2.3.0 增量檢查
+
+新增初始招式JSON欄位驗證型別、dex、ID與時間戳，不更動認證或SQL結構。新增多人暈眩訊息限制持續時間0～10秒（不含0）、敵人ID及事件長度，敵人套用端亦檢查有限正數並封頂10秒；此界線不改正常招式暈眩數值。啟動失敗按鈕移除被CSP拒絕的inline onclick，改事件綁定。沒有新增依賴；本次不是全面CVE掃描或滲透測試。

@@ -62,6 +62,16 @@ G.DB = (() => {
     return out;
   }
 
+  function normalizeStarts(value) {
+    const out={};
+    if(isObj(value))for(const [dex,v] of Object.entries(value)) {
+      if(!/^[1-9][0-9]{0,3}$/.test(dex)||!G.DEX_BY[dex])continue;
+      const e=typeof v==='string'?{id:v,at:0}:v;
+      if(e&&typeof e.id==='string'&&e.id.length<=80&&G.Moves?.BY_ID[e.id]&&Number.isSafeInteger(e.at)&&e.at>=0&&e.at<=1e15)out[dex]={id:e.id,at:e.at};
+    }
+    return out;
+  }
+
   function newSave(name) {
     return {
       v: VERSION,
@@ -77,6 +87,7 @@ G.DB = (() => {
       personality: null,      // { trait, scores }
       upgrades: {},           // (antiguo) mejoras de la cuenta; ahora van por Pokémon
       favorites: {},          // dex -> {on,at}; separate from public profile.favs
+      pstart: {},
       moveReserve: {},       // per-Pokemon purchased reserve preference
       survivalBest: {},       // dex -> best survival seconds for this account
       pupg: {},               // dex -> { id -> nivel }: mejoras de cada Pokémon
@@ -121,6 +132,7 @@ G.DB = (() => {
    * servidor (firestore.rules, saves).
    */
   function sanitize(s) {
+    s.pstart=normalizeStarts(s.pstart);
     s.pused=Object.fromEntries(Object.entries(isObj(s.pused)?s.pused:{}).filter(([d,n])=>/^[1-9][0-9]{0,3}$/.test(d)&&G.DEX_BY[d]&&Number.isSafeInteger(n)&&n>=0&&n<=1e9));
     s.favorites=normalizeFavorites(s.favorites);
     s.moveReserve=normalizeReserve(s.moveReserve);
@@ -263,6 +275,11 @@ G.DB = (() => {
     for(const [dex,entry] of Object.entries(normalizeFavorites(older.favorites))) {
       const current=favorites[dex];
       if(!current || entry.at>current.at || (entry.at===current.at && !entry.on)) favorites[dex]=entry;
+    }
+    r.pstart=normalizeStarts(r.pstart);
+    for(const [dex,e] of Object.entries(normalizeStarts(older.pstart))) {
+      const current=r.pstart[dex];
+      if(!current||e.at>current.at||(e.at===current.at&&e.id<current.id))r.pstart[dex]=e;
     }
     r.pused=r.pused||{};
     for(const [dex,n] of Object.entries(older.pused||{}))if(/^[1-9][0-9]{0,3}$/.test(dex)&&G.DEX_BY[dex]&&Number.isSafeInteger(n)&&n>=0&&n<=1e9)r.pused[dex]=Math.max(r.pused[dex]||0,n);
@@ -807,6 +824,13 @@ G.DB = (() => {
     save.favorites[dex]={on,at:Math.max(Date.now(),(save.favorites[dex]?.at||0)+1)};
     commit(true);return {ok:true,on};
   }
+  function setStartMove(dex,id) {
+    if(!save||!Number.isInteger(dex)||!save.owned[dex]||!(upgradesOf(dex).start>0)||!G.startChoices(dex).includes(id))return false;
+    save.pstart=normalizeStarts(save.pstart);
+    save.pstart[dex]={id,at:Math.max(Date.now(),(save.pstart[dex]?.at||0)+1)};
+    if(Array.isArray(save.pban?.[dex]))save.pban[dex]=save.pban[dex].filter(x=>x!==id);
+    commit(true);return true;
+  }
   function reserveEnabled(dex) { return save?.moveReserve?.[dex]?.enabled!==false; }
   function setReserveEnabled(dex,enabled) {
     if(!save||!Number.isInteger(dex)||!G.DEX_BY[dex]||typeof enabled!=='boolean'||!(upgradesOf(dex).moves>0))return false;
@@ -838,7 +862,7 @@ G.DB = (() => {
 
   return {
     ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, flush: () => pushNow(true),
-    isFavorite, favoriteCount, toggleFavorite, reserveEnabled, setReserveEnabled, survivor, recordSurvival, owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
+    isFavorite, favoriteCount, toggleFavorite, setStartMove, reserveEnabled, setReserveEnabled, survivor, recordSurvival, owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
     /** Acceso de bajo nivel para los módulos de red (sólo en modo nube). */

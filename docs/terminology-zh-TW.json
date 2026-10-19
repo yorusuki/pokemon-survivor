@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T12:25:07.044462+00:00",
+  "generatedAt": "2026-10-19T14:36:19.008306+00:00",
   "sources": [
     {
       "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv",
@@ -39,16 +39,16 @@
       "total": 966
     },
     "moves": {
-      "matched": 65,
-      "total": 65
+      "matched": 103,
+      "total": 103
     },
     "items": {
       "matched": 11,
       "total": 11
     },
     "evolutionMoves": {
-      "matched": 59,
-      "total": 59
+      "matched": 97,
+      "total": 97
     }
   },
   "records": [
@@ -9332,6 +9332,348 @@
       "source": "PokeAPI CSV"
     },
     {
+      "kind": "moves",
+      "gameId": "hyper-beam",
+      "sourceId": "63",
+      "original": "Hiperrayo",
+      "en": "Hyper Beam",
+      "zh-TW": "破壞光線",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "rapid-spin",
+      "sourceId": "229",
+      "original": "Giro Rápido",
+      "en": "Rapid Spin",
+      "zh-TW": "高速旋轉",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "flame-charge",
+      "sourceId": "488",
+      "original": "Nitrocarga",
+      "en": "Flame Charge",
+      "zh-TW": "蓄能焰襲",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "whirlpool",
+      "sourceId": "250",
+      "original": "Torbellino",
+      "en": "Whirlpool",
+      "zh-TW": "潮旋",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "seed-bomb",
+      "sourceId": "402",
+      "original": "Bomba Germen",
+      "en": "Seed Bomb",
+      "zh-TW": "種子炸彈",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "energy-ball",
+      "sourceId": "412",
+      "original": "Energibola",
+      "en": "Energy Ball",
+      "zh-TW": "能量球",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "solar-beam",
+      "sourceId": "76",
+      "original": "Rayo Solar",
+      "en": "Solar Beam",
+      "zh-TW": "日光束",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "thunder-wave",
+      "sourceId": "86",
+      "original": "Onda Trueno",
+      "en": "Thunder Wave",
+      "zh-TW": "電磁波",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "electro-ball",
+      "sourceId": "486",
+      "original": "Bola Voltio",
+      "en": "Electro Ball",
+      "zh-TW": "電球",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "extrasensory",
+      "sourceId": "326",
+      "original": "Paranormal",
+      "en": "Extrasensory",
+      "zh-TW": "神通力",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "mist-ball",
+      "sourceId": "296",
+      "original": "Bola Neblina",
+      "en": "Mist Ball",
+      "zh-TW": "薄霧球",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "acid-spray",
+      "sourceId": "491",
+      "original": "Bomba Ácida",
+      "en": "Acid Spray",
+      "zh-TW": "酸液炸彈",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "sand-tomb",
+      "sourceId": "328",
+      "original": "Bucle Arena",
+      "en": "Sand Tomb",
+      "zh-TW": "流沙地獄",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "magnitude",
+      "sourceId": "222",
+      "original": "Magnitud",
+      "en": "Magnitude",
+      "zh-TW": "震級",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "whirlwind",
+      "sourceId": "18",
+      "original": "Remolino",
+      "en": "Whirlwind",
+      "zh-TW": "吹飛",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "air-slash",
+      "sourceId": "403",
+      "original": "Tajo Aéreo",
+      "en": "Air Slash",
+      "zh-TW": "空氣斬",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "signal-beam",
+      "sourceId": "324",
+      "original": "Rayo Señal",
+      "en": "Signal Beam",
+      "zh-TW": "信號光束",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "u-turn",
+      "sourceId": "369",
+      "original": "Ida y Vuelta",
+      "en": "U-turn",
+      "zh-TW": "急速折返",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "rock-tomb",
+      "sourceId": "317",
+      "original": "Tumba Rocas",
+      "en": "Rock Tomb",
+      "zh-TW": "岩石封鎖",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "ancient-power",
+      "sourceId": "246",
+      "original": "Poder Pasado",
+      "en": "Ancient Power",
+      "zh-TW": "原始之力",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "power-gem",
+      "sourceId": "408",
+      "original": "Joya de Luz",
+      "en": "Power Gem",
+      "zh-TW": "力量寶石",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "ice-shard",
+      "sourceId": "420",
+      "original": "Canto Helado",
+      "en": "Ice Shard",
+      "zh-TW": "冰礫",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "freeze-dry",
+      "sourceId": "573",
+      "original": "Liofilización",
+      "en": "Freeze-Dry",
+      "zh-TW": "冷凍乾燥",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "rolling-kick",
+      "sourceId": "27",
+      "original": "Patada Giro",
+      "en": "Rolling Kick",
+      "zh-TW": "迴旋踢",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "vacuum-wave",
+      "sourceId": "410",
+      "original": "Onda Vacío",
+      "en": "Vacuum Wave",
+      "zh-TW": "真空波",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "dynamic-punch",
+      "sourceId": "223",
+      "original": "Puño Dinámico",
+      "en": "Dynamic Punch",
+      "zh-TW": "爆裂拳",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "shadow-sneak",
+      "sourceId": "425",
+      "original": "Sombra Vil",
+      "en": "Shadow Sneak",
+      "zh-TW": "影子偷襲",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "ominous-wind",
+      "sourceId": "466",
+      "original": "Viento Aciago",
+      "en": "Ominous Wind",
+      "zh-TW": "奇異之風",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "dragon-breath",
+      "sourceId": "225",
+      "original": "Dragoaliento",
+      "en": "Dragon Breath",
+      "zh-TW": "龍息",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "dragon-claw",
+      "sourceId": "337",
+      "original": "Garra Dragón",
+      "en": "Dragon Claw",
+      "zh-TW": "龍爪",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "outrage",
+      "sourceId": "200",
+      "original": "Enfado",
+      "en": "Outrage",
+      "zh-TW": "逆鱗",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "draining-kiss",
+      "sourceId": "577",
+      "original": "Beso Drenaje",
+      "en": "Draining Kiss",
+      "zh-TW": "吸取之吻",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "play-rough",
+      "sourceId": "583",
+      "original": "Carantoña",
+      "en": "Play Rough",
+      "zh-TW": "嬉鬧",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "disarming-voice",
+      "sourceId": "574",
+      "original": "Voz Cautivadora",
+      "en": "Disarming Voice",
+      "zh-TW": "魅惑之聲",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "mirror-shot",
+      "sourceId": "429",
+      "original": "Disparo Espejo",
+      "en": "Mirror Shot",
+      "zh-TW": "鏡光射擊",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "gyro-ball",
+      "sourceId": "360",
+      "original": "Giro Bola",
+      "en": "Gyro Ball",
+      "zh-TW": "陀螺球",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "sucker-punch",
+      "sourceId": "389",
+      "original": "Golpe Bajo",
+      "en": "Sucker Punch",
+      "zh-TW": "突襲",
+      "source": "PokeAPI CSV"
+    },
+    {
+      "kind": "moves",
+      "gameId": "night-slash",
+      "sourceId": "400",
+      "original": "Tajo Umbrío",
+      "en": "Night Slash",
+      "zh-TW": "暗襲要害",
+      "source": "PokeAPI CSV"
+    },
+    {
       "kind": "items",
       "gameId": "leftovers",
       "sourceId": "211",
@@ -9498,6 +9840,17 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Ataque Aéreo",
+      "sourceId": "143",
+      "sourceKind": "moves",
+      "original": "Ataque Aéreo",
+      "en": "Sky Attack",
+      "zh-TW": "神鳥猛擊",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Ataque Óseo",
       "sourceId": "198",
       "sourceKind": "moves",
@@ -9564,12 +9917,78 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Carga Dragón",
+      "sourceId": "407",
+      "sourceKind": "moves",
+      "original": "Carga Dragón",
+      "en": "Dragon Rush",
+      "zh-TW": "龍之俯衝",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Carámbano",
+      "sourceId": "333",
+      "sourceKind": "moves",
+      "original": "Carámbano",
+      "en": "Icicle Spear",
+      "zh-TW": "冰錐",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Chispa",
+      "sourceId": "209",
+      "sourceKind": "moves",
+      "original": "Chispa",
+      "en": "Spark",
+      "zh-TW": "電光",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Choque Anímico",
+      "sourceId": "789",
+      "sourceKind": "moves",
+      "original": "Choque Anímico",
+      "en": "Spirit Break",
+      "zh-TW": "靈魂衝擊",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Cometa Draco",
       "sourceId": "434",
       "sourceKind": "moves",
       "original": "Cometa Draco",
       "en": "Draco Meteor",
       "zh-TW": "流星群",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Cuchilla Solar",
+      "sourceId": "669",
+      "sourceKind": "moves",
+      "original": "Cuchilla Solar",
+      "en": "Solar Blade",
+      "zh-TW": "日光刃",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Cuerpo Pesado",
+      "sourceId": "484",
+      "sourceKind": "moves",
+      "original": "Cuerpo Pesado",
+      "en": "Heavy Slam",
+      "zh-TW": "重磅衝撞",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9608,12 +10027,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Dracoflecha",
+      "sourceId": "751",
+      "sourceKind": "moves",
+      "original": "Dracoflecha",
+      "en": "Dragon Darts",
+      "zh-TW": "龍箭",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Electrocañón",
       "sourceId": "192",
       "sourceKind": "moves",
       "original": "Electrocañón",
       "en": "Zap Cannon",
       "zh-TW": "電磁炮",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Encanto",
+      "sourceId": "204",
+      "sourceKind": "moves",
+      "original": "Encanto",
+      "en": "Charm",
+      "zh-TW": "撒嬌",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9674,12 +10115,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Frío Polar",
+      "sourceId": "329",
+      "sourceKind": "moves",
+      "original": "Frío Polar",
+      "en": "Sheer Cold",
+      "zh-TW": "絕對零度",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Fuego Sagrado",
       "sourceId": "221",
       "sourceKind": "moves",
       "original": "Fuego Sagrado",
       "en": "Sacred Fire",
       "zh-TW": "神聖之火",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Fuerza Equina",
+      "sourceId": "667",
+      "sourceKind": "moves",
+      "original": "Fuerza Equina",
+      "en": "High Horsepower",
+      "zh-TW": "十萬馬力",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9696,12 +10159,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Garra Umbría",
+      "sourceId": "421",
+      "sourceKind": "moves",
+      "original": "Garra Umbría",
+      "en": "Shadow Claw",
+      "zh-TW": "暗影爪",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Gas Venenoso",
       "sourceId": "139",
       "sourceKind": "moves",
       "original": "Gas Venenoso",
       "en": "Poison Gas",
       "zh-TW": "毒瓦斯",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Gigadrenado",
+      "sourceId": "202",
+      "sourceKind": "moves",
+      "original": "Gigadrenado",
+      "en": "Giga Drain",
+      "zh-TW": "終極吸取",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9718,12 +10203,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Golpe Calor",
+      "sourceId": "535",
+      "sourceKind": "moves",
+      "original": "Golpe Calor",
+      "en": "Heat Crash",
+      "zh-TW": "高溫重壓",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Golpe Fantasma",
       "sourceId": "566",
       "sourceKind": "moves",
       "original": "Golpe Fantasma",
       "en": "Phantom Force",
       "zh-TW": "潛靈奇襲",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Golpe Umbrío",
+      "sourceId": "467",
+      "sourceKind": "moves",
+      "original": "Golpe Umbrío",
+      "en": "Shadow Force",
+      "zh-TW": "暗影潛襲",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9740,6 +10247,17 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Huracán",
+      "sourceId": "542",
+      "sourceKind": "moves",
+      "original": "Huracán",
+      "en": "Hurricane",
+      "zh-TW": "暴風",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Infierno",
       "sourceId": "517",
       "sourceKind": "moves",
@@ -9751,12 +10269,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Juego Sucio",
+      "sourceId": "492",
+      "sourceKind": "moves",
+      "original": "Juego Sucio",
+      "en": "Foul Play",
+      "zh-TW": "欺詐",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Lanza Mugre",
       "sourceId": "441",
       "sourceKind": "moves",
       "original": "Lanza Mugre",
       "en": "Gunk Shot",
       "zh-TW": "垃圾射擊",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Lariat Oscuro",
+      "sourceId": "663",
+      "sourceKind": "moves",
+      "original": "Lariat Oscuro",
+      "en": "Darkest Lariat",
+      "zh-TW": "ＤＤ金勾臂",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9795,12 +10335,89 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Luz Lunar",
+      "sourceId": "236",
+      "sourceKind": "moves",
+      "original": "Luz Lunar",
+      "en": "Moonlight",
+      "zh-TW": "月光",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Mazazo",
+      "sourceId": "452",
+      "sourceKind": "moves",
+      "original": "Mazazo",
+      "en": "Wood Hammer",
+      "zh-TW": "木槌",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Megacuerno",
+      "sourceId": "224",
+      "sourceKind": "moves",
+      "original": "Megacuerno",
+      "en": "Megahorn",
+      "zh-TW": "超級角擊",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Megapuño",
+      "sourceId": "5",
+      "sourceKind": "moves",
+      "original": "Megapuño",
+      "en": "Mega Punch",
+      "zh-TW": "百萬噸重拳",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Metaláser",
+      "sourceId": "796",
+      "sourceKind": "moves",
+      "original": "Metaláser",
+      "en": "Steel Beam",
+      "zh-TW": "鐵蹄光線",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Onda Certera",
       "sourceId": "411",
       "sourceKind": "moves",
       "original": "Onda Certera",
       "en": "Focus Blast",
       "zh-TW": "真氣彈",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Onda Tóxica",
+      "sourceId": "482",
+      "sourceKind": "moves",
+      "original": "Onda Tóxica",
+      "en": "Sludge Wave",
+      "zh-TW": "污泥波",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Patada Salto Alta",
+      "sourceId": "136",
+      "sourceKind": "moves",
+      "original": "Patada Salto Alta",
+      "en": "High Jump Kick",
+      "zh-TW": "飛膝踢",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9872,12 +10489,45 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Psicoonda",
+      "sourceId": "149",
+      "sourceKind": "moves",
+      "original": "Psicoonda",
+      "en": "Psywave",
+      "zh-TW": "精神波",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Pulso Dragón",
+      "sourceId": "406",
+      "sourceKind": "moves",
+      "original": "Pulso Dragón",
+      "en": "Dragon Pulse",
+      "zh-TW": "龍之波動",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Puya Nociva",
       "sourceId": "398",
       "sourceKind": "moves",
       "original": "Puya Nociva",
       "en": "Poison Jab",
       "zh-TW": "毒擊",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Puño Incremento",
+      "sourceId": "612",
+      "sourceKind": "moves",
+      "original": "Puño Incremento",
+      "en": "Power-Up Punch",
+      "zh-TW": "增強拳",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9905,12 +10555,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Rayo Meteórico",
+      "sourceId": "800",
+      "sourceKind": "moves",
+      "original": "Rayo Meteórico",
+      "en": "Meteor Beam",
+      "zh-TW": "流星光束",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Rayo Metálico",
       "sourceId": "796",
       "sourceKind": "moves",
       "original": "Rayo Metálico",
       "en": "Steel Beam",
       "zh-TW": "鐵蹄光線",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Rayo Prisma",
+      "sourceId": "711",
+      "sourceKind": "moves",
+      "original": "Rayo Prisma",
+      "en": "Prismatic Laser",
+      "zh-TW": "稜鏡鐳射",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9927,12 +10599,45 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Resplandor",
+      "sourceId": "295",
+      "sourceKind": "moves",
+      "original": "Resplandor",
+      "en": "Luster Purge",
+      "zh-TW": "潔淨光芒",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Roca Afilada",
       "sourceId": "444",
       "sourceKind": "moves",
       "original": "Roca Afilada",
       "en": "Stone Edge",
       "zh-TW": "尖石攻擊",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Salmuera",
+      "sourceId": "362",
+      "sourceKind": "moves",
+      "original": "Salmuera",
+      "en": "Brine",
+      "zh-TW": "鹽水",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Sanguijuela",
+      "sourceId": "141",
+      "sourceKind": "moves",
+      "original": "Sanguijuela",
+      "en": "Leech Life",
+      "zh-TW": "吸血",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9960,12 +10665,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Taladradora",
+      "sourceId": "529",
+      "sourceKind": "moves",
+      "original": "Taladradora",
+      "en": "Drill Run",
+      "zh-TW": "直衝鑽",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Terremoto",
       "sourceId": "89",
       "sourceKind": "moves",
       "original": "Terremoto",
       "en": "Earthquake",
       "zh-TW": "地震",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Testarazo",
+      "sourceId": "457",
+      "sourceKind": "moves",
+      "original": "Testarazo",
+      "en": "Head Smash",
+      "zh-TW": "雙刃頭錘",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -9993,12 +10720,34 @@
     },
     {
       "kind": "evolutionMoves",
+      "gameId": "Tormenta de Diamantes",
+      "sourceId": "591",
+      "sourceKind": "moves",
+      "original": "Tormenta de Diamantes",
+      "en": "Diamond Storm",
+      "zh-TW": "鑽石風暴",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
       "gameId": "Trampa Rocas",
       "sourceId": "446",
       "sourceKind": "moves",
       "original": "Trampa Rocas",
       "en": "Stealth Rock",
       "zh-TW": "隱形岩",
+      "source": "PokeAPI CSV",
+      "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Triataque",
+      "sourceId": "161",
+      "sourceKind": "moves",
+      "original": "Triataque",
+      "en": "Tri Attack",
+      "zh-TW": "三重攻擊",
       "source": "PokeAPI CSV",
       "note": ""
     },
@@ -10078,6 +10827,17 @@
       "zh-TW": "冰凍之風",
       "source": "PokeAPI CSV",
       "note": ""
+    },
+    {
+      "kind": "evolutionMoves",
+      "gameId": "Voltio Cruel",
+      "sourceId": "344",
+      "sourceKind": "moves",
+      "original": "Voltio Cruel",
+      "en": "Volt Tackle",
+      "zh-TW": "伏特攻擊",
+      "source": "PokeAPI CSV",
+      "note": ""
     }
   ],
   "reliability": "名稱依 PokéAPI zh-Hant CSV 比對，屬社群維護資料，非逐筆官方認證。一般文案依遊戲語境撰寫，不使用外部機翻服務。",
@@ -10088,7 +10848,7 @@
       "url": "https://tw.portal-pokemon.com/pokedex/0001/"
     }
   ],
-  "editorialTextCount": 1860,
+  "editorialTextCount": 1974,
   "missingEditorialTexts": 0,
   "guidePages": 10
 }

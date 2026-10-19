@@ -1,6 +1,6 @@
 # 原作新增差異審查：803125d
 
-檢查日期：2026-10-19。狀態：**等待選擇，尚未整合**。
+檢查日期：2026-10-19。狀態：**已依使用者決策整合至 2.3.0**。
 
 - 原作分支：[JPTER78/pokesurvivor main](https://github.com/JPTER78/pokesurvivor/tree/803125dfdf3066fe6cf65f490f1e7b577871a295)。
 - 上次已決策基準：`e4ba0e173cb7e415f9815c924a48c5c25f516962`。
@@ -88,6 +88,8 @@
 - 已下載 main 到忽略的 bare 快取；核對完整 SHA、提交範圍及三方文字比對。
 - 原始碼確認新增 38 招、8 種攻擊方式、400 金額／1 級上限、1.2 加成及 2500／4 秒頭目處理。
 - 已確認目前 tools/build.js 已包含 CSS 指紋；不將原作已有但本分支亦具備的功能列為缺失。
-- 未 checkout／merge／cherry-pick，也未執行下載的原作 JavaScript 或建立資料表。
-- 新玩法尚未實作／測試，不宣稱原作新招式已經過本分支平衡驗收。
-- 本次只新增審查文件與 lastInspected；reviewedThrough 維持 e4ba0e1，待使用者決策。
+- 未 checkout／merge／cherry-pick；以來源模組選擇性移植，沒有建立資料表。
+- 新玩法已移植，實際驗證結果見根目錄 CHANGELOG；不宣稱完成長局平衡驗收。
+- 本次採用 N01～N05；N06 採語境／暱稱保護，保留既有語言與繁中；N07 補雙語搜尋、保留原排行說明；N08 略過；N09 補 CSP 下可用的重新載入按鈕，不重做 CSS 指紋。reviewedThrough 推進至 803125d。
+
+本表「目前2.2.0」與建議欄保留採用前決策依據；最終結果見 [固定比較表](UPSTREAM_COMPARISON.md) 及 [擴池數據](MOVE_POOL_EXPANSION.md)。

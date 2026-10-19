@@ -14,7 +14,7 @@ G.RankingUI = (() => {
     dl.innerHTML = G.DEX.map(p => `<option value="${esc(p.name)}">`).join('');
     $('rk-poke').onchange = () => {
       const v = $('rk-poke').value.trim().toLowerCase();
-      const p = G.DEX.find(x => x.name.toLowerCase() === v);
+      const p = G.DEX.find(x => [x.name,x.searchName].filter(Boolean).some(name=>name.toLowerCase()===v));
       if (!v) { setDex(null); return; }
       if (!p) { G.UI.toast('No hay ningún Pokémon con ese nombre'); return; }
       setDex(p.dex);

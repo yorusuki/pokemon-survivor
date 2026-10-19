@@ -102,8 +102,10 @@ G.Player = class Player {
   get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
   atkFor(m) {
     const cat = m && m.cat, b = cat === 'physical' ? this.buffs.patk : cat === 'special' ? this.buffs.satk : null;
-    return this.atk * (G.Stats?.fit(this.mon, cat) ?? 1) * (b ? 1 + b.n * b.amount : 1);
+    return this.atk * (G.Stats?.fit(this.mon, cat) ?? 1) * (b ? 1 + b.n * b.amount : 1) * (m && this.monoType(m.type) ? Player.MONO_K : 1);
   }
+  static get MONO_K() { return 1.2; }
+  monoType(type) { return this.mon.types.length === 1 && type === this.mon.types[0]; }
   get spd() {
     const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount) * (this.slowT > 0 ? 0.5 : 1);
     const w = G.Weather.speedFor(this.mon.types);
@@ -126,8 +128,8 @@ G.Player = class Player {
     const group = [m];
     this.slots.push(group);
     this.arrange();
-    // Se cambia al nuevo, salvo si estás usando un vínculo (no te quita el grupo).
-    if (!(this.slots[this.active] && this.slots[this.active].length > 1)) this.setActive(this.slots.indexOf(group));
+    // Keep the current group when learning a move; arrange preserves its slot.
+    if (!this.slots[this.active]) this.active = this.slots.indexOf(group);
     return true;
   }
 
@@ -547,9 +549,9 @@ G.Player = class Player {
       ctx.textAlign = 'center';
       const y = this.y - this.bodyH - 8;
       ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(0,0,0,.75)';
-      ctx.strokeText(this.tag, this.x, y);
+      G.I18n.rawCanvas(ctx, 'strokeText', this.tag, this.x, y);
       ctx.fillStyle = this.dead ? '#ff8a96' : this.tagColor || '#fff';
-      ctx.fillText(this.tag, this.x, y);
+      G.I18n.rawCanvas(ctx, 'fillText', this.tag, this.x, y);
       if (this.dead) {
         ctx.font = '700 6px Pixelify,"Segoe UI",sans-serif';
         ctx.strokeText(this.revLabel || '', this.x, y - 8);

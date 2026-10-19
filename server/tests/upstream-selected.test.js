@@ -15,7 +15,7 @@ test('升級、重抽、連結與道具都阻擋初始 600ms，允許時間邊�
  const a={name:'a',type:'normal',id:'a',lvl:1},b={...a,name:'b',id:'b'};f.G.U.TYPE_COLOR={normal:'#fff'};f.G.RunUI.showBond({mode:'pair',loose:[a,b]},()=>picks++);f.G.RunUI.pickBond(0);f.setTime(2400);f.G.RunUI.pickBond(0);f.G.RunUI.pickBond(0);assert.equal(picks,2);f.setTime(3000);f.G.RunUI.pickBond(0);assert.equal(picks,3);
 });
 test('暫停摘要只顯示現行能力、顯示物特，轉義動態名稱；DPS 按遊戲時間計',()=>{
- const {G}=runUI();G.Stats={taken:()=>1,NAME:{physical:'physical',special:'special'}};G.Game.player={mon:{},atkFor:()=>1.3,moves:[{name:'<img>',id:'x',kind:'melee',lvl:2,since:10,dealt:100}],hp:90,maxHp:100,atk:1.3,spd:100,effectiveReduction:.9,critChance:0,cdMul:1,regen:0,statsTaken:{}};
+ const {G}=runUI();G.Stats={taken:()=>1,NAME:{physical:'physical',special:'special'}};G.Game.player={mon:{types:[]},atkFor:()=>1.3,moves:[{name:'<img>',id:'x',kind:'melee',lvl:2,since:10,dealt:100}],hp:90,maxHp:100,atk:1.3,spd:100,effectiveReduction:.9,critChance:0,cdMul:1,regen:0,statsTaken:{}};
  const html=G.RunUI.pauseSummary();assert.match(html,/&lt;img&gt;/);assert.doesNotMatch(html,/<img>/);assert.match(html,/5\/s/);assert.match(html,/90%/);assert.doesNotMatch(html,/At\. Esp\.|Def\. Esp\.|Crítico/);assert.equal(G.RunUI.pauseSummary(),html);
 });
 function padFixture(){let sample=null;const keys=[],listeners={};const G={Settings:{get:()=>true},Game:{state:'playing'},Input:{virtual:k=>keys.push(k)}};

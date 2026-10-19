@@ -262,6 +262,7 @@ G.RunUI = (() => {
     }).join('');
     const stats=[['Vida',n(pl.hp)+' / '+n(pl.maxHp)],['Ataque físico',n(pl.atkFor({cat:'physical'}),2)],['Ataque especial',n(pl.atkFor({cat:'special'}),2)],['Velocidad',n(pl.spd,1)]];
     for(const [cat,label] of [['physical','Reducción física'],['special','Reducción especial']])stats.push([label,n((1-(1-pl.effectiveReduction)*G.Stats.taken(pl.mon,cat))*100,1)+'%']);
+    if(pl.mon.types.length===1)stats.push(['Bonificación monotipo','+20% · '+G.U.TYPE_NAME[pl.mon.types[0]]]);
     if(pl.critChance>0)stats.push(['Crítico',n(pl.critChance*100,1)+'%']);
     if(pl.cdMul<1)stats.push(['Recarga',n((1-pl.cdMul)*100,1)+'%']);
     if(pl.regen>0)stats.push(['Regeneración',n(pl.regen,1)+'/s']);

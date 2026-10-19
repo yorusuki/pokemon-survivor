@@ -18,6 +18,7 @@ G.NetProtocol = (() => {
   function state(a) { return Array.isArray(a) && a.length >= 13 && a.length <= 15 && a.every((v,i) => i === 7 ? typeof v === 'string' && v.length <= 80 : num(v)); }
   function event(e) {
     if (!Array.isArray(e) || e.length > 16 || !events.has(e[0])) return false;
+    if(e[0]==='s'&&e[2]==='t')return e.length===4&&Number.isSafeInteger(e[1])&&e[1]>0&&Number.isFinite(e[3])&&e[3]>0&&e[3]<=10;
     if(e[0]==='es' && !(e.length===9 || (e.length===10 && [null,'physical','special'].includes(e[9]))))return false;
     if(e[0]==='hz' && e[1]?.cat!==undefined && ![null,'physical','special'].includes(e[1].cat))return false;
     if (['lp','lr'].includes(e[0])) return e.length===2 && Number.isSafeInteger(e[1]) && e[1]>0;

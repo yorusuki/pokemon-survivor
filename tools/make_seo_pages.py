@@ -401,6 +401,9 @@ KIND = {'es': {'projectile': 'Proyectil', 'melee': 'Cuerpo a cuerpo', 'beam': 'R
         'en': {'projectile': 'Projectile', 'melee': 'Melee', 'beam': 'Beam', 'orbit': 'Orbit', 'nova': 'Burst', 'aura': 'Aura', 'buff': 'Buff',
                'boomerang': 'Boomerang', 'chain': 'Chain', 'mine': 'Mines', 'meteor': 'Meteors', 'turret': 'Turret', 'dash': 'Dash',
                'trail': 'Trail', 'cone': 'Spray'}}
+KIND['en'].update({'homing':'Homing','bounce':'Bouncing','charge':'Charged beam','spin':'Spinning','quake':'Ground waves','vortex':'Vortex','shove':'Push wave','stun':'Stun zone'})
+KIND['es'].update({'homing':'Perseguidor','bounce':'Rebote','charge':'Rayo cargado','spin':'Giro','quake':'Ondas terrestres','vortex':'Remolino','shove':'Empuje','stun':'Aturdimiento'})
+
 def moves_page(lang):
     pid = 'moves'
     rows = []

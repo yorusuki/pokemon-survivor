@@ -199,9 +199,9 @@ G.HUD = (() => {
         ctx.textAlign = ca > 0.3 ? 'right' : ca < -0.3 ? 'left' : 'center';
         const lx = -ca * 34, ly = -sa * 30 + 4;
         ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.85)';
-        ctx.strokeText(label, lx, ly);
+        G.I18n.rawCanvas(ctx,'strokeText',label,lx,ly);
         ctx.fillStyle = '#e2d0ff';
-        ctx.fillText(label, lx, ly);
+        G.I18n.rawCanvas(ctx,'fillText',label,lx,ly);
       } else {
         // Encima de la grieta: flecha hacia abajo que bota.
         const by = sy - 46 - Math.abs(Math.sin(now * 4)) * 10;
@@ -428,7 +428,7 @@ G.HUD = (() => {
       const o = m.pl;
       ctx.font = F(800, 10);
       ctx.fillStyle = m.color;
-      ctx.fillText(m.name, px, y + 9);
+      G.I18n.rawCanvas(ctx,'fillText',m.name,px,y+9);
       const lx = px + 78;
       bar(ctx, lx, y + 1, 110, 8, o.dead ? 0 : o.hp / o.maxHp, o.dead ? '#ff5f6d' : '#5fe08a');
       if (o.dead) {
@@ -465,16 +465,16 @@ G.HUD = (() => {
       ctx.font = F(800, 14);
       ctx.textAlign = 'center';
       ctx.fillStyle = '#fff';
-      ctx.fillText(m.name.charAt(0).toUpperCase(), 0, 5);
+      G.I18n.rawCanvas(ctx,'fillText',m.name.charAt(0).toUpperCase(),0,5);
       // Nombre y distancia: al lado contrario de la flecha, para que no se salga
       const lx = -Math.cos(a) * 30, ly = -Math.sin(a) * 26 + 4;
       ctx.font = F(800, 12);
-      const label = (o.dead ? '¡' + m.name + ' necesita ayuda! ' : m.name + ' ') + '· ' + metres + ' m';
+      const label = o.dead ? G.I18n.f('¡{x} necesita ayuda! · {x} m',m.name,metres) : m.name+' · '+metres+' m';
       ctx.textAlign = Math.cos(a) > 0.3 ? 'right' : Math.cos(a) < -0.3 ? 'left' : 'center';
       ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.8)';
-      ctx.strokeText(label, lx, ly);
+      G.I18n.rawCanvas(ctx,'strokeText',label,lx,ly);
       ctx.fillStyle = col;
-      ctx.fillText(label, lx, ly);
+      G.I18n.rawCanvas(ctx,'fillText',label,lx,ly);
       ctx.restore();
     }
 

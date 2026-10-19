@@ -28,6 +28,15 @@ G.I18n = (() => {
   const exact = new Map(), exactLow = new Map();
   let patterns = [], frag = null, fragLow = null, fragMap = new Map();
   const cache = new Map();
+  const nameTemplates = new Set([
+    'Faltan por elegir: {x}', 'Esperando a {x}…', '{x} ha dejado la partida',
+    '¡{x} necesita ayuda! · {x} m', 'Tu apodo es {x}', '¿Quitar a {x} de tus amigos?',
+    'Solicitud enviada a {x}', 'Ahora eres amigo de {x}',
+    'Estás en la sala de {x}. El anfitrión empezará la partida.', 'Invitación enviada a {x}',
+    '{x} te invita a jugar en su sala', 'Pausa: {x} está eligiendo…',
+    'Pausa: {x} están eligiendo…', 'Pausa: esperando a {x} (anfitrión)…',
+    '¿Reportar la marca de {x} como trampa?'
+  ]);
   const L = '\\p{L}\\p{N}';
   const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -39,7 +48,7 @@ G.I18n = (() => {
       if (!en || es === en) continue;
       if (es.includes('{x}')) {
         const parts = es.split('{x}').map(reEsc);
-        patterns.push({ re: new RegExp('^' + parts.join('(.+?)') + '$', 'u'), reI: new RegExp('^' + parts.join('(.+?)') + '$', 'iu'), en });
+        patterns.push({ key:es, weight:es.replace(/\{x\}/g,'').length, re: new RegExp('^' + parts.join('(.+?)') + '$', 'u'), reI: new RegExp('^' + parts.join('(.+?)') + '$', 'iu'), en });
       } else {
         exact.set(es, en);
         exactLow.set(es.toLowerCase(), en);
@@ -49,6 +58,7 @@ G.I18n = (() => {
     // Una sola expresión con todos los trozos (los más largos primero), sólo palabras enteras.
     const all = [...fragMap.keys()].sort((a, b) => b.length - a.length).map(reEsc).join('|');
     frag = all ? new RegExp(`(?<![${L}])(${all})(?![${L}])`, 'giu') : null;
+    patterns.sort((a,b)=>b.weight-a.weight);
     cache.clear();
   }
 
@@ -83,7 +93,7 @@ G.I18n = (() => {
         const mm = (upper ? p.reI : p.re).exec(body);
         if (!mm) continue;
         let i = 1;
-        r = p.en.replace(/\{x\}/g, () => { const g = mm[i++]; return g === undefined ? '' : core(g); });
+        r = p.en.replace(/\{x\}/g, () => { const g = mm[i++]; return g === undefined ? '' : nameTemplates.has(p.key)&&i===2 ? g : core(g); });
         r = keepCase(body, r);
         break;
       }
@@ -143,8 +153,10 @@ G.I18n = (() => {
   }
 
   // ---------------- canvas y ventanas del navegador ----------------
+  const P = CanvasRenderingContext2D.prototype;
+  const canvasText = Object.fromEntries(['fillText','strokeText','measureText'].map(k=>[k,P[k]]));
+  function rawCanvas(ctx,method,text,...args){return canvasText[method].call(ctx,text,...args);}
   if (lang !== 'es') {
-    const P = CanvasRenderingContext2D.prototype;
     for (const k of ['fillText', 'strokeText', 'measureText']) {
       const orig = P[k];
       P[k] = function (s, ...a) { return orig.call(this, typeof s === 'string' ? t(s) : s, ...a); };
@@ -159,6 +171,6 @@ G.I18n = (() => {
     location.reload();
   }
 
-  return { lang, add, t, f, set, startDom, walk };
+  return { lang, add, t, f, set, startDom, walk, rawCanvas };
 })();
 G.T = G.I18n.t;

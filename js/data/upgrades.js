@@ -4,7 +4,7 @@
 G.Upgrades = (() => {
   const LIST = [
     { id: 'hp',     icon: 'heart', name: 'Vitalidad',      unit: '+8 vida',            max: 10, base: 60,  grow: 1.35 },
-    { id: 'atk',    icon: 'fist', name: 'Fuerza',         unit: '+4% daño',           max: 10, base: 80,  grow: 1.38 },
+    { id: 'atk',    icon: 'fist', name: 'Entrenamiento de ataque',         unit: '+4% daño',           max: 10, base: 80,  grow: 1.38 },
     { id: 'spd',    icon: 'boot', name: 'Zancada',        unit: '+3% velocidad',      max: 8,  base: 70,  grow: 1.4 },
     { id: 'cd',     icon: 'clock', name: 'Reflejos',       unit: '-3% recarga',        max: 8,  base: 90,  grow: 1.42 },
     { id: 'def',    icon: 'shield', name: 'Coraza',         unit: '+2% defensa',        max: 8,  base: 80,  grow: 1.4 },
@@ -15,7 +15,9 @@ G.Upgrades = (() => {
     { id: 'moves',  icon: 'cards', name: 'Repertorio',     unit: 'Empiezas con 2 movimientos', max: 1, base: 1500, grow: 1 },
     { id: 'crit',   icon: 'star', name: 'Golpe Crítico',  unit: '+3% de críticos (x1,5 de daño)', max: 10, base: 90, grow: 1.4 },
     { id: 'reroll', icon: 'up', name: 'Cambio de cartas', unit: '+1 cambio de cartas de nivel por run', max: 5, base: 150, grow: 1.6 },
-    { id: 'ban',    icon: 'ban', name: 'Veto',           unit: 'Bloquea 1 movimiento: no te sale en las cartas', max: 3, base: 300, grow: 1.9 }
+    { id: 'ban',    icon: 'ban', name: 'Veto',           unit: 'Bloquea 1 movimiento: no te sale en las cartas', max: 3, base: 300, grow: 1.9 },
+    // 19-10-2026: se compra una vez y luego se elige gratis (save.pstart, ver G.startMoveOf).
+    { id: 'start',  icon: 'cursor', name: 'Movimiento inicial', unit: 'Eliges con qué ataque empiezas la partida', max: 1, base: 400, grow: 1 }
   ];
   const BY = {};
   for (const u of LIST) BY[u.id] = u;

@@ -28,6 +28,7 @@ G.Bonuses = (() => {
     if(changed(pl.magnet,78)) add('mag','Radio de recogida',n(pl.magnet));
     if(pl.rerollBonus>0) add('reroll','Cambios restantes',n(Math.max(0,1+pl.rerollBonus-(pl.rerolls||0)))+'/'+n(1+pl.rerollBonus));
     if(pl.banned?.size) add('ban','Movimientos vetados',n(pl.banned.size));
+    if(pl.mon?.types?.length===1)add('mono','Bonificación monotipo','+20% · '+t(G.U.TYPE_NAME[pl.mon.types[0]]));
     if(pl.item) add('item','Objeto equipado',t(G.Items?.BY?.[pl.item]?.name||pl.item));
     if(pl.power) add('power','Poder temporal',t(pl.power.def.name)+' '+n(pl.power.t)+'s');
     return result;

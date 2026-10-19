@@ -50,4 +50,4 @@ python -m unittest discover -s tools -p test_upstream_review.py
 
 本次決策結果見 [2026-10-19 審查](UPSTREAM_REVIEW_2026-10-19.md)。此流程不影響遊戲執行，不需要重建容器才能使用檢查工具。
 
-最新待決策差異見 [803125d 新增審查](UPSTREAM_REVIEW_2026-10-19_803125d.md)，尚未套用。
+803125d 已依決策整合至2.3.0；見 [新增審查結果](UPSTREAM_REVIEW_2026-10-19_803125d.md) 與 [招式數據](MOVE_POOL_EXPANSION.md)。
