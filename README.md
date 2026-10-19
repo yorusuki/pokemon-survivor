@@ -41,6 +41,7 @@ docker compose up -d
 | 介面與收藏 | [畫面設定](docs/GAMEPLAY_OPTIONS.md)、[最愛與能力面板](docs/FAVORITES_DISPLAY.md) |
 | 平衡與招式 | [平衡方案](docs/BALANCE_PLAN.md)、[支援敵人](docs/SUPPORT_BALANCE.md)、[招式池](docs/SKILL_POOL_REVIEW.md) |
 | 翻譯與字型 | [中文化](docs/LOCALIZATION.md)、[名稱來源](docs/terminology-zh-TW.json)、[字型來源](docs/FONT_SOURCES.md) |
+| 原作更新審查 | [檢查與移植流程](docs/UPSTREAM_SYNC.md)、[本次待選差異](docs/UPSTREAM_REVIEW_2026-10-19.md) |
 | Git 更新方式 | [版本下載與更新](docs/GITHUB_SSH.md) |
 
 ## 開發與驗證

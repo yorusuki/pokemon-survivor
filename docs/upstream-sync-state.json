@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "repository": "JPTER78/pokesurvivor",
+  "initialBaseline": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
+  "reviewedThrough": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
+  "lastInspected": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
+  "decisionStatus": "pending",
+  "note": "已產生差異報告，等待使用者選擇；尚未完成各項決策，不推進 reviewedThrough。"
+}
