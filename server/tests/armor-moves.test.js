@@ -58,3 +58,7 @@ test('實際變硬從一級到五級疊層與升級不降低效果，滿級護�
  }
  assert.equal(m.stacks,7);near(p.effectiveReduction,.8);p.buffs.def.n=0;near(p.effectiveReduction,0);near(p.dmgReduce,0);
 });
+
+test('實際受傷確認：穿背心再加護甲不增傷，卸裝保留已獲本體，80%溢出不會刪除來源',()=>{
+ const {G,p}=fixture();p.dmgReduce=.6;p.mon.df=75;const hit=()=>{p.invuln=0;const before=p.hp;p.hurt(100,null,false,'physical');return before-p.hp;};near(hit(),40);p.equip('assaultvest');near(hit(),20);G.LevelUp.STATS.find(s=>s.id==='def').apply(p);near(hit(),20);p.equip(null);near(hit(),34);p.dmgReduce=.7;p.equip('assaultvest');p.buffs.def={n:5,amount:.07};near(hit(),20);p.equip(null);p.buffs.def.n=0;near(hit(),30);near(p.dmgReduce,.7);
+});

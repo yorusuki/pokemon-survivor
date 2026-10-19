@@ -3,7 +3,7 @@
 本表只比較固定原作基準與本分支目前結果，不記錄中間試作。每次功能變更應同步修改對應列；逐日修改及驗證見 [更新紀錄](../CHANGELOG.md)。
 
 - 初始基準：原作者 [JPTER78/pokesurvivor](https://github.com/JPTER78/pokesurvivor/tree/5bbc3b29288d6af4596f21188fb8b54e0e9b739f)，固定提交 `5bbc3b29288d6af4596f21188fb8b54e0e9b739f`，不是本分支經過修改的最早提交。
-- 目前結果：本分支 2.3.0；最後核對日期 **2026-10-19**。此欄隨功能維護，不隨上游 main 自動改變基準。
+- 目前結果：本分支 2.3.1；最後核對日期 **2026-10-19**。此欄隨功能維護，不隨上游 main 自動改變基準。
 - 原作既有更新仍保留於遊戲內歷史；這不表示原站後端資料或政策已移植。
 
 ## 架構、帳號與連線
@@ -74,3 +74,5 @@
 原始行為可由固定提交的 [資料庫](https://github.com/JPTER78/pokesurvivor/blob/5bbc3b29288d6af4596f21188fb8b54e0e9b739f/js/core/db.js)、[敵人](https://github.com/JPTER78/pokesurvivor/blob/5bbc3b29288d6af4596f21188fb8b54e0e9b739f/js/entities/enemy.js)、[玩家](https://github.com/JPTER78/pokesurvivor/blob/5bbc3b29288d6af4596f21188fb8b54e0e9b739f/js/entities/player.js)、[抽卡](https://github.com/JPTER78/pokesurvivor/blob/5bbc3b29288d6af4596f21188fb8b54e0e9b739f/js/systems/gacha.js) 與 [連線](https://github.com/JPTER78/pokesurvivor/blob/5bbc3b29288d6af4596f21188fb8b54e0e9b739f/js/net/net.js) 核對。原作者、素材與字型授權保持原規定，見 [README 授權說明](../README.md#原作素材與授權)。
 
 後續原作 803125d 已按決策整合 N01～N05，N06／N07／N09 選擇補強、N08 略過；[擴池數據](MOVE_POOL_EXPANSION.md)。
+
+治療者施法間隔已在2.3.1校正為原作3.5秒；背心維持來源分離，合計80%上限不變，避免原作裝卸與護甲卡互相倒扣。

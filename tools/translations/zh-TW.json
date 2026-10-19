@@ -1972,5 +1972,6 @@
   "with Vigor · ×1.8 damage, more radius and longer stun": "需要「體魄」· 傷害 ×1.8，半徑增加、暈眩時間延長",
   "with Vigor · ×1.8 damage, more radius and stronger pull": "需要「體魄」· 傷害 ×1.8，半徑增加、吸引力提升",
   "Attack training": "攻擊強化",
-  "Entrenamiento de ataque": "攻擊強化"
+  "Entrenamiento de ataque": "攻擊強化",
+  "Healers now use the upstream 3.5-second casting interval.": "治療者施法間隔修正為原作的3.5秒，補齊先前整合遺漏。"
 }

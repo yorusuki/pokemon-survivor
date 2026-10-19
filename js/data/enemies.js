@@ -98,7 +98,7 @@ G.Enemies = (() => {
     };
     // Los que pelean de lejos: daño del disparo, recarga y distancia.
     const CD = { ranged: 2.2 - ti * 0.15, fan: 3.2 - ti * 0.15, beamer: 4.4 - ti * 0.2, zoner: 4.6 - ti * 0.2,
-                 healer: 5, summoner: 7 };
+                 healer: 3.5, summoner: 7 };
     if (CD[behavior]) {
       d.shotDmg = Math.round(tier.dmg * (behavior === 'fan' ? 0.7 : 0.8));
       d.shotCd = +CD[behavior].toFixed(2);

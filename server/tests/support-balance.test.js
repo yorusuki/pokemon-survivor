@@ -29,3 +29,7 @@ test('制裁速度軟上限與37→40分鐘觸碰成長；35分鐘以前不額�
  const G={};vm.runInNewContext(read('js/systems/judgment.js'),{G});for(const [speed,value] of [[100,100],[130,130],[170,140],[250,160],[290,170]])assert.equal(G.Judgment.capSpd(speed),value);
  const source=read('js/systems/judgment.js'),fn=source.match(/const touchPct = [^;]+;/)[0],calc=vm.runInNewContext('(()=>{const TOUCH=.4;let arenaT=0;'+fn+'return t=>{arenaT=t;return touchPct();};})()');for(const [time,rate] of [[0,.4],[420,.4],[480,.6],[540,.8],[600,1],[900,1]])assert.ok(Math.abs(calc(time)-rate)<1e-9);
 });
+
+test('實際敵人定義產生器使用原作3.5秒治療間隔，不殘留客製5秒',()=>{
+ const G={U:{hash:()=>.5,pick:a=>a[0],pickN:(a,n)=>a.slice(0,n),clamp:(v,a,b)=>Math.max(a,Math.min(b,v))}},math=Object.create(Math);math.random=()=>0;const c={G,Math:math};vm.createContext(c);for(const p of ['js/data/pokedex.js','js/data/sprites-meta.js','js/data/enemies.js'])vm.runInContext(read(p),c);const defs=G.Enemies.rollRun().cast.flatMap(t=>t.list).filter(e=>e.behavior==='healer');assert.ok(defs.length>0);for(const d of defs)assert.equal(d.shotCd,3.5);
+});
