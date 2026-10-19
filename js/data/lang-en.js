@@ -745,3 +745,39 @@ G.I18n.add({
 });
 
 G.I18n.add({"No puedes añadirte como amigo.": "You cannot add yourself as a friend."});
+
+G.I18n.add({
+  "Accesibilidad": "Accessibility",
+  "Con mando": "Controller",
+  "Mando conectado": "Controller connected",
+  "Mando conectado:": "Controller connected:",
+  "Xbox, PlayStation, Switch y la mayoría de mandos USB o Bluetooth. Conéctalo y pulsa cualquier botón.": "Xbox, PlayStation, Switch and most USB or Bluetooth controllers. Connect it and press a button.",
+  "Usar mando": "Enable controller",
+  "Moverte, cambiar de ataque y manejar los menús con el mando.": "Move, switch moves and navigate menus with a controller.",
+  "Vibración": "Vibration",
+  "El mando vibra al recibir daño (si el mando y el navegador lo permiten).": "Vibrate when taking damage, if supported by your controller and browser.",
+  "Stick izq.": "Left stick",
+  "Cruceta": "D-pad",
+  "moverse · elegir en los menús": "move · navigate menus",
+  "pulsar (en los menús) · saltar la animación de Arceus": "confirm in menus · skip Arceus cinematic",
+  "atrás / cerrar": "back / close",
+  "cambiar las cartas al subir de nivel": "reroll level-up cards",
+  "Stick der.": "Right stick",
+  "desplazar las listas · apuntar (si activas Apuntar a mano en Accesibilidad)": "scroll lists · aim (enable Manual aim in Accessibility)",
+  "Apuntado": "Aiming",
+  "Apuntar a mano": "Manual aim",
+  "Tus ataques van hacia el ratón (o hacia donde empujes el stick derecho del mando) en vez de al enemigo más cercano. Si sueltas el stick y no mueves el ratón, vuelve a apuntar solo. La cadena y los meteoros siguen buscando a los enemigos solos.": "Aim toward the mouse or controller right stick. Releasing the stick without moving the mouse restores auto aim. Chain and meteor attacks still select targets automatically.",
+  "Tus ataques": "Your moves",
+  "Tus estadísticas": "Current stats",
+  "Objeto y cartas": "Item and upgrades",
+  "Por segundo": "Per second",
+  "Daño directo, incluido el exceso de daño; sin veneno, quemaduras ni objetos del mapa. DPS medio desde que aprendiste el movimiento; mínimo 5 segundos.": "Direct-hit damage includes overkill, excluding poison, burn and map props. DPS averages game time since learning the move, with a 5-second minimum.",
+  "Sin objeto.": "No held item.",
+  "Aún no has cogido cartas de mejora.": "No upgrade cards selected yet.",
+  "Resumen de partida, mando y apuntado manual.": "Run summary, controller and manual aim.",
+  "Las cartas esperan 0,6 segundos para evitar pulsaciones accidentales.": "Cards wait 0.6 seconds before accepting selections to prevent accidental picks.",
+  "Pokémon grandes con mejor tamaño y colisión; mejoras de pantalla en iPhone.": "Improved large Pokémon sizing and collision, plus iPhone screen fixes.",
+  "Compatibilidad shiny del ranking sin reiniciar las tablas.": "Leaderboard shiny compatibility without resetting boards."
+});
+
+G.I18n.add({"Daño":"Damage"});

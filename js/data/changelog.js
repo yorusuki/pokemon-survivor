@@ -6,7 +6,7 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
-  {"d": "2026-10-19", "title": ["Novedades por fecha", "Updates by date"], "chg": [["Vidasfera da +30% de daño y -10% de vida máxima, sin perder vida al atacar.", "Life Orb gives +30% damage and -10% maximum HP, without draining HP on attacks."], ["Las novedades se agrupan por fecha y categoría; los cambios del mismo día se reúnen en una sola entrada.", "Updates are grouped by date and category; same-day changes share one entry."]]},
+  {"d": "2026-10-19", "title": ["2.1.0", "2.1.0"], "chg": [["Resumen de partida, mando y apuntado manual.", "Run summary, controller and manual aim."], ["Las cartas esperan 0,6 segundos para evitar pulsaciones accidentales.", "Cards wait 0.6 seconds before accepting selections to prevent accidental picks."], ["Pokémon grandes con mejor tamaño y colisión; mejoras de pantalla en iPhone.", "Improved large Pokémon sizing and collision, plus iPhone screen fixes."], ["Compatibilidad shiny del ranking sin reiniciar las tablas.", "Leaderboard shiny compatibility without resetting boards."], ["Vidasfera da +30% de daño y -10% de vida máxima, sin perder vida al atacar.", "Life Orb gives +30% damage and -10% maximum HP, without draining HP on attacks."], ["Las novedades se agrupan por fecha y categoría; los cambios del mismo día se reúnen en una sola entrada.", "Updates are grouped by date and category; same-day changes share one entry."]]},
   {
     "d": "2026-10-18",
     "title": [

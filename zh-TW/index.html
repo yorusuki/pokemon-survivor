@@ -23,7 +23,7 @@
 <link rel="preload" href="assets/fonts/PixelifyPS-400.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="assets/fonts/PixelifyPS-700.ttf" as="font" type="font/ttf" crossorigin>
 
-<link rel="stylesheet" href="css/style.css?v=5625b13006">
+<link rel="stylesheet" href="css/style.css?v=3589a33d7f">
 </head>
 <body>
 
@@ -191,6 +191,7 @@
       <button class="gen-tab" data-t="sound">Sonido</button>
       <button class="gen-tab" data-t="gfx">Gráficos</button>
       <button class="gen-tab" data-t="ctl">Controles</button>
+      <button class="gen-tab" data-t="a11y">Accesibilidad</button>
       <button class="gen-tab" data-t="acc">Cuenta</button>
       <button class="gen-tab" data-t="about">Acerca de</button>
     </div>
@@ -478,8 +479,9 @@
 </section>
 
 <section id="scr-pause" class="scr dim hidden">
-  <div class="box center" style="width:min(460px,100%)">
+  <div class="box center pause-box">
     <h2>Pausa</h2>
+    <div id="pause-sum" class="pause-sum" translate="no"></div>
     <p class="sub kbd-hint"><kbd>WASD</kbd> moverse · <kbd>1</kbd>–<kbd>4</kbd> movimiento · <kbd>Q</kbd>/<kbd>E</kbd> ciclar · <kbd>Esc</kbd> pausa</p>
     <p class="sub touch-hint">Arrastra el dedo para moverte · toca un ataque para cambiarlo</p>
     <p id="pause-coop" class="note hidden">Partida en grupo: el juego sigue mientras estás aquí.</p>
@@ -501,6 +503,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=3bcfca612e"></script>
+<script defer src="js/app.min.js?v=396cdf0308"></script>
 </body>
 </html>

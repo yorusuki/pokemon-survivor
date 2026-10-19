@@ -45,7 +45,7 @@ body {
   -webkit-font-smoothing: none;
 }
 canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
-#game { display: block; width: 100vw; height: 100vh; height: 100dvh; touch-action: none; }
+#game { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
 button { font: inherit; color: inherit; }
 input { font: inherit; }
 
@@ -886,3 +886,28 @@ html[data-font="pixel"] body,html[data-font="pixel"] button,html[data-font="pixe
 .reserve-toggle button{white-space:normal;text-align:left}
 
 .cell b .survivor-name{max-width:100%;box-sizing:border-box;vertical-align:bottom;overflow:hidden;text-overflow:ellipsis}
+
+/* Selected upstream UI improvements; existing local preferences remain. */
+/* Pausa con el resumen de la partida (run-ui.js, pauseSummary). */
+.pause-box { width: min(720px, 100%); max-height: calc(100dvh - 24px); overflow-y: auto; }
+.pause-sum { text-align: left; margin: 4px 0 10px; }
+.pause-sum h3 { color: var(--gold); font-size: 16px; margin: 10px 0 6px; }
+.sum-moves { width: 100%; border-collapse: collapse; font-size: 14px; }
+.sum-moves td, .sum-moves th { padding: 3px 4px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sum-moves th { font-size: 12px; color: var(--muted); font-weight: 400; }
+.sum-moves .num { text-align: right; white-space: nowrap; }
+.sum-moves img { vertical-align: -4px; }
+.sum-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 14px; font-size: 14px; }
+.sum-stats div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.08); padding: 2px 0; }
+.sum-stats span { color: var(--muted); }
+.sum-stats small { color: var(--muted); font-weight: 400; }
+
+.cards.guard .card { opacity: .5; filter: saturate(.6); }
+.cards .card { transition: transform .08s, background .12s, border-color .12s, opacity .2s, filter .2s; }
+
+.pad-focus { outline: 3px solid var(--gold); outline-offset: 3px; }
+.padkey { display:inline-block; padding:1px 5px; border:1px solid var(--muted); border-radius:4px; }
+#set-tabs { flex-wrap:nowrap; overflow-x:auto; flex-shrink:0; }
+#set-tabs .gen-tab { flex-shrink:0; }
+.pause-sum { overflow-x:auto; }
+.pause-sum .summary-note { font-size:12px; color:var(--muted); }

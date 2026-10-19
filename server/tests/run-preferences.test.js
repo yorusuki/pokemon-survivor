@@ -23,10 +23,10 @@ test('道具選擇排隊且不覆蓋，升級後恢復詢問',()=>{
  const g=itemFlow();g.c.state='levelup';g.c.offer('lifeorb');assert.equal(g.choices.length,0);g.c.state='playing';g.c.after();assert.equal(g.choices[0].next,'lifeorb');
 });
 test('沒有現有道具的選擇介面可選不裝備，已有道具仍可保留',()=>{
- const nodes={},shown=[];const element=()=>({children:[],className:'',innerHTML:'',appendChild(e){this.children.push(e);}});nodes['item-cards']=element();
- const c={G:{T:s=>s,UI:{$:id=>nodes[id],show:id=>shown.push(id),hide(){}},Items:{BY:{lifeorb:{name:'orb',desc:'risk'},focussash:{name:'sash',desc:'protect'}}},Icons:{html:()=>''}},document:{createElement:element}};
- vm.createContext(c);vm.runInContext(read('js/ui/run-ui.js'),c);let selected='unset';c.G.RunUI.showItemChoice(null,'lifeorb',id=>selected=id);assert.match(nodes['item-cards'].children[0].innerHTML,/No equipar/);nodes['item-cards'].children[0].onclick();assert.equal(selected,null);
- nodes['item-cards'].children=[];c.G.RunUI.showItemChoice('focussash','lifeorb',id=>selected=id);assert.match(nodes['item-cards'].children[0].innerHTML,/sash/);nodes['item-cards'].children[1].onclick();assert.equal(selected,'lifeorb');
+ let now=0;const nodes={},shown=[];const element=()=>({children:[],className:'',innerHTML:'',classList:{add(){},remove(){}},appendChild(e){this.children.push(e);}});nodes['item-cards']=element();
+ const c={performance:{now:()=>now},setTimeout(){},G:{T:s=>s,UI:{$:id=>nodes[id],show:id=>shown.push(id),hide(){}},Items:{BY:{lifeorb:{name:'orb',desc:'risk'},focussash:{name:'sash',desc:'protect'}}},Icons:{html:()=>''}},document:{createElement:element}};
+ vm.createContext(c);vm.runInContext(read('js/ui/run-ui.js'),c);let selected='unset';c.G.RunUI.showItemChoice(null,'lifeorb',id=>selected=id);assert.match(nodes['item-cards'].children[0].innerHTML,/No equipar/);nodes['item-cards'].children[0].onclick();assert.equal(selected,'unset');now+=600;nodes['item-cards'].children[0].onclick();assert.equal(selected,null);
+ nodes['item-cards'].children=[];c.G.RunUI.showItemChoice('focussash','lifeorb',id=>selected=id);assert.match(nodes['item-cards'].children[0].innerHTML,/sash/);now+=600;nodes['item-cards'].children[1].onclick();assert.equal(selected,'lifeorb');
 });
 
 test('實際開場招式區塊尊重購買與停用，排除 buff 與被禁止招式',()=>{

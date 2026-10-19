@@ -162,6 +162,7 @@ G.MenuUI = (() => {
       if (/^\d$/.test(dexFilter) && p.rarity !== +dexFilter) continue;
 
       const cell = document.createElement('div');
+      cell.dataset.pad='';
       cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
       if(G.DB.isFavorite(p.dex)) cell.insertAdjacentHTML('beforeend', `<span class="favorite-heart" aria-label="${G.U.escapeHTML(G.T('Favorito'))}">♥</span>`);
       cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}</span>`);

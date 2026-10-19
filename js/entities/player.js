@@ -12,10 +12,12 @@ G.Player = class Player {
     this.mon = mon;
     this.dex = mon.dex;
     this.shiny = shiny && G.Sprites.hasShiny(mon.dex);
-    this.anim = new G.Sprites.Animator(mon.dex, 1, this.shiny);
+    // Los grandes, algo más pequeños y con el choque de uno normal (ver sprites.js).
+    this.scale = G.Sprites.playerScale(mon.dex);
+    this.anim = new G.Sprites.Animator(mon.dex, this.scale, this.shiny);
     this.x = 0; this.y = 0;
-    this.r = G.Sprites.bodyRadius(mon.dex);
-    this.bodyH = G.Sprites.bodyHeight(mon.dex);
+    this.r = G.Sprites.playerRadius(mon.dex);
+    this.bodyH = G.Sprites.bodyHeight(mon.dex, this.scale);
 
     this.atkMul = perks.atkMul || 1;
     this.spdMul = perks.spdMul || 1;
@@ -113,6 +115,7 @@ G.Player = class Player {
   addMove(id) {
     if (this.slots.length >= this.maxMoves || this.hasMove(id)) return false;
     const m = G.Moves.instance(id, 1);
+    m.since = G.Game?.st?.time || 0;
     this.moves.push(m);
     const group = [m];
     this.slots.push(group);
@@ -251,6 +254,7 @@ G.Player = class Player {
     this.flash = 0.14;
     G.Audio.sfx('hurt');
     G.Camera.kick(0.28);
+    if (!this.remote) G.Pad?.rumble(0.25 + Math.min(0.75, d / this.maxHp * 3), 140);
     G.FX.dmgText(this.x, this.y - this.bodyH - 4, '-' + Math.round(d), eff === 'super' ? '#ff3048' : eff === 'weak' ? '#c9a0a8' : '#ff6b7a', eff === 'super');
     G.FX.burst(this.x, this.y - this.bodyH * 0.5, '#ff5f6d', 6, 90);
     // Banda Focus: aguanta el golpe con 1 de vida (una vez cada 60 s).
@@ -386,14 +390,48 @@ G.Player = class Player {
     const tg = (ranged ? boss || threat : threat || boss)
             || G.Projectiles.nearest(all, this.x, this.y, 520)
             || G.World.nearestBreakable(this.x, this.y, 200);
-    this.target = tg;
-    if (tg) this.aim = Math.atan2(tg.y - this.y, tg.x - this.x);
-    else if (this.walking) this.aim = this.moveAngle;
+    // Apuntar a mano (Ajustes > Accesibilidad): hacia el ratón o el stick derecho.
+    // El blanco (para la cadena) es el enemigo que hay en esa dirección; si no
+    // hay ninguno, el de siempre.
+    const hand = this.handAim();
+    this.manualAim = hand != null;
+    if (hand != null) {
+      this.aim = hand;
+      this.target = this.enemyAlong(all, hand) || tg;
+    } else {
+      this.target = tg;
+      if (tg) this.aim = Math.atan2(tg.y - this.y, tg.x - this.x);
+      else if (this.walking) this.aim = this.moveAngle;
+    }
 
     // --- animación: mira al objetivo al atacar, si no a donde camina ---
     const face = this.attackFace > 0 || !this.walking ? this.aim : this.moveAngle;
     this.anim.dir = G.Sprites.dirFromAngle(face);
     this.anim.loop(this.walking ? 'Walk' : 'Idle', this.walking ? s / 110 : 1);
+  }
+
+  handAim() {
+    if (this.remote || !G.Settings.get('aimManual')) return null;
+    const st = G.Pad?.aim();
+    if (st) return Math.atan2(st[1], st[0]);
+    if (G.Touch.active || !G.Input.mouseMovedAt || G.Input.mouseMovedAt < (G.Pad?.aimAt || 0)) return null;
+    const w = G.Input.mouseWorld();
+    const dx = w.x - this.x, dy = w.y - (this.y - G.LIFT * 0.5);
+    return Math.hypot(dx, dy) < 4 ? null : Math.atan2(dy, dx);
+  }
+
+  /** El enemigo más cercano dentro de ±25° de la dirección a (a menos de 520). */
+  enemyAlong(all, a) {
+    let best = null, bd = 520 * 520;
+    const ca = Math.cos(a), sa = Math.sin(a), cosMax = Math.cos(0.44);
+    for (const e of all) {
+      if (e.dead) continue;
+      const dx = e.x - this.x, dy = e.y - this.y, d2 = dx * dx + dy * dy;
+      if (d2 >= bd || d2 < 1) continue;
+      if ((dx * ca + dy * sa) / Math.sqrt(d2) < cosMax) continue;
+      bd = d2; best = e;
+    }
+    return best;
   }
 
   /** Vuelve a levantarse (lo revive un compañero en cooperativo). */
@@ -456,7 +494,7 @@ G.Player = class Player {
       ctx.beginPath(); ctx.ellipse(this.x, this.y, this.r * 1.5, this.r * 0.6, 0, 0, 6.2832); ctx.stroke();
       ctx.restore();
     }
-    G.Sprites.drawShadow(ctx, this.dex, this.x, this.y);
+    G.Sprites.drawShadow(ctx, this.dex, this.x, this.y, this.scale);
     // Poder de altar: aro de su color latiendo bajo los pies.
     if (this.power && !this.dead) {
       ctx.save();

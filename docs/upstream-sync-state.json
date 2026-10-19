@@ -4,6 +4,26 @@
   "initialBaseline": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
   "reviewedThrough": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
   "lastInspected": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
-  "decisionStatus": "pending",
-  "note": "已產生差異報告，等待使用者選擇；尚未完成各項決策，不推進 reviewedThrough。"
+  "decisionStatus": "partial_implementation_pending_decisions",
+  "note": "已選項目依 2.1.0 移植；其餘等待決定，未推進 reviewedThrough，未清榜。",
+  "items": {
+    "G01": "pending_details_decision",
+    "G02": "pending_details_decision",
+    "G03": "pending_details_decision",
+    "G04": "pending_details_decision",
+    "G05": "implemented",
+    "G06": "implemented",
+    "G07": "implemented",
+    "G08": "pending_details_decision",
+    "G09": "implemented",
+    "G10": "implemented",
+    "G11": "pending_details_decision",
+    "G12": "pending_details_decision",
+    "G13": "pending_details_decision",
+    "G14": "pending_details_decision",
+    "G15": "implemented",
+    "G16": "implemented",
+    "G17": "pending_details_decision"
+  },
+  "release": "2.1.0"
 }

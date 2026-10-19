@@ -30,7 +30,14 @@ G.Game = (() => {
     cv = document.getElementById('game');
     ctx = cv.getContext('2d');
     resize();
-    addEventListener('resize', resize);
+    addEventListener('resize', resizeSoon);
+    // iPhone: al girarlo o al abrirlo desde la pantalla de inicio avisa del
+    // cambio ANTES de recolocar la página, y con esas medidas viejas el juego
+    // se quedaba estirado. Se vuelve a medir cuando el lienzo cambia de verdad
+    // (ResizeObserver) y, por si acaso, un poco después de cada aviso.
+    addEventListener('orientationchange', resizeSoon);
+    if (window.visualViewport) visualViewport.addEventListener('resize', resizeSoon);
+    if (window.ResizeObserver) new ResizeObserver(() => resize()).observe(cv);
     G.Touch.init(cv);
     // En móvil: al cambiar de app o girarlo en vertical, la partida se pausa.
     document.addEventListener('visibilitychange', () => { if (document.hidden) autoPause(); });
@@ -43,12 +50,22 @@ G.Game = (() => {
   function resize() {
     // Resolución interna como mucho ×1,5: en pantallas ×2 dibujar el doble de
     // píxeles era de lo que más costaba, y con el pixel art no se nota.
-    dpr = Math.min(1.5, window.devicePixelRatio || 1);
-    w = cv.clientWidth; h = cv.clientHeight;
+    const d = Math.min(1.5, window.devicePixelRatio || 1);
+    const cw = cv.clientWidth, ch = cv.clientHeight;
+    if (!cw || !ch) return;
+    G.Touch.resetSafe();
+    if (cw === w && ch === h && d === dpr && cv.width === Math.round(cw * d) && cv.height === Math.round(ch * d)) { checkOrientation(); return; }
+    dpr = d; w = cw; h = ch;
     cv.width = Math.round(w * dpr);
     cv.height = Math.round(h * dpr);
     G.Camera.resize(w, h, dpr);
     checkOrientation();
+  }
+  let resizeTs = [];
+  function resizeSoon() {
+    resize();
+    resizeTs.forEach(clearTimeout);
+    resizeTs = [100, 350, 800].map(ms => setTimeout(resize, ms));
   }
 
   /** Móvil en vertical: aviso de girarlo (y pausa). */
@@ -595,6 +612,7 @@ G.Game = (() => {
     if (fpsAcc >= 0.5) { fpsShown = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
     frameDt = state === 'playing' ? dt : 0;
 
+    G.Pad.poll(real);
     handleKeys();
 
     if (state === 'playing') update(dt);

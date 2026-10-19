@@ -3,6 +3,14 @@ G.RunUI = (() => {
   const $ = G.UI.$;
   let offers = null, offerCb = null, coopMode = false;
 
+  const GUARD_MS=600;
+  const guardTimes=new WeakMap();
+  function guard(box) {
+    const until=performance.now()+GUARD_MS;guardTimes.set(box,until);box.classList.add('guard');
+    setTimeout(()=>{if(guardTimes.get(box)===until)box.classList.remove('guard');},GUARD_MS);
+  }
+  const guarded=box=>performance.now()<(guardTimes.get(box)||0);
+
   /** @param coop  en grupo: tras elegir, se queda esperando a los demás */
   function showLevelUp(level, list, cb, coop = false) {
     offerCb = cb; coopMode = coop;
@@ -36,7 +44,7 @@ G.RunUI = (() => {
   }
 
   function reroll() {
-    if (!offers || rerollsLeft() <= 0) return;
+    if (!offers || rerollsLeft() <= 0 || guarded($('cards'))) return;
     const p = G.Game.player;
     p.rerolls = (p.rerolls || 0) + 1;
     G.Audio.sfx('select');
@@ -44,6 +52,7 @@ G.RunUI = (() => {
   }
 
   function renderCards(list) {
+    guard($('cards'));
     offers = list;
     const left = rerollsLeft();
     $('lvl-rr-n').textContent = left;
@@ -73,7 +82,7 @@ G.RunUI = (() => {
   }
 
   function pick(i) {
-    if (!offers || !offers[i]) return;
+    if (!offers || !offers[i] || guarded($('cards'))) return;
     const c = offers[i], cb = offerCb;
     offers = null; offerCb = null;
     $('lvl-reroll').classList.add('hidden');
@@ -159,6 +168,8 @@ G.RunUI = (() => {
   /** Has encontrado un objeto llevando ya otro: ¿con cuál te quedas? */
   function showItemChoice(cur, next, cb) {
     const box = $('item-cards');
+    guard(box);
+    let chosen=false;
     box.innerHTML = '';
     [[cur, cur?'Quedarme con':'No equipar'], [next, cur?'Cambiar a':'Equipar']].forEach(([id, verb], i) => {
       const it = G.Items.BY[id] || {name:'',desc:G.T('Seguir sin objeto equipado.')};
@@ -167,7 +178,7 @@ G.RunUI = (() => {
       el.innerHTML = `<div class="ico">${id?G.Icons.html(id, 36):''}</div>
         <div class="txt"><div class="nm">${G.T(verb)} ${it.name}</div><div class="ds">${it.desc}</div></div>
         <div class="key">${i + 1}</div>`;
-      el.onclick = () => { G.UI.hide('scr-item'); cb(id); };
+      el.onclick = () => { if(chosen || guarded(box))return;chosen=true;G.UI.hide('scr-item');cb(id); };
       box.appendChild(el);
     });
     G.UI.show('scr-item');
@@ -197,6 +208,7 @@ G.RunUI = (() => {
     $('bond-back').classList.toggle('hidden', !step2);
     bond.list = step2 ? opt.loose.filter(m => m !== first) : opt.loose;
     const box = $('bond-cards');
+    guard(box);
     box.innerHTML = '';
     bond.list.forEach((m, i) => {
       const col = G.U.TYPE_COLOR[m.type];
@@ -216,7 +228,7 @@ G.RunUI = (() => {
   }
 
   function pickBond(i) {
-    if (!bond || !bond.list[i]) return;
+    if (!bond || !bond.list[i] || guarded($('bond-cards'))) return;
     const m = bond.list[i];
     if (bond.opt.mode === 'pair' && !bond.first) {
       bond.first = m;
@@ -237,7 +249,36 @@ G.RunUI = (() => {
     renderBond();
   }
 
+  // Direct-hit totals follow upstream: overkill included, status DOT/props/ghosts excluded.
+  function pauseSummary() {
+    const pl=G.Game.player;if(!pl)return '';
+    const esc=G.U.escapeHTML,t=x=>esc(G.T(x));
+    const locale=G.I18n.lang==='zh-TW'?'zh-TW':G.I18n.lang==='en'?'en':'es';
+    const n=(v,d=0)=>Number.isFinite(v)?v.toLocaleString(locale,{maximumFractionDigits:d}):'—';
+    const time=G.Game.st.time;
+    const moves=pl.moves.map(m=>{
+      const seconds=Math.max(5,time-(m.since||0)),buff=m.kind==='buff';
+      return `<tr><td>${G.Icons.html('move:'+m.id,18)} ${esc(m.name)} <small>${t('Nivel')} ${n(m.lvl)}</small></td><td class="num">${buff?'—':n(m.dealt||0)}</td><td class="num">${buff?'—':n((m.dealt||0)/seconds,1)+'/s'}</td></tr>`;
+    }).join('');
+    const stats=[['Vida',n(pl.hp)+' / '+n(pl.maxHp)],['Ataque',n(pl.atk,2)],['Velocidad',n(pl.spd,1)]];
+    if(pl.effectiveReduction>0)stats.push(['Reducción de daño',n(pl.effectiveReduction*100,1)+'%']);
+    if(pl.critChance>0)stats.push(['Crítico',n(pl.critChance*100,1)+'%']);
+    if(pl.cdMul<1)stats.push(['Recarga',n((1-pl.cdMul)*100,1)+'%']);
+    if(pl.regen>0)stats.push(['Regeneración',n(pl.regen,1)+'/s']);
+    for(const row of G.Bonuses.rows(pl))if(['xp','coins','mag','reroll','ban','power'].includes(row.id))stats.push([row.label,row.value]);
+    const cards=Object.entries(pl.statsTaken||{}).map(([id,count])=>{
+      const stat=G.LevelUp.STATS.find(x=>x.id===id);
+      return stat&&count>0?`<span class="chip">${t(stat.title)} ×${n(count)}</span>`:'';
+    }).join('');
+    const it=pl.item&&G.Items.BY[pl.item];
+    return `<h3>${t('Tus ataques')}</h3><table class="sum-moves"><thead><tr><th>${t('Movimiento')}</th><th class="num">${t('Daño')}</th><th class="num">${t('Por segundo')}</th></tr></thead><tbody>${moves}</tbody></table>
+      <p class="summary-note">${t('Daño directo, incluido el exceso de daño; sin veneno, quemaduras ni objetos del mapa. DPS medio desde que aprendiste el movimiento; mínimo 5 segundos.')}</p>
+      <h3>${t('Tus estadísticas')}</h3><div class="sum-stats">${stats.map(([label,value])=>`<div><span>${t(label)}</span><b>${esc(value)}</b></div>`).join('')}</div>
+      <h3>${t('Objeto y cartas')}</h3><p class="sub">${it?'<b>'+esc(it.name)+'</b>: '+esc(it.desc):t('Sin objeto.')}</p><div class="chips">${cards||'<span class="sub">'+t('Aún no has cogido cartas de mejora.')+'</span>'}</div>`;
+  }
+
   function showPause(coop = false) {
+    $('pause-sum').innerHTML=pauseSummary();
     G.UI.soundControls($('pause-sound'));
     $('pause-coop').classList.toggle('hidden', !coop);
     $('btn-quit').textContent = coop ? 'Salir de la partida' : 'Abandonar run';
@@ -249,5 +290,5 @@ G.RunUI = (() => {
     $('btn-quit').onclick = onQuit;
   }
 
-  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showOver, wirePause, showPause };
+  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showOver, wirePause, showPause, pauseSummary };
 })();
