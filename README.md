@@ -1,6 +1,6 @@
 # PokéSurvivor 繁體中文自架版
 
-目前版本：**2.3.1**。本次無資料表變更；從 2.0.0 之前的版本升級，請先閱讀 [帳號升級步驟](docs/ACCOUNT_NICKNAME_PLAN.md)。
+目前版本：**2.3.2**。本次無資料表變更；從 2.0.0 之前的版本升級，請先閱讀 [帳號升級步驟](docs/ACCOUNT_NICKNAME_PLAN.md)。
 
 以寶可夢為主題的瀏覽器倖存者遊戲，包含 966 隻寶可夢、招式升級、異色收藏、抽卡及最多四人合作。本分支沿用原作 HTML、CSS、原生 JavaScript 與 Canvas 2D，加入繁體中文、PostgreSQL 後端及 Docker 部署。
 
@@ -32,7 +32,7 @@ docker compose up -d
 
 功能更新及修正見 [CHANGELOG.md](CHANGELOG.md)，按日期分類；完整功能差異見 [原作與目前版本比較表](docs/UPSTREAM_COMPARISON.md)。
 
-最新逐項核對見 [原作整合缺口複核](docs/UPSTREAM_REMAINING_AUDIT_2026-10-19.md)，區分尚未修正的介面遺漏與刻意保留的功能。
+最新逐項核對見 [原作整合缺口複核](docs/UPSTREAM_REMAINING_AUDIT_2026-10-19.md)，包含2.3.2修正進度與刻意保留的功能。
 
 | 主題 | 文件 |
 |---|---|

@@ -51,7 +51,8 @@ G.HUD = (() => {
     ctx.fillRect(0, 0, w * G.U.clamp(xpF, 0, 1), 7);
 
     // ---------- vida + nivel ----------
-    const px = 16, py = 20;
+    const safe=G.Touch.safeArea();
+    const px=16+safe.left, py=20+safe.top;
     ctx.font = F(800, 13);
     ctx.fillStyle = '#eaf2ff';
     ctx.textAlign = 'left';
@@ -79,8 +80,8 @@ G.HUD = (() => {
     }
 
     // buffs activos
-    const COL = { atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
-    const LBL = { atk: 'ATK', spd: 'VEL', def: 'DEF', regen: 'REG' };
+    const COL = { patk:'#ff6b4d', satk:'#c47bff', atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
+    const LBL = { patk:G.T('Ataque físico'), satk:G.T('Ataque especial'), atk: 'ATK', spd: 'VEL', def: 'DEF', regen: 'REG' };
     let bx = px;
     ctx.textAlign = 'left';
     for (const k in pl.buffs) {
@@ -112,7 +113,7 @@ G.HUD = (() => {
       ctx.textAlign = 'left';
       const txt = wx.name.toUpperCase() + ' · ' + Math.ceil(wx.left) + 's';
       const tw = ctx.measureText(txt).width + 40;
-      const x0 = w - tw - 16 - (touch ? 56 : 0), y0 = 14;
+      const x0 = w - tw - 16 - safe.right - (touch ? 56 : 0), y0 = 14 + safe.top;
       roundRect(ctx, x0, y0, tw, 26, 9);
       ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fill();
       G.Icons.draw(ctx, wx.icon, x0 + 6, y0 + 3, 20);

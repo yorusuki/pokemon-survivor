@@ -7,12 +7,12 @@ function el(){const classes=new Set();return {children:[],dataset:{},classList:{
 function runUI(){let now=0;const nodes={};const $=id=>nodes[id]||(nodes[id]=el());const summary=$('level-bonus-summary');summary.appendChild(el());summary.appendChild(el());
  const G={T:s=>s,UI:{$,show(){},hide(){},soundControls(){}},Icons:{html:()=>''},Bonuses:{rows:()=>[],cardSummary:()=>''},Game:{player:{rerolls:0,rerollBonus:1},st:{time:30}},I18n:{lang:'zh-TW'},U:{escapeHTML:esc},Items:{BY:{orb:{name:'orb',desc:'risk'}}},LevelUp:{STATS:[],offer:()=>[]},Audio:{sfx(){}}};
  const c={G,performance:{now:()=>now},setTimeout(){},document:{createElement:el}};vm.runInNewContext(read('js/ui/run-ui.js'),c);return {G,nodes,$,setTime:n=>now=n};}
-test('升級、重抽、連結與道具都阻擋初始 600ms，允許時間邊界且同次選擇不重複回呼',()=>{
+test('首次升級、連結與道具阻擋 600ms，重抽與連結下一步不重設，允許時間邊界且同次選擇不重複回呼',()=>{
  const f=runUI();let picks=0;const card={title:'test',desc:'test',color:'#fff',type:'new',icon:'a'};
  f.G.RunUI.showLevelUp(2,[card],()=>picks++);f.G.RunUI.pick(0);assert.equal(picks,0);f.setTime(599);f.G.RunUI.pick(0);assert.equal(picks,0);f.setTime(600);f.G.RunUI.pick(0);f.G.RunUI.pick(0);assert.equal(picks,1);
  f.G.RunUI.showLevelUp(3,[card],()=>picks++);f.G.RunUI.reroll();assert.equal(f.G.Game.player.rerolls,0);f.setTime(1200);f.G.RunUI.reroll();assert.equal(f.G.Game.player.rerolls,1);
  f.G.RunUI.showItemChoice(null,'orb',()=>picks++);f.$('item-cards').children.at(-1).onclick();assert.equal(picks,1);f.setTime(1800);const choose=f.$('item-cards').children.at(-1).onclick;choose();choose();assert.equal(picks,2);
- const a={name:'a',type:'normal',id:'a',lvl:1},b={...a,name:'b',id:'b'};f.G.U.TYPE_COLOR={normal:'#fff'};f.G.RunUI.showBond({mode:'pair',loose:[a,b]},()=>picks++);f.G.RunUI.pickBond(0);f.setTime(2400);f.G.RunUI.pickBond(0);f.G.RunUI.pickBond(0);assert.equal(picks,2);f.setTime(3000);f.G.RunUI.pickBond(0);assert.equal(picks,3);
+ const a={name:'a',type:'normal',id:'a',lvl:1},b={...a,name:'b',id:'b'};f.G.U.TYPE_COLOR={normal:'#fff'};f.G.RunUI.showBond({mode:'pair',loose:[a,b]},()=>picks++);f.G.RunUI.pickBond(0);f.setTime(2400);f.G.RunUI.pickBond(0);f.G.RunUI.pickBond(0);assert.equal(picks,3);f.setTime(3000);f.G.RunUI.pickBond(0);assert.equal(picks,3);
 });
 test('暫停摘要只顯示現行能力、顯示物特，轉義動態名稱；DPS 按遊戲時間計',()=>{
  const {G}=runUI();G.Stats={taken:()=>1,NAME:{physical:'physical',special:'special'}};G.Game.player={mon:{types:[]},atkFor:()=>1.3,moves:[{name:'<img>',id:'x',kind:'melee',lvl:2,since:10,dealt:100}],hp:90,maxHp:100,atk:1.3,spd:100,effectiveReduction:.9,critChance:0,cdMul:1,regen:0,statsTaken:{}};

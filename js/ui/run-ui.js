@@ -18,6 +18,7 @@ G.RunUI = (() => {
     $('lvl-wait').textContent = '';
     $('lvl-wait').classList.toggle('hidden', !coop);
     $('cards').classList.remove('done');
+    guard($('cards'));
     renderCards(list);
     $('lvl-reroll').onclick = reroll;
     updateBonusSummary(true);
@@ -52,7 +53,6 @@ G.RunUI = (() => {
   }
 
   function renderCards(list) {
-    guard($('cards'));
     offers = list;
     const left = rerollsLeft();
     $('lvl-rr-n').textContent = left;
@@ -99,13 +99,13 @@ G.RunUI = (() => {
   function setWaiting(names) {
     const me = G.Social.me ? G.Social.me.name : '';
     const others = names.filter(n => n !== me);
-    const list = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : a[0];
-    const message = !names.length ? ''
-      : !others.length ? 'Elige tu carta'
-      : names.includes(me) ? 'Faltan por elegir: ' + list([...others, 'tú'])
-      : 'Esperando a ' + list(others) + '…';
-    const translated=G.T(message);
-    if($('lvl-wait').textContent!==translated) $('lvl-wait').textContent=translated;
+    const list = a => new Intl.ListFormat(G.I18n.lang==='zh-TW'?'zh-TW':G.I18n.lang, { style: 'long', type: 'conjunction' }).format(a);
+    $('lvl-wait').setAttribute('translate', 'no');
+    const text = !names.length ? ''
+      : !others.length ? G.T('Elige tu carta')
+      : names.includes(me) ? G.I18n.f('Faltan por elegir: {x}', list([...others, G.T('tú')]))
+      : G.I18n.f('Esperando a {x}…', list(others));
+    if($('lvl-wait').textContent!==text)$('lvl-wait').textContent=text;
   }
 
   function closeLevelUp() {
@@ -195,6 +195,7 @@ G.RunUI = (() => {
   function showBond(opt, cb) {
     bond = { opt, cb, first: null, list: [] };
     $('bond-back').onclick = bondBack;
+    guard($('bond-cards'));
     renderBond();
     G.UI.show('scr-bond');
   }
@@ -208,7 +209,6 @@ G.RunUI = (() => {
     $('bond-back').classList.toggle('hidden', !step2);
     bond.list = step2 ? opt.loose.filter(m => m !== first) : opt.loose;
     const box = $('bond-cards');
-    guard(box);
     box.innerHTML = '';
     bond.list.forEach((m, i) => {
       const col = G.U.TYPE_COLOR[m.type];

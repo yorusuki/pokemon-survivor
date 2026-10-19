@@ -29,7 +29,7 @@ G.UI = (() => {
 
   function refreshCoins() {
     const s = G.DB.save;
-    $('coins').textContent = s ? s.coins.toLocaleString('es') : '0';
+    $('coins').textContent = s ? s.coins.toLocaleString('en-US') : '0';
     const t = (s && s.tickets) || { t1: 0, t10: 0 };
     $('tickets-pill').innerHTML = `${G.Icons.html('ticket', 18)} ${t.t1} &nbsp;${G.Icons.html('ticket10', 18)} ${t.t10}`;
     // Punto de sincronización: verde = guardado en la nube, amarillo = guardando,
@@ -205,6 +205,7 @@ G.UI = (() => {
   // ---------------- sprites en canvas del DOM ----------------
 
   const live = new Set();
+  const byCanvas=new WeakMap();
   // Sólo se animan los canvas que están a la vista (la colección tiene cientos).
   const seen = new WeakMap();
   const io = 'IntersectionObserver' in window
@@ -222,12 +223,14 @@ G.UI = (() => {
    *                   que quepa, porque ahí no se compara con nada }
    */
   function sprite(cv, dex, opts = {}) {
-    for (const s of live) if (s.cv === cv) live.delete(s);
+    const previous=byCanvas.get(cv);
+    if(previous)live.delete(previous);
     const a = new G.Sprites.Animator(dex, 1, !!opts.shiny);
     a.dir = opts.dir || 0;
     a.loop(opts.anim || 'Idle');
     const s = { cv, ctx: cv.getContext('2d'), a, dex, opts, t: Math.random() * 3, spinT: 0, sparkT: 0 };
     live.add(s);
+    byCanvas.set(cv,s);
     if (io) io.observe(cv);
     return s;
   }

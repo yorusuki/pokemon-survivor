@@ -25,7 +25,7 @@
     "G16": "implemented_no_reset",
     "G17": "implemented"
   },
-  "release": "2.3.1",
+  "release": "2.3.2",
   "excluded": [
     "Firebase services and write throttling",
     "Leaderboard reset"

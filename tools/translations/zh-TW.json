@@ -1973,5 +1973,6 @@
   "with Vigor · ×1.8 damage, more radius and stronger pull": "需要「體魄」· 傷害 ×1.8，半徑增加、吸引力提升",
   "Attack training": "攻擊強化",
   "Entrenamiento de ataque": "攻擊強化",
-  "Healers now use the upstream 3.5-second casting interval.": "治療者施法間隔修正為原作的3.5秒，補齊先前整合遺漏。"
+  "Healers now use the upstream 3.5-second casting interval.": "治療者施法間隔修正為原作的3.5秒，補齊先前整合遺漏。",
+  "Fixed manual reticle, HUD safe areas, buff labels, titles, teammate waiting text and profile search; numbers use US separators.": "補上手動瞄準準星與 HUD 安全區，修正增益標籤、稱號、隊友等待文字及個人展示搜尋；數字統一使用美式千分位。"
 }

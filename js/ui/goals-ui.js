@@ -65,7 +65,7 @@
           el.innerHTML = `
             <div class="m-txt"><b>${esc(G.Progress.text(m))}</b>
               <div class="bar"><i style="width:${pct}%"></i></div>
-              <small>${Math.min(m.prog, m.goal).toLocaleString('es')} / ${m.goal.toLocaleString('es')}</small></div>
+              <small>${Math.min(m.prog, m.goal).toLocaleString('en-US')} / ${m.goal.toLocaleString('en-US')}</small></div>
             <div class="m-rw">${G.Progress.rewardText(d.reward)}</div>`;
           const btn = document.createElement('button');
           if (m.claimed) { btn.className = 'btn small'; btn.disabled = true; btn.textContent = 'Recogido'; }
@@ -139,7 +139,7 @@
       el.innerHTML = `${G.Icons.html(ok ? 'medal' + a.tier : 'medalOff', 36)}
         <div class="a-txt"><b>${esc(a.name)}</b><small>${esc(a.desc)}</small>
           ${ok ? '' : `<div class="bar"><i style="width:${v / a.goal * 100}%"></i></div>`}
-          <div class="a-rw">${ok ? '¡Conseguido!' : v.toLocaleString('es') + ' / ' + a.goal.toLocaleString('es')} · ${G.Progress.rewardText(a.reward)}
+          <div class="a-rw">${ok ? '¡Conseguido!' : v.toLocaleString('en-US') + ' / ' + a.goal.toLocaleString('en-US')} · ${G.Progress.rewardText(a.reward)}
           ${a.title ? ` · <span class="gold">Título: ${esc(a.title)}</span>` : ''}</div></div>`;
       return el;
     }
@@ -169,11 +169,16 @@
       box.appendChild(favs);
 
       const titles = G.Progress.titles();
+      // Recover translated legacy values only when the unlocked title is unambiguous.
+      if(P.title && !titles.includes(P.title)){
+        const matches=titles.filter(t=>G.T(t)===P.title);
+        if(matches.length===1){P.title=matches[0];save();}
+      }
       box.insertAdjacentHTML('beforeend', `<h3 style="margin-top:14px">Título</h3>`);
       const sel = document.createElement('select');
       sel.className = 'field';
       sel.style.maxWidth = '320px';
-      sel.innerHTML = `<option value="">(sin título)</option>` + titles.map(t => `<option ${t === P.title ? 'selected' : ''}>${esc(t)}</option>`).join('');
+      sel.innerHTML = `<option value="">(sin título)</option>` + titles.map(t => `<option value="${esc(t)}" ${t === P.title ? 'selected' : ''}>${esc(t)}</option>`).join('');
       sel.onchange = () => { P.title = sel.value; save(); };
       box.appendChild(sel);
       if (!titles.length) box.insertAdjacentHTML('beforeend', '<p class="note">Consigue logros para desbloquear títulos.</p>');
@@ -196,7 +201,7 @@
       const fill = q => {
         const g = $('fav-grid');
         g.innerHTML = '';
-        const mons = Object.keys(s.owned).map(Number).filter(d => G.DEX_BY[d] && (!q || G.DEX_BY[d].name.toLowerCase().includes(q)));
+        const mons = Object.keys(s.owned).map(Number).filter(d => G.DEX_BY[d] && (!q || [G.DEX_BY[d].name,G.DEX_BY[d].searchName].filter(Boolean).some(name=>name.toLowerCase().includes(q))));
         for (const d of mons.slice(0, 120)) {
           for (const shiny of G.DB.ownsShiny(d) ? [false, true] : [false]) {
             const c = document.createElement('div');
@@ -256,9 +261,9 @@
           <div><span>Mejor tiempo</span><b>${fmt(b.solo || 0)}</b></div>
           <div><span>En grupo</span><b>${fmt(b.group || 0)}</b></div>
           <div><span>Nivel máximo</span><b>${b.level || 0}</b></div>
-          <div><span>Jefes</span><b>${(b.bosses || 0).toLocaleString('es')}</b></div>
+          <div><span>Jefes</span><b>${(b.bosses || 0).toLocaleString('en-US')}</b></div>
           <div><span>Legendarios</span><b>${b.legends || 0}</b></div>
-          <div><span>Derrotados</span><b>${(b.kills || 0).toLocaleString('es')}</b></div>
+          <div><span>Derrotados</span><b>${(b.kills || 0).toLocaleString('en-US')}</b></div>
         </div>
         <h3>Medallas <span class="sub">${b.medals || 0}</span></h3>
         <div class="prof-medals" id="prof-medals"></div>`;

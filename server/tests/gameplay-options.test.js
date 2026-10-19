@@ -23,7 +23,7 @@ test('己方投射物不透明度不影響敵方投射物或傷害資料',()=>{
 });
 test('合作升級暫停不重建敵人清單、舊回合確認不能解除新回合等待',()=>{
  const host='a'.repeat(32),guest='b'.repeat(32),frames=[];let handler,enemyCalls=0,resumed=0;
- const G={Net:{uid:host,slow:()=>false,send:(u,f)=>frames.push(JSON.parse(JSON.stringify(f))),on:fn=>handler=fn,onPeer(){}},DEX_BY:{1:{}},Player:class{},Sprites:{preload(){}},startMoveOf:()=>'',Social:{me:{name:'Host'}},U:{dist2:()=>0},EnemyMgr:{all:()=>{enemyCalls++;return[];}},Judgment:{netState:()=>null},NetProtocol:{message:()=>true}};
+ const G={Net:{uid:host,slow:()=>false,send:(u,f)=>frames.push(JSON.parse(JSON.stringify(f))),on:fn=>handler=fn,onPeer(){}},DEX_BY:{1:{}},Player:class{},Sprites:{preload(){}},startMoveOf:()=>{throw Error('must not read local choice for teammate');},baseStartOf:()=>'',Social:{me:{name:'Host'}},U:{dist2:()=>0},EnemyMgr:{all:()=>{enemyCalls++;return[];}},Judgment:{netState:()=>null},NetProtocol:{message:()=>true}};
  load('js/net/coop.js',scope(G));const pl={activeGroup:()=>[],xpMul:1,x:0,y:0,hp:100,maxHp:100,magnet:70,aim:0};
  const api={team:()=>({time:2,level:2,xp:0,xpNext:10,kills:0,bosses:0,coins:0,t1:0,t10:0}),levelStart(){},waiting(){},resume:()=>resumed++,choosing:()=>false};
  G.Coop.begin({host,members:[{uid:host,name:'Host',dex:1},{uid:guest,name:'Guest',dex:1}]},pl,api);
