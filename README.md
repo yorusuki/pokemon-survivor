@@ -32,6 +32,8 @@ docker compose up -d
 
 功能更新及修正見 [CHANGELOG.md](CHANGELOG.md)，按日期分類；完整功能差異見 [原作與目前版本比較表](docs/UPSTREAM_COMPARISON.md)。
 
+最新逐項核對見 [原作整合缺口複核](docs/UPSTREAM_REMAINING_AUDIT_2026-10-19.md)，區分尚未修正的介面遺漏與刻意保留的功能。
+
 | 主題 | 文件 |
 |---|---|
 | 部署、備份與回滾 | [自架部署](docs/SELF_HOSTING.md)、[回滾](docs/ROLLBACK.md) |
