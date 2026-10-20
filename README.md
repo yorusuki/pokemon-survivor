@@ -34,6 +34,8 @@ docker compose up -d
 
 最新逐項核對見 [原作整合缺口複核](docs/UPSTREAM_REMAINING_AUDIT_2026-10-19.md)，包含2.3.2修正進度與刻意保留的功能。
 
+新增原作內容與待選項目見 [2026-10-20原作更新審查](docs/UPSTREAM_REVIEW_2026-10-20.md)，尚未套用。
+
 | 主題 | 文件 |
 |---|---|
 | 部署、備份與回滾 | [自架部署](docs/SELF_HOSTING.md)、[回滾](docs/ROLLBACK.md) |
