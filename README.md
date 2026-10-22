@@ -36,6 +36,8 @@ docker compose up -d
 
 新增原作內容與待選項目見 [2026-10-20原作更新審查](docs/UPSTREAM_REVIEW_2026-10-20.md)，尚未套用。
 
+截至10/22的完整待選清單見 [商店、培育與多人連線更新比較](docs/UPSTREAM_REVIEW_2026-10-22.md)，包含前次T01～T05與新增項目。
+
 | 主題 | 文件 |
 |---|---|
 | 部署、備份與回滾 | [自架部署](docs/SELF_HOSTING.md)、[回滾](docs/ROLLBACK.md) |
