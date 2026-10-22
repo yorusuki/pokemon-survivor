@@ -14,3 +14,5 @@ backups
 .config
 *.local
 docs/CONTACTOS_CREADORES.md
+
+docs/reference

@@ -218,3 +218,7 @@ docker compose logs --tail=40 pokesurvivor-web
 ## 帳號與好友代碼升級
 
 新版需由 db-init 建立兩個帳號私有表並授權 API；既有使用者、存檔與好友保留。升級步驟、暱稱與代碼規則見 [帳號文件](ACCOUNT_NICKNAME_PLAN.md)。請同時發布前後端並重新載入舊分頁；不要刪除資料卷。
+
+## 3.0.0部署注意
+
+Node.js22.23.4及NGINX1.30.6固定官方多架構digest，含Apple Silicon使用的arm64；見[容器安全檢查](CONTAINER_SECURITY_2026-10-23.md)。升級前備份資料庫，離峰部署，所有玩家需更新；更新器會結束正在進行的場次。[存檔相容與回滾](SHOP_AND_MULTIPLAYER_3.md)。本次沒有SQL migration，不重設排行榜。

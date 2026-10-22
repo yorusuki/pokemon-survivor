@@ -6,11 +6,12 @@
 G.SettingsUI = (() => {
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '2.3.2 · 2026-10-19';
+  const VERSION = '3.0.0 · 2026-10-23';
   const REPO = 'https://github.com/JPTER78/pokesurvivor';
   let tab = 'sound';
 
   function init() {
+    if(G.Settings.touch)document.querySelector('#set-tabs [data-t="a11y"]')?.classList.add('hidden');
     document.querySelectorAll('#set-tabs .gen-tab').forEach(b => { b.onclick = () => { tab = b.dataset.t; render(); }; });
     for (const ev of ['gamepadconnected','gamepaddisconnected']) addEventListener(ev,()=>{if(isOpen()&&tab==='ctl')render();});
     $('set-close').onclick = close;

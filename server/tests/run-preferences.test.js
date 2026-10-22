@@ -32,6 +32,6 @@ test('沒有現有道具的選擇介面可選不裝備，已有道具仍可保�
 test('實際開場招式區塊尊重購買與停用，排除 buff 與被禁止招式',()=>{
  const source=read('js/game.js'),start=source.indexOf('    // Mejora "Repertorio"'),end=source.indexOf('    if (coop)',start),block=source.slice(start,end);
  for(const [bought,enabled,expected] of [[1,true,1],[2,false,1],[2,true,2]]){
-  const learned=['starter'];const c={perks:{startMoves:bought},mon:{dex:1},pl:{hasMove:id=>learned.includes(id),banned:new Set(['banned']),addMove:id=>learned.push(id),setActive(){}},G:{DB:{reserveEnabled:()=>enabled},Moves:{poolFor:()=>['starter','buff','banned','attack'],BY_ID:{starter:{kind:'melee'},buff:{kind:'buff'},banned:{kind:'melee'},attack:{kind:'melee'}}},U:{pick:list=>list[0]}}};vm.createContext(c);vm.runInContext(block,c);assert.equal(learned.length,expected);if(expected===2)assert.equal(learned[1],'attack');
+  const learned=['starter'];const c={perks:{startMoves:bought},mon:{dex:1},pl:{hasMove:id=>learned.includes(id),banned:new Set(['banned']),addMove:id=>learned.push(id),setActive(){}},G:{startMove2Of:()=>null,DB:{reserveEnabled:()=>enabled},Moves:{poolFor:()=>['starter','buff','banned','attack'],BY_ID:{starter:{kind:'melee'},buff:{kind:'buff'},banned:{kind:'melee'},attack:{kind:'melee'}}},U:{pick:list=>list[0]}}};vm.createContext(c);vm.runInContext(block,c);assert.equal(learned.length,expected);if(expected===2)assert.equal(learned[1],'attack');
  }
 });

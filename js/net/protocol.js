@@ -15,9 +15,10 @@ G.NetProtocol = (() => {
     if (Array.isArray(value)) return value.length <= 8192 && value.every(v => bounded(v, depth + 1, budget));
     return obj(value) && Object.keys(value).length <= 128 && Object.entries(value).every(([k,v]) => !['__proto__','prototype','constructor'].includes(k) && k.length <= 128 && bounded(v, depth + 1, budget));
   }
-  function state(a) { return Array.isArray(a) && a.length >= 13 && a.length <= 15 && a.every((v,i) => i === 7 ? typeof v === 'string' && v.length <= 80 : num(v)); }
+  function state(a) { return Array.isArray(a) && a.length >= 13 && a.length <= 16 && a.every((v,i) => i===15 ? (v===''||uid(v)) : i === 7 ? typeof v === 'string' && v.length <= 80 : num(v)); }
   function event(e) {
     if (!Array.isArray(e) || e.length > 16 || !events.has(e[0])) return false;
+    if(e[0]==='fxr' && !(e.length===5 && e.slice(1,4).every(Number.isFinite) && e[3]>=0 && e[3]<=2000 && typeof e[4]==='string' && e[4].length<=64))return false;
     if(e[0]==='s'&&e[2]==='t')return e.length===4&&Number.isSafeInteger(e[1])&&e[1]>0&&Number.isFinite(e[3])&&e[3]>0&&e[3]<=10;
     if(e[0]==='es' && !(e.length===9 || (e.length===10 && [null,'physical','special'].includes(e[9]))))return false;
     if(e[0]==='hz' && e[1]?.cat!==undefined && ![null,'physical','special'].includes(e[1].cat))return false;

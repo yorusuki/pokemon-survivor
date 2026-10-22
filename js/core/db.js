@@ -54,6 +54,12 @@ G.DB = (() => {
     return out;
   }
 
+  function setStartMove2(dex,id){
+    if(!save?.owned[dex]||!save.pupg?.[dex]?.start2||!save.pupg?.[dex]?.moves||typeof id!=='string'||(id&&(!G.startChoices(dex).includes(id)||id===G.startMoveOf(dex))))return false;
+    save.pstart2=normalizeStarts(save.pstart2);save.pstart2[dex]={id,at:Math.max(Date.now(),(save.pstart2[dex]?.at||0)+1)};
+    if(id&&save.pban?.[dex])save.pban[dex]=save.pban[dex].filter(x=>x!==id);commit();return true;
+  }
+
   function normalizeReserve(value) {
     const out={};
     if(value && typeof value==='object' && !Array.isArray(value))for(const [dex,e] of Object.entries(value)) {
@@ -67,7 +73,7 @@ G.DB = (() => {
     if(isObj(value))for(const [dex,v] of Object.entries(value)) {
       if(!/^[1-9][0-9]{0,3}$/.test(dex)||!G.DEX_BY[dex])continue;
       const e=typeof v==='string'?{id:v,at:0}:v;
-      if(e&&typeof e.id==='string'&&e.id.length<=80&&G.Moves?.BY_ID[e.id]&&Number.isSafeInteger(e.at)&&e.at>=0&&e.at<=1e15)out[dex]={id:e.id,at:e.at};
+      if(e&&typeof e.id==='string'&&e.id.length<=80&&(e.id===''||G.Moves?.BY_ID[e.id])&&Number.isSafeInteger(e.at)&&e.at>=0&&e.at<=1e15)out[dex]={id:e.id,at:e.at};
     }
     return out;
   }
@@ -87,7 +93,7 @@ G.DB = (() => {
       personality: null,      // { trait, scores }
       upgrades: {},           // (antiguo) mejoras de la cuenta; ahora van por Pokémon
       favorites: {},          // dex -> {on,at}; separate from public profile.favs
-      pstart: {},
+      pstart: {}, pstart2:{}, bag:{}, tms:{}, ptm:{}, pnat:{}, pabil:{},
       moveReserve: {},       // per-Pokemon purchased reserve preference
       survivalBest: {},       // dex -> best survival seconds for this account
       pupg: {},               // dex -> { id -> nivel }: mejoras de cada Pokémon
@@ -133,6 +139,7 @@ G.DB = (() => {
    */
   function sanitize(s) {
     s.pstart=normalizeStarts(s.pstart);
+    s.pstart2=normalizeStarts(s.pstart2);
     s.pused=Object.fromEntries(Object.entries(isObj(s.pused)?s.pused:{}).filter(([d,n])=>/^[1-9][0-9]{0,3}$/.test(d)&&G.DEX_BY[d]&&Number.isSafeInteger(n)&&n>=0&&n<=1e9));
     s.favorites=normalizeFavorites(s.favorites);
     s.moveReserve=normalizeReserve(s.moveReserve);
@@ -142,16 +149,41 @@ G.DB = (() => {
     s.tickets.t10 = n(s.tickets.t10);
     if (isObj(s.led)) {
       for (const dev of Object.keys(s.led)) {
+        if(!/^[a-z0-9]{1,20}$/.test(dev)){delete s.led[dev];continue;}
         const e = s.led[dev];
         if (!isObj(e)) { delete s.led[dev]; continue; }
         for (const k of Object.keys(e)) {
-          if (!CUR[k] || !Array.isArray(e[k])) { delete e[k]; continue; }
+          if (!isCurKey(k) || !Array.isArray(e[k])) { delete e[k]; continue; }
           e[k] = [n(e[k][0]), n(e[k][1])];
         }
       }
     } else delete s.led;
     if (G.DEX_BY) for (const coll of ['owned', 'shiny']) {
       for (const d of Object.keys(s[coll] || {})) if (!G.DEX_BY[d]) delete s[coll][d];
+    }
+    // Mochila y MT: cuántas de cada cosa que exista (tope 999).
+    for (const [k, ok] of [['bag', id => !G.Shop || G.Shop.ITEMS[id]], ['tms', id => !G.Moves || G.Moves.BY_ID[id]]]) {
+      if (!isObj(s[k])) s[k] = {};
+      for (const id of Object.keys(s[k])) {
+        s[k][id] = Math.min(999, n(s[k][id]));
+        if (!s[k][id] || !ok(id)) delete s[k][id];
+      }
+    }
+    // MT aprendidas: movimientos que existen, sin repetir.
+    if (!isObj(s.ptm)) s.ptm = {};
+    for (const d of Object.keys(s.ptm)) {
+      const l = Array.isArray(s.ptm[d]) ? s.ptm[d] : [];
+      s.ptm[d] = [...new Set(l.filter(id => typeof id === 'string' && (!G.Moves || G.Moves.BY_ID[id])))];
+      if (!s.ptm[d].length || (G.DEX_BY && !G.DEX_BY[d])) delete s.ptm[d];
+    }
+    // Naturaleza y habilidad elegidas: [valor, fecha].
+    for (const [k, ok] of [['pnat', v => typeof v === 'string' && (!G.NATURE_BY || G.NATURE_BY[v])], ['pabil', v => v === 0 || v === 1 || v === 2]]) {
+      if (!isObj(s[k])) s[k] = {};
+      for (const d of Object.keys(s[k])) {
+        const e = s[k][d];
+        if (!Array.isArray(e) || !ok(e[0]) || (G.DEX_BY && !G.DEX_BY[d])) delete s[k][d];
+        else s[k][d] = [e[0], n(e[1])];
+      }
     }
     // Atajos: 4 huecos con un movimiento que exista (o null), sin repetir.
     if (s.pbind && typeof s.pbind === 'object') {
@@ -206,6 +238,26 @@ G.DB = (() => {
     t1: [s => s.tickets.t1, (s, v) => { s.tickets.t1 = v; }],
     t10: [s => s.tickets.t10, (s, v) => { s.tickets.t10 = v; }]
   };
+  const isCurKey = k => Object.hasOwn(CUR,k) || /^b:[a-z0-9]{1,12}$/.test(k) || /^m:[a-z0-9-]{1,40}$/.test(k);
+  const SUB = { b: 'bag', m: 'tms' };
+  function curGet(s, k) {
+    if (Object.hasOwn(CUR,k)) return CUR[k][0](s);
+    const o = s[SUB[k[0]]];
+    return o ? o[k.slice(2)] : 0;
+  }
+  function curSet(s, k, v) {
+    if (Object.hasOwn(CUR,k)) { CUR[k][1](s, v); return; }
+    const o = s[SUB[k[0]]] = s[SUB[k[0]]] || {};
+    if (v > 0) o[k.slice(2)] = Math.min(999, v); else delete o[k.slice(2)];
+  }
+  /** Todas las cosas con saldo de una partida (y de su libreta). */
+  function curKeys(s, led) {
+    const ks = new Set(Object.keys(CUR));
+    for (const id of Object.keys(s.bag || {})) ks.add('b:' + id);
+    for (const id of Object.keys(s.tms || {})) ks.add('m:' + id);
+    for (const dev in led || {}) for (const k in led[dev]) if (isCurKey(k)) ks.add(k);
+    return [...ks];
+  }
   // Este aparato (navegador): un nombre al azar que se queda guardado.
   const DEV = (() => {
     let d = read('ps.dev');
@@ -213,7 +265,7 @@ G.DB = (() => {
     return d;
   })();
   const num = v => (Number.isFinite(+v) && +v > 0 ? Math.floor(+v) : 0);
-  const balOf = s => { const o = {}; for (const k in CUR) o[k] = num(CUR[k][0](s)); return o; };
+  const balOf = s => { const o={};for(const k of curKeys(s,s.led))o[k]=num(curGet(s,k));return o; };
   function ledSum(led, k) {
     let t = 0;
     for (const dev in led) { const e = led[dev] && led[dev][k]; if (e) t += num(e[0]) - num(e[1]); }
@@ -229,12 +281,12 @@ G.DB = (() => {
   function ledOf(s, dev) {
     if (!isObj(s.led)) {
       const b = balOf(s), base = {};
-      for (const k in CUR) base[k] = [b[k], 0];
+      for (const k in b) base[k] = [b[k], 0];
       return { base };
     }
     const led = JSON.parse(JSON.stringify(s.led)), b = balOf(s);
     // Un saldo en negativo (lo mismo gastado en dos aparatos sin conexión) se ve como 0.
-    for (const k in CUR) addTo(led, dev, k, b[k] - Math.max(0, ledSum(led, k)));
+    for (const k in b) addTo(led, dev, k, b[k] - Math.max(0, ledSum(led, k)));
     return led;
   }
   /** Apunta en la libreta de ESTE aparato lo que ha cambiado desde la última vez. */
@@ -258,7 +310,7 @@ G.DB = (() => {
     }
     r.led = led;
     r.tickets = r.tickets || { t1: 0, t10: 0 };
-    for (const k in CUR) CUR[k][1](r, Math.max(0, ledSum(led, k)));
+    for (const k of curKeys(r,led)) curSet(r,k, Math.max(0, ledSum(led, k)));
     for (const coll of ['owned', 'shiny']) {
       r[coll] = r[coll] || {};
       for (const k in older[coll] || {}) {
@@ -281,6 +333,10 @@ G.DB = (() => {
       const current=r.pstart[dex];
       if(!current||e.at>current.at||(e.at===current.at&&e.id<current.id))r.pstart[dex]=e;
     }
+    r.pstart2=normalizeStarts(r.pstart2);
+    for(const [d,e] of Object.entries(normalizeStarts(older.pstart2))){const cur=r.pstart2[d];if(!cur||e.at>cur.at||(e.at===cur.at&&e.id<cur.id))r.pstart2[d]=e;}
+    for(const k of ['pnat','pabil']){r[k]=r[k]||{};for(const [d,e] of Object.entries(older[k]||{})){const cur=r[k][d];if(!cur||e[1]>cur[1]||(e[1]===cur[1]&&String(e[0])<String(cur[0])))r[k][d]=e;}}
+    r.ptm=r.ptm||{};for(const [d,l] of Object.entries(older.ptm||{}))r.ptm[d]=[...new Set([...(r.ptm[d]||[]),...l])].sort();
     r.pused=r.pused||{};
     for(const [dex,n] of Object.entries(older.pused||{}))if(/^[1-9][0-9]{0,3}$/.test(dex)&&G.DEX_BY[dex]&&Number.isSafeInteger(n)&&n>=0&&n<=1e9)r.pused[dex]=Math.max(r.pused[dex]||0,n);
     r.favorites=normalizeFavorites(favorites);
@@ -862,7 +918,7 @@ G.DB = (() => {
 
   return {
     ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, flush: () => pushNow(true),
-    isFavorite, favoriteCount, toggleFavorite, setStartMove, reserveEnabled, setReserveEnabled, survivor, recordSurvival, owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
+    isFavorite, favoriteCount, toggleFavorite, setStartMove, setStartMove2, reserveEnabled, setReserveEnabled, survivor, recordSurvival, owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
     /** Acceso de bajo nivel para los módulos de red (sólo en modo nube). */

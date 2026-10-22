@@ -219,7 +219,10 @@ function createApp(pool, options = {}) {
         if (!data) { await db.query('DELETE FROM rooms WHERE id=$1', [id]); return { ok: true }; }
       } else {
         if (!room) fail('room-not-found', 404);
-        if (parts[0] === 'm' && parts.length === 2 && parts[1] === uid) {
+        if(parts[0]==='m'&&parts.length===2&&parts[1]!==uid&&room.host===uid&&b.op==='remove') {
+          if(!room.m[parts[1]])return {ok:true};
+          delete room.m[parts[1]];delete room._seen[parts[1]];if(room.q)delete room.q[parts[1]];
+        } else if (parts[0] === 'm' && parts.length === 2 && parts[1] === uid) {
           if (data && (!member && (!room.open || Object.keys(room.m).length >= 4))) fail('room-full', 409);
           if (data && b.op === 'update' && member) data = { ...room.m[uid], ...data };
           if (data) data = validateMember(data);

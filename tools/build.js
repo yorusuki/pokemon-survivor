@@ -62,6 +62,7 @@ for (const [folder, lang] of [['en', 'en'], ['zh-TW', 'zh-Hant']]) {
 // Versión publicada: los jugadores la miran cada 5 min y, si cambia, el juego se
 // actualiza solo (en el menú, o al acabar la partida). Ver js/core/updater.js.
 // --forzar: versión obligatoria, también corta las partidas en curso (guardándolas).
-const FORZAR = process.argv.includes('--forzar');
+const releasePolicy=JSON.parse(fs.readFileSync(path.join(ROOT,'tools/release-policy.json'),'utf8'));
+const FORZAR = process.argv.includes('--forzar') || releasePolicy.forceVersion===require(path.join(ROOT,'server/package.json')).version;
 fs.writeFileSync(path.join(ROOT, 'version.json'), JSON.stringify(Object.assign({ v: hash, at: new Date().toISOString() }, FORZAR ? { force: true } : {})) + '\n');
 console.log(`${FORZAR ? '[OBLIGATORIA] ' : ''}${SIN_SEO ? '[sin SEO] ' : ''}${EXPOSE ? '[SIN PROTEGER, sólo pruebas] ' : ''}ok: ${files.length} scripts · ${(joined.length / 1024).toFixed(0)} KB -> ${(min.length / 1024).toFixed(0)} KB (app.min.js?v=${hash})`);

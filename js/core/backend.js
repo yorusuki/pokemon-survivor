@@ -111,7 +111,7 @@ G.Backend = (() => {
           for (const k of next) if (!seen.has(k)) fn({ val: () => data[k], key: k, ref: this.child(k) });
           seen = next;
         } else if (JSON.stringify(data) !== last) { last = JSON.stringify(data); fn(snap); }
-      }, error, this.path.includes('/q/') ? 500 : 2000);
+      }, e=>{last=undefined;if(error)error(e);else console.warn('[Backend] room_subscription_failed');}, this.path.includes('/q/') ? 500 : 2000);
       this.stops.push(stop); return fn;
     }
     off() { this.stops.forEach(fn => fn()); this.stops = []; }
@@ -122,7 +122,7 @@ G.Backend = (() => {
     for (const path of disconnects) api('rooms', { op: 'remove', path }, { keepalive: true }).catch(() => console.warn('[Backend] 離線房間將由租約清理'));
   });
   async function iceServers() {
-    if (!ice || ice.expiresAt < Date.now() + 60000) {
+    if (!ice || ice.expiresAt < Date.now() + (ice.turn ? 80*60000 : 60000)) {
       if (!icePending) icePending = api('ice-servers').then(data => {
         ice = { ...data, expiresAt: data.expiresAt || Date.now() + 600000 };
       }).finally(() => { icePending = null; });

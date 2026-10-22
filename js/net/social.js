@@ -385,6 +385,21 @@ G.Social = (() => {
     return { ok: true };
   }
 
+  let roomFaultTimer=0;
+  function roomFault(){
+    if(!room||room.lost)return;room.lost=true;console.warn('[Social] room_connection_interrupted');
+    const id=room.id;
+    function check(){
+      if(!room||room.id!==id||!room.lost)return;
+      const live=playing&&(room.isHost?room.members.some(m=>m.uid!==uid&&G.Net.mode(m.uid)==='direct'):G.Net.mode(room.host)==='direct');
+      if(live){roomFaultTimer=setTimeout(check,45000);return;}
+      closedRoom();
+    }
+    roomFaultTimer=setTimeout(check,playing?45000:12000);
+  }
+  function roomRecovered(){if(room?.lost)console.info('[Social] room_connection_recovered');if(room)room.lost=false;clearTimeout(roomFaultTimer);roomFaultTimer=0;}
+  function dropMember(u){if(room?.isHost&&u!==uid)return fb.rtdb.ref('rooms/'+room.id+'/m/'+u).remove().catch(()=>console.warn('[Social] member_cleanup_failed'));}
+
   function enterRoom(id, host) {
     room = { id, host, isHost: host === uid, members: [], open: true };
     watchRoomDisconnect();
@@ -392,14 +407,15 @@ G.Social = (() => {
     mref.on('value', s => {
       if (!room || room.id !== id) return;
       const m = s.val() || {};
+      if(!m[uid]){roomFault();return;}roomRecovered();
       // El anfitrión siempre primero; el resto por orden de llegada.
       // UID 只能來自伺服器資料列 key，不接受成員內容覆寫身分。
       room.members = Object.keys(m).map(k => Object.assign({}, m[k], { uid: k }))
         .sort((a, b) => (a.uid === room.host ? -1 : b.uid === room.host ? 1 : (a.at || 0) - (b.at || 0)));
       emit('room');
-    }, () => closedRoom());
+    }, () => roomFault());
     const href = fb.rtdb.ref('rooms/' + id + '/host');
-    href.on('value', s => { if (room && room.id === id && !s.val()) closedRoom(); }, () => closedRoom());
+    href.on('value', s => { if (room && room.id === id && !s.val()) roomFault(); }, () => roomFault());
     const oref = fb.rtdb.ref('rooms/' + id + '/open');
     oref.on('value', s => { if (room && room.id === id) { room.open = s.val() === true; emit('room'); } }, () => {});
     roomRefs = [mref, href, oref];
@@ -415,6 +431,7 @@ G.Social = (() => {
   }
 
   function detachRoom() {
+    clearTimeout(roomFaultTimer);roomFaultTimer=0;
     for (const r of roomRefs) r.off();
     roomRefs = [];
   }
@@ -568,7 +585,7 @@ G.Social = (() => {
   return {
     start, stop, claimNick, rename, refreshAccount, request, accept, remove, publishProfile, getProfile, profileData,
     get account() {return account;},
-    createRoom, joinRoom, leaveRoom, setOpen, refreshMember, setPlaying, refreshPresence,
+    createRoom, joinRoom, leaveRoom, dropMember, setOpen, refreshMember, setPlaying, refreshPresence,
     invite, acceptInvite, declineInvite,
     on(fn) { listeners.add(fn); }, off(fn) { listeners.delete(fn); },
     get me() { return me; },

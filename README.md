@@ -1,6 +1,6 @@
 # PokéSurvivor 繁體中文自架版
 
-目前版本：**2.3.2**。本次無資料表變更；從 2.0.0 之前的版本升級，請先閱讀 [帳號升級步驟](docs/ACCOUNT_NICKNAME_PLAN.md)。
+目前版本：**3.0.0**。本次無資料表變更；從 2.0.0 之前的版本升級，請先閱讀 [帳號升級步驟](docs/ACCOUNT_NICKNAME_PLAN.md)。
 
 以寶可夢為主題的瀏覽器倖存者遊戲，包含 966 隻寶可夢、招式升級、異色收藏、抽卡及最多四人合作。本分支沿用原作 HTML、CSS、原生 JavaScript 與 Canvas 2D，加入繁體中文、PostgreSQL 後端及 Docker 部署。
 
@@ -34,9 +34,9 @@ docker compose up -d
 
 最新逐項核對見 [原作整合缺口複核](docs/UPSTREAM_REMAINING_AUDIT_2026-10-19.md)，包含2.3.2修正進度與刻意保留的功能。
 
-新增原作內容與待選項目見 [2026-10-20原作更新審查](docs/UPSTREAM_REVIEW_2026-10-20.md)，尚未套用。
+3.0.0的操作、存檔相容與更新注意事項見 [商店與多人更新](docs/SHOP_AND_MULTIPLAYER_3.md)；容器修補版本與驗證限制見 [安全檢查](docs/CONTAINER_SECURITY_2026-10-23.md)。此版要求所有連線玩家更新，請安排離峰部署。
 
-截至10/22的完整待選清單見 [商店、培育與多人連線更新比較](docs/UPSTREAM_REVIEW_2026-10-22.md)，包含前次T01～T05與新增項目。
+採用依據見 [商店、培育與多人連線更新比較](docs/UPSTREAM_REVIEW_2026-10-22.md)，決策結果列於該文件開頭。
 
 | 主題 | 文件 |
 |---|---|
@@ -77,3 +77,5 @@ node tools/security-headers.js
 Pokémon 及相關角色與名稱屬原權利人所有；本專案不代表 Nintendo、Creatures、GAME FREAK 或 The Pokémon Company。
 
 原作最新整合內容：[新增差異審查（803125d）](docs/UPSTREAM_REVIEW_2026-10-19_803125d.md)。已依決策選擇性整合；抽選數據見 [招式擴池與初始選擇比較](docs/MOVE_POOL_EXPANSION.md)。
+
+原作程式與原創音樂作者為 **Jonathan Piera Torregrosa（JPTER78）**。變隱龍商店及培育功能沿用原作整合的TheAdro7（PR #236）構想與基礎實作；多人二進位封包與coturn方案來源包含aaronariasperez（PR #221／#227）。原有素材署名與LICENSE說明保持有效。

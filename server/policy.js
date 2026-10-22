@@ -1,5 +1,6 @@
 'use strict';
 const { address, read, fail } = require('./store');
+const {validShopSave}=require('./shop-policy');
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const object = x => !!x && typeof x === 'object' && !Array.isArray(x);
 const str = (x, max = 160) => typeof x === 'string' && x.length <= max;
@@ -30,6 +31,7 @@ async function authorize(db, path, before, after, uid) {
         && (d.save.moveReserve===undefined || (object(d.save.moveReserve) && Object.keys(d.save.moveReserve).length<=1025 && Object.entries(d.save.moveReserve).every(([dex,e])=>/^[1-9][0-9]{0,3}$/.test(dex) && Number(dex)<=1025 && object(e) && keys(e,['enabled','at']) && typeof e.enabled==='boolean' && Number.isSafeInteger(e.at) && e.at>=0 && e.at<=1e15)))
         && (d.save.survivalBest===undefined || (object(d.save.survivalBest) && Object.keys(d.save.survivalBest).length<=1025 && Object.entries(d.save.survivalBest).every(([dex,t])=>/^[1-9][0-9]{0,3}$/.test(dex) && Number(dex)<=1025 && Number.isInteger(t) && t>=0 && t<=1e9)))
         && (d.save.pstart===undefined || (object(d.save.pstart) && Object.keys(d.save.pstart).length<=1025 && Object.entries(d.save.pstart).every(([dex,e])=>/^[1-9][0-9]{0,3}$/.test(dex) && Number(dex)<=1025 && keys(e,['id','at']) && typeof e.id==='string' && /^[a-z][a-z0-9-]{0,79}$/.test(e.id) && Number.isSafeInteger(e.at) && e.at>=0 && e.at<=1e15)))
+        && validShopSave(d.save)
         && num(d.save.coins) && num(d.save.tickets?.t1 ?? 0) && num(d.save.tickets?.t10 ?? 0)
         && !!d.ban === !!before?.ban));
       if (isAdmin && before && d && same(before.save, d.save)) ok = typeof d.ban === 'boolean';

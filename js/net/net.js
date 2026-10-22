@@ -19,7 +19,7 @@ G.Net = (() => {
   const inbound = new Map();
   const peers = new Map();         // uid -> { pc, dc, mode, timer }
   const handlers = new Set(), peerHandlers = new Set();
-  let stats = { sent: 0, recv: 0, relaySent: 0 };
+  const stats = { sent:0,recv:0,relaySent:0,sentBytes:0,jsonBytes:0,recvBytes:0,binarySent:0,binaryRecv:0,invalidBinary:0 };
   let epoch = 0;
 
   function emitPeer(u) {
@@ -110,16 +110,19 @@ G.Net = (() => {
 
   function wireChannel(u, p, dc) {
     p.dc = dc;
+    p.binaryVersion=0;dc.binaryType='arraybuffer';
     dc.onopen = () => {
       if(peers.get(u)!==p) return;
-      clearTimeout(p.timer); p.mode = 'direct'; log('connected','none','unknown',u); emitPeer(u);
+      clearTimeout(p.timer); p.mode = 'direct';
+      try{dc.send(JSON.stringify({k:'net-cap',binary:G.NetCodec?.version||0}));}catch{console.warn('[Net] capability_send_failed');}
+      log('connected','none','unknown',u); emitPeer(u);
       if(p.pc.getStats) p.pc.getStats().then(report=>{
         if(peers.get(u)!==p) return;
         for(const stat of report.values()) if(stat.type==='transport' && stat.selectedCandidatePairId) {
           const pair=report.get(stat.selectedCandidatePairId), local=pair&&report.get(pair.localCandidateId), remote=pair&&report.get(pair.remoteCandidateId);
           if(local?.candidateType && remote?.candidateType) {p.route=local.candidateType==='relay'||remote.candidateType==='relay'?'turn':'direct'; log('route','none',p.route,u);}
         }
-      }).catch(()=>{});
+      }).catch(()=>console.warn('[Net] route_detection_failed'));
     };
     dc.onclose = () => { if (peers.get(u)===p && p.mode === 'direct') useRelay(u,'channel'); };
     dc.onmessage = e => {
@@ -127,10 +130,21 @@ G.Net = (() => {
       const now = performance.now();
       let b = inbound.get(u);
       if (!b || now - b.at >= 1000) { b = { at: now, n: 0, bytes: 0 }; inbound.set(u,b); }
-      b.n++; b.bytes += typeof e.data === 'string' ? e.data.length * 2 : G.NetProtocol.MAX_BYTES + 1;
-      if (b.n > 120 || b.bytes > 2 * 1024 * 1024) { log('failed','limit'); drop(u); return; }
-      const m = G.NetProtocol.parse(e.data, u === hostUid);
-      if (!m) { log('failed','protocol'); drop(u); return; }
+      const bytes=typeof e.data==='string'?new TextEncoder().encode(e.data).byteLength:e.data?.byteLength;
+      b.n++;b.bytes+=Number.isFinite(bytes)?bytes:G.NetProtocol.MAX_BYTES+1;
+      if(b.n>120||b.bytes>2*1024*1024||!Number.isFinite(bytes)||bytes>G.NetProtocol.MAX_BYTES){log('failed','limit');drop(u);return;}
+      let m;
+      if(typeof e.data==='string'){
+        try{const cap=JSON.parse(e.data);if(cap?.k==='net-cap'){
+          if(Object.keys(cap).length!==2||!Number.isInteger(cap.binary))throw Error('capability');
+          p.binaryVersion=cap.binary===G.NetCodec?.version?cap.binary:0;return;
+        }}catch{log('failed','protocol');drop(u);return;}
+        m=G.NetProtocol.parse(e.data,u===hostUid);
+      }else{
+        try{if(!G.NetCodec||p.binaryVersion!==G.NetCodec.version)throw Error('unnegotiated');m=G.NetCodec.decode(e.data);if(m?.k!=='f'||!G.NetProtocol.message(m,u===hostUid))throw Error('frame');stats.binaryRecv++;}
+        catch{stats.invalidBinary++;log('failed','protocol');drop(u);return;}
+      }
+      if(!m){log('failed','protocol');drop(u);return;}stats.recvBytes+=bytes;
       deliver(u, m);
     };
   }
@@ -242,7 +256,12 @@ G.Net = (() => {
     const p = peers.get(to);
     stats.sent++;
     if (p && p.dc && p.dc.readyState === 'open') {
-      try { p.dc.send(JSON.stringify(msg)); return; } catch (e) { /* cae al relé */ }
+      try {
+        const json=JSON.stringify(msg),jsonBytes=new TextEncoder().encode(json).byteLength;
+        const packed=G.NetCodec&&p.binaryVersion===G.NetCodec.version&&msg?.k==='f'?G.NetCodec.encode(msg):null;
+        const binary=packed&&packed.byteLength<jsonBytes;
+        p.dc.send(binary?packed:json);stats.sentBytes+=binary?packed.byteLength:jsonBytes;stats.jsonBytes+=jsonBytes;if(binary)stats.binarySent++;return;
+      } catch(e){log('failed','send',p.route||'unknown',to);}
     }
     // Sin relé, los datos de la partida no van por la base de datos (se pierden: esa
     // pareja no está conectada). Sólo pasa el aviso de empezar.

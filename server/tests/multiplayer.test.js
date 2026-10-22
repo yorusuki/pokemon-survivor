@@ -14,8 +14,8 @@ function fixture() {
  const host='a'.repeat(32),guest='b'.repeat(32);
  const ref={on:(event,fn)=>callbacks.signal=fn,off(){},push:async data=>signals.push(JSON.parse(data))};
  const G={Backend:{iceServers:async()=>[],api:async()=>({ok:true})},DB:{fb:{uid:host,rtdb:{ref:()=>ref}}},NetProtocol:{parse:()=>null,message:()=>true}};
- const ctx={G,RTCPeerConnection:PC,console:{info:(...x)=>logs.push(x),warn(){},error(){}},setTimeout:(fn,ms)=>{timers.set(++tick,{fn,ms});return tick;},clearTimeout:id=>timers.delete(id),performance:{now:()=>0}};
- vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(__dirname,'../../js/net/net.js'),'utf8'),ctx);
+ const ctx={G,Object,ArrayBuffer,Uint8Array,DataView,TextEncoder,TextDecoder,RTCPeerConnection:PC,console:{info:(...x)=>logs.push(x),warn(){},error(){}},setTimeout:(fn,ms)=>{timers.set(++tick,{fn,ms});return tick;},clearTimeout:id=>timers.delete(id),performance:{now:()=>0}};
+ vm.createContext(ctx);for(const f of ['js/net/codec.js','js/net/protocol.js','js/net/net.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../../'+f),'utf8'),ctx);
  const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
  const incoming=sig=>callbacks.signal({val:()=>JSON.stringify({f:guest,sig}),ref:{remove:async()=>{}}});
  return {G,host,guest,pcs,timers,incoming,flush,logs};
@@ -49,4 +49,13 @@ test('選用候選為 relay 時診斷標為 TURN，不輸出候選位址',async(
  const f=fixture(),n=f.G.Net;n.open('room',true,f.host);n.syncMembers([f.host,f.guest]);await f.flush();
  f.pcs[0].getStats=async()=>new Map([['transport',{type:'transport',selectedCandidatePairId:'pair'}],['pair',{localCandidateId:'local',remoteCandidateId:'remote'}],['local',{candidateType:'relay',address:'do-not-log'}],['remote',{candidateType:'host'}]]);
  f.pcs[0].dc.onopen();await f.flush();assert.equal(n.route(f.guest),'turn');assert.ok(!JSON.stringify(n.diagnostics()).includes('do-not-log'));n.close();
+});
+
+test('每條通道協商二進位後才編碼，仍驗證內容並維持JSON後備',async()=>{
+ const f=fixture(),n=f.G.Net,received=[],sent=[];n.on((u,m)=>received.push(m));n.open('room',true,f.host);n.syncMembers([f.host,f.guest]);await f.flush();const dc=f.pcs[0].dc;dc.send=x=>sent.push(x);dc.onopen();
+ const p=[0,0,0,0,100,100,0,'tackle',1,78,0,1,0,0,1,''],frame={k:'f',p,ev:[]};
+ n.send(f.guest,frame);assert.equal(typeof sent.at(-1),'string');
+ dc.onmessage({data:JSON.stringify({k:'net-cap',binary:1})});n.send(f.guest,frame);assert.ok(sent.at(-1) instanceof ArrayBuffer);assert.ok(n.stats.binarySent>0);
+ dc.onmessage({data:f.G.NetCodec.encode(frame)});assert.equal(received.length,1);assert.ok(n.stats.binaryRecv>0);
+ dc.onmessage({data:JSON.stringify({k:'net-cap',binary:99})});n.send(f.guest,frame);assert.equal(typeof sent.at(-1),'string');n.close();
 });

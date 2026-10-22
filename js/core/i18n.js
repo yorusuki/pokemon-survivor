@@ -29,6 +29,7 @@ G.I18n = (() => {
   let patterns = [], frag = null, fragLow = null, fragMap = new Map();
   const cache = new Map();
   const nameTemplates = new Set([
+    '{x} ha vuelto','{x}: reconectando…','Viendo a {x}',
     'Faltan por elegir: {x}', 'Esperando a {x}…', '{x} ha dejado la partida',
     '¡{x} necesita ayuda! · {x} m', 'Tu apodo es {x}', '¿Quitar a {x} de tus amigos?',
     'Solicitud enviada a {x}', 'Ahora eres amigo de {x}',

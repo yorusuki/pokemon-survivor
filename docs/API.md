@@ -125,3 +125,9 @@ TURN 長期 token 只用於後端與 Cloudflare API；前端取得的是短期 I
 錯誤：`invalid-account-operation`／`invalid-nickname`／`invalid-friend-code`（400）、`friend-not-found`（404）、`nickname-taken`／`rename-in-room`（409）、`rename-cooldown`／`too-many-requests`（429）、未登入（401）、來源或權限錯誤（403）。
 
 改名完整交易更新現行名稱、舊名保留、公開 profile、使用者顯示名、存檔與邀請；不修改登入帳號、UID、好友關係或歷史排行榜快照。好友 documents 的讀取與查詢會投影目前名稱，revision 仍代表原好友文件版本。schema 與部署方式見 [帳號文件](ACCOUNT_NICKNAME_PLAN.md)。
+
+## 3.0.0新增欄位與房主清理
+
+`POST /api/rooms`新增`{"op":"remove","path":"rooms/房間ID/m/成員UID"}`：需登入且呼叫者為該房房主，目標不可為房主；成功`{"ok":true}`，同時移除目標心跳與訊息佇列。不存在目標視為已移除；越權403，其他輸入驗證沿用既有400。不能藉此修改他人成員資料，也不能讀取他人的協商訊息。45秒由客戶端流程計時，後端此權限本身不是逾時證明。
+
+個人存檔新增`bag`（mint/cap/caph，0～999）、`tms`（已知學習器庫存0～999）、`pnat`／`pabil`（每隻性格／可用特性位置與時間戳）、`ptm`（相容已學招式）、`pstart2`（第二初始招式與時間戳，空ID代表隨機）。舊存檔缺值相容；無效內容依既有存檔端點回傳400。庫存帳本沿用同一JSON文件，不新增API或SQL資料表。

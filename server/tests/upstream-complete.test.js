@@ -56,5 +56,5 @@ test('收藏名稱排序使用獨立語境，不沿用帳號名稱翻譯',()=>{
 });
 
 test('登入與能力標籤按語境區分，不把會心率當效果名稱',()=>{
- const zh=JSON.parse(read('tools/translations/zh-TW.json'));assert.equal(zh.Name,'名稱');assert.equal(zh.Critical,'會心率');assert.equal(zh.Regeneration,'每秒體力回復');assert.match(read('dev.html'),/<label for="f-user">Nombre de acceso<\/label>/);assert.match(read('js/ui/menu.js'),/bar\('Ataque físico', p.pa/);
+ const zh=JSON.parse(read('tools/translations/zh-TW.json'));assert.equal(zh.Name,'名稱');assert.equal(zh.Critical,'會心率');assert.equal(zh.Regeneration,'每秒體力回復');assert.match(read('dev.html'),/<label for="f-user">Nombre de acceso<\/label>/);assert.match(read('js/ui/menu.js'),/bar\('Ataque físico', q.pa/);
 });

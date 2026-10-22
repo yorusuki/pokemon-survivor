@@ -1,19 +1,19 @@
-FROM node:22-alpine AS game-build
+FROM node:22.23.4-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914 AS game-build
 WORKDIR /game
 COPY . .
 RUN node tools/build.js --plain --sin-seo
 RUN node tools/security-headers.js
 
-FROM node:22-alpine AS api
+FROM node:22.23.4-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914 AS api
 WORKDIR /app
 COPY server/package.json server/package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts --engine-strict && npm cache clean --force
-COPY --chown=node:node server/*.js server/schema.sql ./
+COPY --chown=node:node server/*.js server/shop-data.json server/schema.sql ./
 USER node
 EXPOSE 3000
 CMD ["node", "index.js"]
 
-FROM nginx:stable-alpine AS web
+FROM nginx:1.30.6-alpine@sha256:c59d1f8b1e0e42da75be973424cd72e23f7f8adfb54e982f4d1cd0216a5a5576 AS web
 COPY deployment/25-trusted-proxies.sh /docker-entrypoint.d/25-trusted-proxies.sh
 RUN chmod 755 /docker-entrypoint.d/25-trusted-proxies.sh
 COPY deployment/nginx.conf /etc/nginx/templates/default.conf.template

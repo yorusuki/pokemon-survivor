@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "JPTER78/pokesurvivor",
   "initialBaseline": "5bbc3b29288d6af4596f21188fb8b54e0e9b739f",
-  "reviewedThrough": "803125dfdf3066fe6cf65f490f1e7b577871a295",
-  "lastInspected": "803125dfdf3066fe6cf65f490f1e7b577871a295",
+  "reviewedThrough": "6f0f4409f68adcc5bc31a77cafaf8ba9a0318397",
+  "lastInspected": "6f0f4409f68adcc5bc31a77cafaf8ba9a0318397",
   "decisionStatus": "reviewed_selectively_integrated",
-  "note": "已整合803125d的N01～N05；保留生命寶珠、最愛、校訂繁中及自架架構。",
+  "note": "已依使用者決策整合T系列；保留PostgreSQL、Cloudflare TURN、生命寶珠、最愛與繁中，Firebase T23/T24僅備案。",
   "items": {
     "G01": "implemented",
     "G02": "implemented",
@@ -25,25 +25,41 @@
     "G16": "implemented_no_reset",
     "G17": "implemented"
   },
-  "release": "2.3.2",
+  "release": "3.0.0",
   "excluded": [
     "Firebase services and write throttling",
     "Leaderboard reset"
   ],
   "lastReview": {
-    "base": "e4ba0e173cb7e415f9815c924a48c5c25f516962",
-    "head": "803125dfdf3066fe6cf65f490f1e7b577871a295",
-    "report": "UPSTREAM_REVIEW_2026-10-19_803125d.md",
+    "base": "803125dfdf3066fe6cf65f490f1e7b577871a295",
+    "head": "6f0f4409f68adcc5bc31a77cafaf8ba9a0318397",
+    "report": "UPSTREAM_REVIEW_2026-10-22.md",
     "items": {
-      "N01": "implemented",
-      "N02": "implemented",
-      "N03": "implemented",
-      "N04": "implemented",
-      "N05": "implemented",
-      "N06": "implemented_context_and_name_protection_keep_existing_localization",
-      "N07": "implemented_bilingual_rank_search_keep_current_ui",
-      "N08": "skipped",
-      "N09": "implemented_reload_handler_keep_existing_css_hash"
+      "T01": "implemented",
+      "T02": "implemented",
+      "T03": "retained_cloudflare_turn",
+      "T04": "retained_security_headers",
+      "T05": "implemented",
+      "T06": "implemented",
+      "T07": "implemented",
+      "T08": "implemented",
+      "T09": "implemented",
+      "T10": "implemented",
+      "T11": "implemented",
+      "T12": "implemented",
+      "T13": "implemented",
+      "T14": "implemented",
+      "T15": "implemented",
+      "T16": "implemented",
+      "T17": "implemented",
+      "T18": "implemented",
+      "T19": "retained_30_second_all_ice",
+      "T20": "implemented",
+      "T21": "implemented",
+      "T22": "implemented",
+      "T23": "reference_only",
+      "T24": "reference_only",
+      "T25": "implemented_one_release_force_update"
     }
   }
 }

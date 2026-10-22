@@ -107,6 +107,13 @@ test('房間限制 4 人；協商訊息禁止冒名與跨房讀取', async () =>
   assert.equal((await a('rooms', { op: 'set', path: p, data: JSON.stringify({ f: ids[0], sig: { sdp: { type: 'offer', sdp: 'v=0\r\n' } } }) })).status, 200);
   assert.equal((await a('rooms', { op: 'get', path: room + '/q/' + ids[1] })).status, 403);
   assert.equal(Object.keys((await b('rooms', { op: 'get', path: room + '/q/' + ids[1] })).body.data).length, 1);
+  assert.equal((await outsider('rooms',{op:'remove',path:room+'/m/'+ids[1]})).status,403);
+  assert.equal((await b('rooms',{op:'remove',path:room+'/m/'+ids[0]})).status,403);
+  assert.equal((await b('rooms',{op:'remove',path:room+'/m/'+ids[2]})).status,403);
+  assert.equal((await a('rooms',{op:'set',path:room+'/m/'+ids[1],data:member(1)})).status,403);
+  assert.equal((await a('rooms',{op:'remove',path:room+'/m/'+ids[1]})).status,200);
+  assert.equal((await b('rooms',{op:'get',path:room+'/q/'+ids[1]})).status,403);
+
 });
 test('排行榜時長檢查、摘要由伺服器重建、禁止偽造成績', async () => {
   const a = client(), uid = await register(a, 'RankOwner');
